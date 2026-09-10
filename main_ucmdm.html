@@ -1,0 +1,1193 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PM POSHAN — Monthly Data Capture Format</title>
+  <style>
+    :root { --ink:#172033; --line:#cfd9e6; --paper:#fff; --navy:#173b63; --blue:#2d76c3; --pale:#f3f8fe; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#edf3f9; color:var(--ink); font:14px/1.4 Arial, sans-serif; }
+    .app-shell { display:grid; grid-template-columns:260px minmax(0, 1fr); min-height:100vh; }
+    .sidebar { display:flex; flex-direction:column; position:sticky; top:0; height:100vh; padding:28px 16px; overflow-y:auto; background:var(--navy); color:#fff; }
+    .sidebar-header { display:flex; align-items:center; justify-content:space-between; gap:10px; margin:0 12px 16px; }
+    .sidebar-brand { padding:0 12px 22px; border-bottom:1px solid #ffffff2d; margin-bottom:18px; }
+    .sidebar a.sidebar-logo { display:flex; align-items:center; gap:8px; margin:0; padding:0; color:#fff; text-decoration:none; font:700 20px/1 Georgia, 'Times New Roman', serif; }
+    .sidebar a.sidebar-logo img { display:block; flex:0 0 34px; width:34px; height:34px; border:2px solid #fff; border-radius:8px; }
+    .sidebar a.sidebar-logo:hover, .sidebar a.sidebar-logo:focus-visible { background:transparent; color:#dce9f7; outline:none; }
+    .sidebar-brand strong { display:block; font-size:17px; letter-spacing:.2px; }
+    .sidebar-brand span { display:block; margin-top:5px; color:#c9dcf3; font-size:12px; }
+    .start-page-toggle { display:inline-flex; align-items:center; justify-content:center; }
+    .start-page-toggle input { position:absolute; opacity:0; pointer-events:none; }
+    .start-page-toggle-track { position:relative; display:inline-block; width:40px; height:22px; border:1px solid rgba(255,255,255,.5); border-radius:999px; background:rgba(255,255,255,.18); cursor:pointer; transition:background .15s ease; }
+    .start-page-toggle-track::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.2); transition:transform .15s ease; }
+    .start-page-toggle input:checked + .start-page-toggle-track { background:#8fe9f5; }
+    .start-page-toggle input:checked + .start-page-toggle-track::after { transform:translateX(18px); }
+    .sidebar nav { display:grid; gap:5px; }
+    .sidebar a { display:block; border-radius:8px; padding:10px 12px; color:#dce9f7; text-decoration:none; font-size:13px; transition:.15s; }
+    .sidebar a:hover, .sidebar a.active { background:#ffffff20; color:#fff; }
+    .quick-entry { margin-top:22px; padding:14px; border:1px solid #ffffff2d; border-radius:12px; background:#ffffff10; }
+    .quick-entry h2 { margin:0 0 13px; color:#fff; font-size:14px; }
+    .quick-entry h3 { display:flex; align-items:center; justify-content:space-between; gap:8px; margin:14px 0 7px; padding:7px 8px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font-size:14px; }
+    .quick-entry h3::after { content:'+'; flex:0 0 auto; font-size:18px; line-height:1; }
+    .quick-entry h3[aria-expanded="true"]::after { content:'−'; }
+    .quick-entry .wheat-entry-heading { font-size:13px; }
+    .quick-entry-group:not(.is-expanded) label { display:none; }
+    .grain-checkbox { flex:0 0 20px; appearance:none; width:20px !important; height:20px; min-width:0 !important; margin:0 0 0 6px !important; border:2px solid #c9dcf3; border-radius:6px; background:#fff; cursor:pointer; box-shadow:0 2px 6px #02122240; transition:background .15s, border-color .15s, box-shadow .15s, transform .15s; }
+    .grain-checkbox:hover, .grain-checkbox:focus-visible { border-color:#8fe9f5; box-shadow:0 3px 9px #02122266; outline:none; transform:translateY(-1px); }
+    .grain-checkbox:checked { position:relative; border-color:#8fe9f5; background:#8fe9f5; box-shadow:0 2px 8px #8fe9f566; }
+    .grain-checkbox:checked::after { content:'✓'; display:block; color:#173b63; font-size:14px; font-weight:700; line-height:16px; text-align:center; }
+    .quick-entry h3:first-of-type { margin-top:0; }
+    .quick-entry label { display:grid; grid-template-columns:1fr 68px; align-items:center; gap:8px; margin:6px 0; color:#eff6ff; font-size:12px; }
+    .quick-entry .grain-entry-label { grid-template-columns:1fr 68px auto; gap:4px; }
+    .quick-entry .grain-unit-label { color:#c9dcf3; font-size:10px; }
+    .quick-entry input { min-width:0; border:1px solid #ffffff3b; border-radius:5px; padding:5px 6px; background:#fff; color:var(--ink); font-size:12px; }
+    .note-button { width:100%; margin-top:auto; padding:9px 12px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
+    .note-button:hover, .note-button:focus-visible { background:#2d76c3; outline:none; }
+    main { width:min(1180px, 100%); margin:0 auto; background:var(--paper); padding:34px 38px; }
+    header { text-align:center; margin-bottom:20px; }
+    .print-button { display:block; width:100%; margin:18px 0 18px; padding:9px 14px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
+    .print-button:hover { background:#0e2b4a; }
+    .download-pdf-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #7fd0a0; border-radius:6px; background:#1f8f56; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
+    .download-pdf-button:hover:not(:disabled) { background:#166b40; }
+    .download-pdf-button:disabled { background:#7fae93; border-color:#a9d6bd; cursor:not-allowed; }
+    .export-excel-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #8998aa; border-radius:6px; background:#9aa8b8; color:#fff; cursor:not-allowed; font:700 13px Arial, sans-serif; }
+    .export-excel-button:hover:not(:disabled) { background:#effaf1; }
+    .export-excel-button:disabled { border-color:#8998aa; color:#fff; cursor:not-allowed; }
+    .form-actions { margin-top:48px; padding-top:18px; border-top:1px solid var(--line); }
+    .table-actions { margin:-4px 0 16px; }
+    .cook-table-actions { display:flex; justify-content:flex-start; gap:8px; margin:0; }
+    .add-cook-button { padding:6px 12px; border:1px solid #245b91; border-radius:5px; background:#fff; color:#245b91; cursor:pointer; font:700 12px Arial, sans-serif; }
+    .add-cook-button:hover { background:#eaf2fc; }
+    .undo-cook-button { padding:6px 12px; border:1px solid #f0a0a0; border-radius:5px; background:#fff; color:#9f3030; cursor:pointer; font:700 12px Arial, sans-serif; }
+    .undo-cook-button:hover:not(:disabled) { background:#fff2f2; }
+    .undo-cook-button:disabled { border-color:#d7dee7; color:#9aa8b8; cursor:not-allowed; }
+    .data-entry-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
+    .data-entry-button:hover { background:#2d76c3; }
+    .month-navigation { display:grid; gap:8px; margin-bottom:18px; }
+    .month-navigation h2 { margin:0; color:#fff; font-size:14px; }
+    .selected-month-year { color:#9aa8b8; font-size:14px; font-weight:400; }
+    .month-navigation-controls { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .month-navigation button { padding:8px 6px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 12px Arial, sans-serif; }
+    .month-navigation button:hover { background:#2d76c3; }
+    .daily-sidebar { display:none; position:fixed; z-index:20; top:18px; right:18px; width:330px; max-height:calc(100vh - 36px); padding:22px 14px; overflow-y:auto; background:#f4f8fc; border:1px solid var(--line); border-radius:8px; box-shadow:0 16px 40px #17203340; }
+    .daily-sidebar.is-open { display:block; }
+    .daily-sidebar-header { display:flex; align-items:center; justify-content:space-between; gap:8px; }
+    .daily-sidebar-close { border:0; padding:2px 6px; background:transparent; color:var(--navy); cursor:pointer; font:700 20px/1 Arial, sans-serif; }
+    .daily-sidebar h2 { display:flex; align-items:baseline; gap:6px; margin:0 0 5px; color:var(--navy); font-size:17px; }
+    .daily-sidebar .daily-month-label { color:#66758b; font-size:13px; font-weight:400; }
+    .daily-sidebar > p { margin:0 0 16px; color:#66758b; font-size:12px; }
+    .daily-table-wrap { overflow-x:auto; border:1px solid var(--line); border-radius:8px; background:#fff; }
+    .daily-table { min-width:0; table-layout:fixed; font-size:12px; }
+    .daily-table th:first-child, .daily-table td:first-child { width:38px; }
+    .daily-table th:nth-child(n+2), .daily-table td:nth-child(n+2) { width:58px; }
+    .daily-table th { padding:7px 5px; font-size:11px; white-space:nowrap; }
+    .daily-table td { padding:3px; }
+    .daily-table input { min-width:0; padding:5px 3px; border:1px solid transparent; text-align:right; font-size:12px; }
+    .daily-table .daily-day { display:block; padding:5px 3px; text-align:center; font-weight:700; color:var(--navy); }
+    .daily-table .holiday-button { display:block; width:100%; margin:0; padding:0; border:0; border-radius:0; background:transparent; color:#9f3030; cursor:pointer; font:700 8px/1 Arial, sans-serif; }
+    .daily-table .undo-holiday-button { display:block; width:100%; margin:0; padding:0; border:0; border-radius:0; background:transparent; color:#2d76c3; cursor:pointer; font:700 8px/1 Arial, sans-serif; }
+    .daily-table .sunday-label { display:block; width:100%; color:#c62828; font:700 8px/1 Arial, sans-serif; }
+    .daily-table .holiday-row td { color:#9f3030; background:#fff2f2; }
+    .daily-table .holiday-row input:disabled { background:#fbeaea; color:#c62828; cursor:not-allowed; }
+    .daily-table .sunday-row, .daily-table .sunday-row .daily-day { color:#c62828; }
+    .daily-table .sunday-row input:disabled { background:#fbeaea; color:#c62828; cursor:not-allowed; }
+    .daily-table input:focus { border-color:var(--blue); }
+    .grain-consumption-cell { padding:1px; white-space:nowrap; }
+    .grain-consumption-cell .grain-consumption { display:inline-block; width:80px; min-width:0; padding:1px 0; font-size:12px; }
+    .grain-unit { color:#66758b; font-size:9px; }
+    .daily-total { font-weight:700; background:#eef6ff; }
+    .daily-total input { font-weight:700; color:var(--navy); }
+    h1 { margin:0; font-size:17px; }
+    header p { margin:5px 0 0; font-size:16px; font-weight:700; }
+    .note { margin:6px 0 24px; padding:11px 0; font-size:15px; }
+    h2 { scroll-margin-top:20px; color:var(--navy); font-size:17px; margin:36px 0 9px; }
+    .table-wrap { overflow-x:auto; margin-bottom:18px; border:1px solid var(--line); border-radius:8px; }
+    .school-details tr:first-child th, .school-details tr:first-child td { padding-top:3px; padding-bottom:3px; }
+    .school-details tr:first-child input { padding-top:0; padding-bottom:0; }
+    .school-details tr:first-child th:nth-child(1), .school-details tr:first-child td:nth-child(2) { width:11%; }
+    .school-details #school-name { padding:0; font-size:10px; }
+    .school-details .field-cell { white-space:nowrap; }
+    .school-details .field-cell input { display:inline-block; width:50%; min-width:55px; margin-left:4px; }
+    .inspection-table tr:last-child th, .incident-table th { width:54%; }
+    .inspection-table tr:last-child td, .incident-table td { width:46%; }
+    .payment-table { table-layout:fixed; }
+    .payment-table th:nth-child(1) { width:6%; }
+    .payment-table th:nth-child(2) { width:28%; }
+    .payment-table th:nth-child(3) { width:9%; }
+    .payment-table tbody tr:nth-child(6) td { height:36px; padding-top:10px; }
+    .fund-table th:first-child { font-size:12px; }
+    table { border-collapse:collapse; width:100%; min-width:680px; }
+    th, td { border:1px solid var(--line); padding:3px; vertical-align:middle; }
+    th { background:var(--pale); color:var(--ink); text-align:left; font-weight:700; }
+    .center { text-align:center; }
+    .label { width:20%; font-weight:700; background:#fff; }
+    input, select { width:100%; min-width:70px; border:0; background:transparent; padding:1px 2px; color:var(--ink); font:inherit; outline:none; }
+    input:focus, select:focus { outline:1px solid var(--blue); }
+    .yes-no { display:flex; gap:18px; align-items:center; }
+    .yes-no label { white-space:nowrap; }
+    .yes-no input { width:auto; margin:0 0 0 5px; }
+    .balance-row { white-space:nowrap; font-size:12px; }
+    .balance-row .yes-no { display:inline-flex; margin-left:12px; }
+    .option-list { display:flex; flex-wrap:wrap; gap:8px 22px; }
+    .option-list label { white-space:nowrap; }
+    .option-list input { width:15px; height:39px; min-width:0; margin:0 0 0 7px; padding:0; vertical-align:middle; }
+    .signatures { display:grid; grid-template-columns:1fr 1fr; gap:40px; margin-top:64px; }
+    .signature { border-top:1px dotted var(--ink); padding-top:8px; text-align:center; font-weight:700; }
+    @media (max-width:760px) { .daily-sidebar { top:10px; right:10px; width:calc(100% - 20px); max-height:calc(100vh - 20px); } }
+    @media (max-width:760px) { .app-shell { display:block; } .sidebar { position:static; height:auto; padding:14px; } .sidebar-brand { display:none; } .sidebar nav { display:flex; overflow-x:auto; gap:6px; } .sidebar a { white-space:nowrap; padding:8px 10px; } .quick-entry { max-width:420px; } main { width:100%; margin:0; padding:20px 14px; } h1 { font-size:14px; } .signatures { gap:18px; font-size:12px; } }
+    .month-year-print { display:none; }
+    .site-footer { max-width:1180px; margin:16px auto 24px; padding:0 38px; text-align:center; font:13px Arial, sans-serif; color:#5a6b80; }
+    .site-footer a { color:#245b91; text-decoration:none; }
+    .site-footer a:hover { text-decoration:underline; }
+    .upi-qr-button { display:inline-flex; align-items:center; justify-content:center; gap:6px; max-width:100%; box-sizing:border-box; margin-left:8px; padding:8px 12px; border:0; border-radius:999px; background:linear-gradient(135deg, #245b91 0%, #2d76c3 42%, #49b9d9 100%); color:#fff; cursor:pointer; font:700 12px/1.2 Arial, sans-serif; letter-spacing:.2px; vertical-align:middle; box-shadow:0 8px 18px rgba(36, 91, 145, .28); }
+    .upi-qr-button .upi-donate-prefix { font-size:10px; }
+    .upi-qr-button .upi-qr-label { min-width:0; max-width:100%; color:#fff; font-size:11px; font-weight:700; line-height:1.1; text-align:center; overflow-wrap:anywhere; }
+    .upi-qr-button::before { content:'✦'; font-size:13px; line-height:1; }
+    .upi-qr-button:hover, .upi-qr-button:focus-visible { filter:brightness(1.04); outline:none; }
+    .reset-storage-button { display:none; }
+    .upi-qr-popup { display:none; position:fixed; z-index:30; inset:0; align-items:center; justify-content:center; padding:20px; background:#17203399; }
+    .upi-qr-popup.is-open { display:flex; }
+    .upi-qr-dialog { position:relative; max-width:min(380px, 100%); padding:18px; border-radius:10px; background:#fff; box-shadow:0 16px 40px #17203366; text-align:center; }
+    .upi-qr-dialog img { display:block; width:100%; max-width:320px; height:auto; margin:10px auto 0; }
+    .upi-qr-field-row { display:flex; align-items:center; gap:8px; margin-top:12px; }
+    .upi-qr-field { flex:1; min-width:0; height:40px; padding:8px 10px; border:1px solid #cfe0f4; border-radius:8px; background:#f8fbff; color:var(--navy); font:600 14px Arial, sans-serif; text-align:center; }
+    .upi-qr-copy-button, .upi-qr-open-button { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:8px 14px; border:1px solid #245b91; border-radius:8px; background:#245b91; color:#fff; cursor:pointer; font:700 12px Arial, sans-serif; text-decoration:none; }
+    .upi-qr-copy-button:hover, .upi-qr-copy-button:focus-visible, .upi-qr-open-button:hover, .upi-qr-open-button:focus-visible { background:#2d76c3; outline:none; }
+    .upi-qr-open-button { display:block; width:100%; margin-top:10px; }
+    .upi-qr-dialog h2 { margin:0; color:var(--navy); font-size:17px; }
+    .upi-qr-close { position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted); cursor:pointer; font:700 22px/1 Arial, sans-serif; }
+    .upi-qr-close:hover, .upi-qr-close:focus-visible { color:var(--navy); outline:none; }
+    .notice-popup { display:none; position:fixed; z-index:30; inset:0; align-items:center; justify-content:center; padding:20px; background:#17203399; }
+    .notice-popup.is-open { display:flex; }
+    .notice-dialog { position:relative; max-width:min(560px, 100%); max-height:calc(100vh - 40px); padding:22px; overflow-y:auto; border-radius:10px; background:#fff; box-shadow:0 16px 40px #17203366; color:var(--muted); font-size:13px; }
+    .notice-dialog h2 { margin:0 0 14px; color:var(--navy); font-size:18px; }
+    .notice-topic { margin-top:10px; padding:10px 12px; border:1px solid #c5d8ed; border-radius:6px; background:#f3f8fe; }
+    .notice-topic h3 { margin:0 0 5px; color:var(--navy); font-size:13px; }
+    .notice-topic p { margin:0; }
+    .notice-close { position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted); cursor:pointer; font:700 22px/1 Arial, sans-serif; }
+    .notice-close:hover, .notice-close:focus-visible { color:var(--navy); outline:none; }
+    @media print { .upi-qr-popup { display:none !important; } }
+    @media print { @page { size:A4; margin:6mm 5mm; } body { background:white; color:#000; font-size:12px; } .app-shell { display:block; } .sidebar, .daily-sidebar { display:none; } main { box-shadow:none; width:100%; margin:0; padding:0; } header { margin-top:8px; margin-bottom:10px; } h1 { font-size:15px; font-weight:700; } header p { font-size:14px; font-weight:700; color:#000; margin-top:4px; } h2 { color:#000; margin:32px 0 8px; font-size:13px; font-weight:normal; } .school-details + h2 { margin-top:28px; } .note { margin:6px 0 12px; padding:4px 0; font-size:13px; } .note strong { font-weight:700; } .table-wrap { border:0; border-radius:0; margin-bottom:12px; } table, th, td { border:1px solid #555; } th, td { padding:4px 6px; font-size:11px; } th { background:#fff; color:#000; font-weight:normal; } .label { font-weight:normal; } .note { background:white; } input, select { color:#000; font-size:11px; padding:2px 3px; } .school-details #school-name { font-size:10px; } .signature { border-top-color:#000; font-weight:normal; } .signatures { margin-top:55px; } #food-grains { margin-top:36px; } input[type="month"] { display:none; } .month-year-print { display:inline; } .site-footer { display:none; } .table-actions, .form-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; } }
+    @media print { @page { size:A4; margin:6mm 5mm; } body { background:white; color:#000; font-size:12px; } .app-shell { display:block; } .sidebar, .daily-sidebar, .notice-popup { display:none; } main { box-shadow:none; width:100%; margin:0; padding:0; } header { margin-top:8px; margin-bottom:10px; } h1 { font-size:15px; font-weight:700; } header p { font-size:14px; font-weight:700; color:#000; margin-top:4px; } h2 { color:#000; margin:32px 0 8px; font-size:13px; font-weight:normal; } .school-details + h2 { margin-top:28px; } .note { margin:6px 0 12px; padding:4px 0; font-size:13px; } .note strong { font-weight:700; } .table-wrap { border:0; border-radius:0; margin-bottom:12px; } table, th, td { border:1px solid #555; } th, td { padding:4px 6px; font-size:11px; } th { background:#fff; color:#000; font-weight:normal; } .label { font-weight:normal; } .note { background:white; } input, select { color:#000; font-size:11px; padding:2px 3px; } .school-details #school-name { font-size:10px; } .signature { border-top-color:#000; font-weight:normal; } .signatures { margin-top:55px; } #food-grains { margin-top:36px; } input[type="month"] { display:none; } .month-year-print { display:inline; } .site-footer { display:none; } .table-actions, .form-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; } }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <a class="sidebar-logo" href="index.html" aria-label="ucmdm.in home"><img src="app-icon.svg" alt=""><span>ucmdm.in</span></a>
+        <label class="start-page-toggle" aria-label="Open this page first on startup">
+          <input id="first-page-toggle" type="checkbox">
+          <span class="start-page-toggle-track"></span>
+        </label>
+      </div>
+      <div class="sidebar-brand"><strong>PM POSHAN</strong><span>Monthly Data Entry</span></div>
+      <section class="month-navigation" aria-labelledby="month-navigation-title">
+        <h2 id="month-navigation-title">Select Month-Year <span class="selected-month-year" id="selected-month-year"></span></h2>
+        <div class="month-navigation-controls">
+          <button type="button" id="previous-month">Previous Month</button>
+          <button type="button" id="next-month">Next Month</button>
+        </div>
+      </section>
+      <button class="data-entry-button" type="button" onclick="toggleDailyMealPopup(true)">Daily Data Entry</button>
+      <nav aria-label="Form sections">
+      </nav>
+      <section class="quick-entry">
+        <div class="quick-entry-group">
+          <h3 aria-expanded="false">1. Rupees per student</h3>
+          <label>Bal Vatika <input class="rupees-per-student" type="number" value="6.78" data-default-value="6.78" min="0" step="0.01" aria-label="Rupees per student for Bal Vatika"></label>
+          <label>Primary <input class="rupees-per-student" type="number" value="6.78" data-default-value="6.78" min="0" step="0.01" aria-label="Rupees per student for Primary"></label>
+          <label>Upper Primary <input class="rupees-per-student" type="number" value="10.17" data-default-value="10.17" min="0" step="0.01" aria-label="Rupees per student for Upper Primary"></label>
+        </div>
+        <div class="quick-entry-group">
+          <h3 aria-expanded="false">2. Rice per student <input id="rice-entry-type" class="grain-checkbox" type="checkbox" name="grain-entry-type" value="rice" aria-label="Select Rice per student" checked></h3>
+          <label class="grain-entry-label">Bal Vatika <input class="rice-per-student" type="number" value="100" data-default-value="100" min="0" step="0.01" aria-label="Rice per student for Bal Vatika"><span class="grain-unit-label">gram</span></label>
+          <label class="grain-entry-label">Primary <input class="rice-per-student" type="number" value="100" data-default-value="100" min="0" step="0.01" aria-label="Rice per student for Primary"><span class="grain-unit-label">gram</span></label>
+          <label class="grain-entry-label">Upper Primary <input class="rice-per-student" type="number" value="150" data-default-value="150" min="0" step="0.01" aria-label="Rice per student for Upper Primary"><span class="grain-unit-label">gram</span></label>
+        </div>
+        <div class="quick-entry-group">
+          <h3 class="wheat-entry-heading" aria-expanded="false">3. Wheat per student <input id="wheat-entry-type" class="grain-checkbox" type="checkbox" name="grain-entry-type" value="wheat" aria-label="Select Wheat per student"></h3>
+          <label class="grain-entry-label">Bal Vatika <input class="wheat-per-student" type="number" value="100" data-default-value="100" min="0" step="0.01" aria-label="Wheat per student for Bal Vatika"><span class="grain-unit-label">gram</span></label>
+          <label class="grain-entry-label">Primary <input class="wheat-per-student" type="number" value="100" data-default-value="100" min="0" step="0.01" aria-label="Wheat per student for Primary"><span class="grain-unit-label">gram</span></label>
+          <label class="grain-entry-label">Upper Primary <input class="wheat-per-student" type="number" value="150" data-default-value="150" min="0" step="0.01" aria-label="Wheat per student for Upper Primary"><span class="grain-unit-label">gram</span></label>
+        </div>
+      </section>
+      <button class="note-button" id="note-button" type="button">Note</button>
+    </aside>
+    <main>
+    <header>
+
+      <h1>Pradhan Mantri Poshan Shakti Nirman (PM POSHAN)</h1>
+      <p>School Monthly Data Capture Format (MDCF)</p>
+
+    </header>
+    <p class="note"><strong>Instructions: Keep following registers at the time of filling the form:- <br>
+1) Enrolment Register. 2) Account 3) Bank Account Pass book. 4) Cooking cost details etc. </strong></p>
+
+    <h2 id="school-details">1. School Details</h2>
+    <div class="table-wrap school-details"><table>
+      <tr><th colspan="2">Month-Year</th><td colspan="2"><input type="month" aria-label="Month and year"><span class="month-year-print" id="month-year-print"></span></td><th colspan="2">UDISE Code</th><td colspan="2"><input id="udise-code" type="text" inputmode="numeric" maxlength="11" minlength="11" pattern="[0-9]{11}" aria-label="UDISE code"></td><th colspan="2">School Name</th><td colspan="2"><input id="school-name" aria-label="School name"></td></tr>
+      <tr><th colspan="2">Type</th><td colspan="10"><div class="option-list"><label>Government<input class="school-type-option" type="checkbox"></label><label>Local Body<input class="school-type-option" type="checkbox"></label><label>EGS/AIE Centers<input class="school-type-option" type="checkbox"></label><label>NCLP<input class="school-type-option" type="checkbox"></label><label>Madras / Maqtab<input class="school-type-option" type="checkbox"></label></div></td></tr>
+      <tr><th colspan="2">Category</th><td colspan="10"><div class="option-list"><label>Primary<input class="school-category-option" type="checkbox"></label><label>Upper Primary<input class="school-category-option" type="checkbox"></label><label>Primary with Upper Primary<input class="school-category-option" type="checkbox"></label></div></td></tr>
+      <tr><th colspan="3" class="field-cell">State / UT-<input class="persistent-field" data-persistent-key="state-or-ut" aria-label="State or UT"></th><th colspan="3" class="field-cell">District-<input class="persistent-field" data-persistent-key="district" aria-label="District"></th><th colspan="3" class="field-cell">Block/NP-<input class="persistent-field" data-persistent-key="block-or-np" aria-label="Block or NP"></th><th colspan="3" class="field-cell">Village/Ward-<input class="persistent-field" data-persistent-key="village-or-ward" aria-label="Village or ward"></th></tr>
+      <tr><th colspan="3" class="field-cell">Kitchen Type-<input class="persistent-field" data-persistent-key="kitchen-type" aria-label="Kitchen type"></th><th colspan="3" class="field-cell">NGO/SHG-<input class="persistent-field" data-persistent-key="ngo-or-shg" aria-label="NGO or SHG"></th><th colspan="3" class="field-cell">Enrolment-<input class="persistent-field" data-persistent-key="enrolment" type="number" min="0" aria-label="Enrolment"></th><td colspan="3"></td></tr>
+    </table></div>
+
+    <h2 id="meals-status">2. Meals Availed Status</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Details</th><th class="center">Bal Vatika</th><th class="center">Primary</th><th class="center">Upper Primary</th></tr>
+      <tr><th>Number of School days during month</th><td><input class="school-days-input" type="number" min="0" readonly aria-label="Bal Vatika school days during month"></td><td><input class="school-days-input" type="number" min="0" readonly aria-label="Primary school days during month"></td><td><input class="school-days-input" type="number" min="0" readonly aria-label="Upper Primary school days during month"></td></tr>
+      <tr><th>Actual number of days Mid Day Meal served</th><td><input class="actual-meal-days-input" type="number" min="0" aria-label="Bal Vatika actual meal days served"></td><td><input class="actual-meal-days-input" type="number" min="0" aria-label="Primary actual meal days served"></td><td><input class="actual-meal-days-input" type="number" min="0" aria-label="Upper Primary actual meal days served"></td></tr>
+      <tr><th>Total Meals served during the month</th><td><input class="total-meals-month-input" type="number" min="0" aria-label="Bal Vatika total meals served during month"></td><td><input class="total-meals-month-input" type="number" min="0" aria-label="Primary total meals served during month"></td><td><input class="total-meals-month-input" type="number" min="0" aria-label="Upper Primary total meals served during month"></td></tr>
+    </table></div>
+
+    <h2 id="fund-details">3. Fund Details <small>(in Rs.)</small></h2>
+    <div class="table-wrap"><table class="fund-table">
+      <tr><th>Component</th><th>Opening Balance</th><th>Received during the Month</th><th>Expenditure during the Month</th><th>Closing Balance</th></tr>
+      <tr><th>Cooking Cost - Bal Vatika</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Bal Vatika cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><th>Cooking Cost - Primary</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Primary cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><th>Cooking Cost - Uper Primary</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Upper Primary cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><th>Cook Cum Helper</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure" type="number" min="0"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><th>School Expenses : MME Expenses</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure" type="number" min="0"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><td colspan="5" class="balance-row">Whether the Sum of above Closing Balance matches with Bank Account Closing Balance <span class="yes-no"><label>Yes<input type="checkbox" name="balance-yes"></label><label>No<input type="checkbox" name="balance-no"></label></span></td></tr>
+    </table></div>
+
+    <h2 id="cook-payment">4. Cook Cum Helper Payment Details</h2>
+    <div class="table-wrap"><table class="payment-table">
+      <tr><th>S.No.</th><th>Cook Name</th><th>Gender (M/F)</th><th>Category (SC/ST/OBC/GEN)</th><th>Payment Mode (Cash/Bank)</th><th>Amount Received during month (In Rs.)</th></tr>
+      <tbody id="cook-rows"></tbody>
+      <tfoot><tr><td colspan="6"><div class="table-actions cook-table-actions"><button type="button" class="add-cook-button" onclick="addCookRow()">+ Add More Cook</button><button type="button" class="undo-cook-button" onclick="removeCookRow()" disabled>Undo Extra Row</button></div></td></tr></tfoot>
+    </table></div>
+
+    <h2 id="food-grains">5. Food Grains Details <small>(in KG.)</small></h2>
+    <div class="table-wrap"><table>
+      <tr><th>Category</th><th>Food Item</th><th>Opening Balance</th><th>Received during the Month</th><th>Consumption during the Month</th><th>Closing Balance</th></tr>
+      <tbody id="grain-rows"></tbody>
+    </table></div>
+
+    <h2 id="health-status">6. Children Health Status</h2>
+    <div class="table-wrap"><table>
+      <tr><th>Indicator</th><th style="width:18%">Number</th></tr>
+      <tr><td>No. of children from class 1 to 8 who had received 4 IFA tablets (Boys)</td><td><input type="number" min="0"></td></tr>
+      <tr><td>No. of children from class 1 to 8 who had received 4 IFA tablets (Girls)</td><td><input type="number" min="0"></td></tr>
+      <tr><td>No. of children screened by mobile health (RBSK) team</td><td><input type="number" min="0"></td></tr>
+      <tr><td>No. of children referred by mobile health (RBSK) team</td><td><input type="number" min="0"></td></tr>
+    </table></div>
+
+    <h2 id="school-inspection">7. School Inspection</h2>
+    <div class="table-wrap inspection-table"><table>
+      <tr><th>School inspection done during the month</th><td><div class="yes-no"><label>Yes<input type="checkbox" name="inspection-yes"></label><label>No<input type="checkbox" name="inspection-no"></label></div></td></tr>
+      <tr><th>By Members of Task Force</th><td><input aria-label="Task Force inspection details"></td></tr>
+      <tr><th>By District Officials</th><td><input aria-label="District Officials inspection details"></td></tr>
+      <tr><th>By Block/Taluka Level Officials</th><td><input aria-label="Block Taluka inspection details"></td></tr>
+      <tr><th>By SMC Members</th><td><input aria-label="SMC Members inspection details"></td></tr>
+    </table></div>
+    <div class="table-wrap incident-table"><table>
+      <tr><th>Number of Untoward Incidents Occurred</th><td><input type="number" min="0" aria-label="Number of untoward incidents occurred"></td></tr>
+    </table></div>
+
+    <div class="signatures"><div class="signature"> Signature of the SMC Chairperson / Gram Pradhan</div><div class="signature">Signature of Head Teacher</div></div>
+    <div class="form-actions">
+      <button class="print-button" type="button" onclick="printForm()">Print</button>
+      <button class="download-pdf-button" type="button" onclick="downloadPDF()">Download PDF</button>
+      <button class="export-excel-button" type="button" disabled>Export all as Excel (Coming soon)</button>
+    </div>
+    </main>
+    <aside class="daily-sidebar" id="daily-meal-popup" aria-labelledby="daily-meals-title">
+      <div class="daily-sidebar-header"><h2 id="daily-meals-title">Daily Meal Entry <span class="daily-month-label" id="daily-month-label"></span></h2><button class="daily-sidebar-close" type="button" onclick="toggleDailyMealPopup(false)" aria-label="Close Daily Meal Entry">&times;</button></div>
+      <p>Enter meals served for each date.</p>
+      <div class="daily-table-wrap">
+        <table class="daily-table">
+          <thead><tr><th>Date</th><th>BV</th><th>Pri</th><th>UP</th><th>Total</th></tr></thead>
+          <tbody id="daily-meal-rows"></tbody>
+          <tfoot>
+            <tr class="daily-total"><th>Total</th><td><input id="daily-total-bal-vatika" type="text" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Total Bal Vatika meals"></td><td><input id="daily-total-primary" type="text" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Total Primary meals"></td><td><input id="daily-total-upper-primary" type="text" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Total Upper Primary meals"></td><td><input id="daily-total-all" type="text" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Total meals served"></td></tr>
+          </tfoot>
+        </table>
+      </div>
+    </aside>
+    <div class="notice-popup" id="notice-popup" role="dialog" aria-modal="true" aria-labelledby="notice-title">
+      <div class="notice-dialog">
+        <button class="notice-close" id="notice-close" type="button" aria-label="Close Important Data Storage Notice">&times;</button>
+        <h2 id="notice-title">Important Data Storage Notice</h2>
+        <div class="notice-topic"><h3>Where your data is stored</h3><p>Your data is saved only in your browser on your device.</p></div>
+        <div class="notice-topic"><h3>Privacy</h3><p>ucmdm.in does not store or transmit your data to its server.</p></div>
+        <div class="notice-topic"><h3>Protect your records</h3><p>Please do not clear this browser's site data, browser storage, or app data if you want to keep your records.</p></div>
+        <div class="notice-topic"><h3>How to recover data</h3><p>If you clear the browser storage or remove the app or site data, your saved records will be permanently deleted and cannot be recovered.</p></div>
+        <div class="notice-topic"><h3>Offline use</h3><p>After you install the app, it works offline and does not require an internet connection.</p></div>
+        <div class="notice-topic"><h3>Tip</h3><p>Download the completed PDF to keep a copy of your filled form.</p></div>
+      </div>
+    </div>
+  </div>
+  <footer class="site-footer"><div>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><button class="upi-qr-button" id="upi-qr-button" type="button"><span class="upi-donate-prefix">Donate with</span> <span class="upi-qr-label">UPI QR code</span></button><button class="reset-storage-button" id="reset-storage-button" type="button">Reset all saved data</button></div></footer>
+  <div class="upi-qr-popup" id="upi-qr-popup" role="dialog" aria-modal="true" aria-labelledby="upi-qr-title">
+    <div class="upi-qr-dialog">
+      <button class="upi-qr-close" id="upi-qr-close" type="button" aria-label="Close Donate with UPI QR code">&times;</button>
+      <h2 id="upi-qr-title">Donate with UPI QR code</h2>
+      <img src="UPI.jpeg" alt="UPI QR code for donations">
+      <div class="upi-qr-field-row">
+        <input class="upi-qr-field" id="upi-id-field" type="text" value="rajibbandhu-2@okicici" readonly aria-label="UPI ID">
+        <button class="upi-qr-copy-button" id="upi-copy-button" type="button">Copy</button>
+      </div>
+      <a class="upi-qr-open-button" id="upi-open-button" href="upi://pay?pa=rajibbandhu-2%40okicici&cu=INR" aria-label="Open UPI app">Open UPI app</a>
+    </div>
+  </div>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script>
+    const START_PAGE_KEY = 'ucmdm-default-page';
+    const UPI_ID = 'rajibbandhu-2@okicici';
+    const UPI_PAYMENT_URL = 'upi://pay?pa=rajibbandhu-2%40okicici&cu=INR';
+    const firstPageToggle = document.querySelector('#first-page-toggle');
+    const syncStartPageToggle = () => {
+      if (!firstPageToggle) return;
+      const isMainPage = (localStorage.getItem(START_PAGE_KEY) || 'index') === 'main';
+      firstPageToggle.checked = isMainPage;
+    };
+    firstPageToggle?.addEventListener('change', () => {
+      localStorage.setItem(START_PAGE_KEY, firstPageToggle.checked ? 'main' : 'index');
+    });
+    syncStartPageToggle();
+    const upiQrPopup = document.querySelector('#upi-qr-popup');
+    const upiIdField = document.querySelector('#upi-id-field');
+    const upiCopyButton = document.querySelector('#upi-copy-button');
+    const upiOpenButton = document.querySelector('#upi-open-button');
+    document.querySelector('#upi-qr-button')?.addEventListener('click', () => {
+      upiQrPopup?.classList.add('is-open');
+      if (upiIdField) {
+        upiIdField.value = UPI_ID;
+        upiIdField.setAttribute('value', UPI_ID);
+      }
+      if (upiCopyButton) upiCopyButton.textContent = 'Copy';
+    });
+    document.querySelector('#upi-qr-close')?.addEventListener('click', () => upiQrPopup?.classList.remove('is-open'));
+    if (upiIdField) upiIdField.value = UPI_ID;
+    upiCopyButton?.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(UPI_ID);
+        upiCopyButton.textContent = 'Copied';
+      } catch {
+        upiIdField?.select();
+        document.execCommand('copy');
+        upiCopyButton.textContent = 'Copied';
+      }
+      setTimeout(() => {
+        upiCopyButton.textContent = 'Copy';
+      }, 1200);
+    });
+    upiOpenButton?.setAttribute('href', UPI_PAYMENT_URL);
+    upiQrPopup?.addEventListener('click', event => {
+      if (event.target === upiQrPopup) upiQrPopup.classList.remove('is-open');
+    });
+    const noticePopup = document.querySelector('#notice-popup');
+    document.querySelector('#note-button')?.addEventListener('click', () => noticePopup?.classList.add('is-open'));
+    document.querySelector('#notice-close')?.addEventListener('click', () => noticePopup?.classList.remove('is-open'));
+    noticePopup?.addEventListener('click', event => {
+      if (event.target === noticePopup) noticePopup.classList.remove('is-open');
+    });
+    const STORAGE_KEY = 'pm-poshan-uc-monthly-data';
+    const SESSION_STATE_KEY = 'pm-poshan-uc-session-state';
+    const UDISE_STORAGE_KEY = 'pm-poshan-uc-udise-code';
+    const SCHOOL_NAME_STORAGE_KEY = 'pm-poshan-uc-school-name';
+    const SCHOOL_TYPE_STORAGE_KEY = 'pm-poshan-uc-school-type';
+    const SCHOOL_CATEGORY_STORAGE_KEY = 'pm-poshan-uc-school-category';
+    const PERSISTENT_FIELDS_STORAGE_KEY = 'pm-poshan-uc-persistent-fields';
+    function readStorage(key, fallback) {
+      try {
+        const value = localStorage.getItem(key);
+        return value === null ? fallback : JSON.parse(value);
+      } catch {
+        localStorage.removeItem(key);
+        return fallback;
+      }
+    }
+
+    function writeStorage(key, value) {
+      localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    const blank = '<td><input type="text"></td>';
+    const dailyMealRows = document.querySelector('#daily-meal-rows');
+    const cookRows = document.querySelector('#cook-rows');
+    const undoCookButton = document.querySelector('.undo-cook-button');
+    let cookRowCount = 0;
+
+    function buildCookRow(rowNumber) {
+      return `<tr><td class="center">${rowNumber}</td><td><input class="persistent-field" data-persistent-key="cook-${rowNumber}-name" type="text" aria-label="Cook ${rowNumber} name"></td><td><input class="persistent-field" data-persistent-key="cook-${rowNumber}-gender" type="text" aria-label="Cook ${rowNumber} gender"></td><td><input class="persistent-field" data-persistent-key="cook-${rowNumber}-category" type="text" aria-label="Cook ${rowNumber} category"></td><td><input class="persistent-field" data-persistent-key="cook-${rowNumber}-payment-mode" type="text" aria-label="Cook ${rowNumber} payment mode"></td><td><input type="number" min="0" aria-label="Cook ${rowNumber} amount received"></td></tr>`;
+    }
+
+    function addCookRow() {
+      cookRowCount += 1;
+      cookRows.insertAdjacentHTML('beforeend', buildCookRow(cookRowCount));
+      undoCookButton.disabled = false;
+      restorePersistentFields();
+    }
+
+    function removeCookRow() {
+      if (cookRowCount <= 4) return;
+      cookRows.lastElementChild.remove();
+      cookRowCount -= 1;
+      undoCookButton.disabled = cookRowCount <= 4;
+    }
+
+    function restoreSavedCookRows(monthValue) {
+      const storage = readStorage(STORAGE_KEY, {});
+      const savedData = storage[monthValue] || {};
+      const savedCookRows = Object.keys(savedData)
+        .map(key => key.match(/^Cook (\d+) /)?.[1])
+        .filter(Boolean)
+        .map(Number);
+      const highestSavedRow = Math.max(4, ...savedCookRows);
+      while (cookRowCount < highestSavedRow) addCookRow();
+    }
+
+    cookRows.innerHTML = Array.from({length: 4}, (_, i) => buildCookRow(i + 1)).join('');
+    cookRowCount = 4;
+    const grainData = [['Bal Vatika', 'Wheat', 'Rice'], ['Primary', 'Wheat', 'Rice'], ['Upper Primary', 'Wheat', 'Rice']];
+    document.querySelector('#grain-rows').innerHTML = grainData.map(([category, firstItem, secondItem]) =>
+      `<tr data-grain-category="${category}" data-grain-item="${firstItem}"><th rowspan="2">${category}</th><td>${firstItem}</td><td><input class="grain-opening" type="number" min="0" data-default-value="0"></td><td><input class="grain-received" type="number" min="0" value="0" data-default-value="0"></td><td class="grain-consumption-cell"><input class="grain-consumption" type="number" min="0" readonly aria-label="${category} ${firstItem} consumption"><span class="grain-unit">kg</span></td><td><input class="grain-closing" type="number" min="0" readonly></td></tr>` +
+      `<tr data-grain-category="${category}" data-grain-item="${secondItem}"><td>${secondItem}</td><td><input class="grain-opening" type="number" min="0" data-default-value="0"></td><td><input class="grain-received" type="number" min="0" value="0" data-default-value="0"></td><td class="grain-consumption-cell"><input class="grain-consumption" type="number" min="0" readonly aria-label="${category} ${secondItem} consumption"><span class="grain-unit">kg</span></td><td><input class="grain-closing" type="number" min="0" readonly></td></tr>`
+    ).join('');
+
+    function updateDailyMealTotals() {
+      const totals = { balVatika: 0, primary: 0, upperPrimary: 0, all: 0 };
+      const summaryInputs = {
+        balVatika: document.querySelector('#daily-total-bal-vatika'),
+        primary: document.querySelector('#daily-total-primary'),
+        upperPrimary: document.querySelector('#daily-total-upper-primary'),
+        all: document.querySelector('#daily-total-all')
+      };
+
+      dailyMealRows.querySelectorAll('tr').forEach(row => {
+        if (row.dataset.holiday === 'true') return;
+        const values = [...row.querySelectorAll('.daily-meal-value')].map(input => Number(input.value.replace(/\D/g, '').slice(0, 5)) || 0);
+        const totalInput = row.querySelector('.daily-row-total');
+        const computedTotal = values.reduce((sum, value) => sum + value, 0);
+
+        totalInput.value = computedTotal;
+
+        totals.balVatika += values[0] || 0;
+        totals.primary += values[1] || 0;
+        totals.upperPrimary += values[2] || 0;
+        totals.all += computedTotal;
+      });
+
+      const finalTotals = totals;
+
+      summaryInputs.balVatika.value = finalTotals.balVatika;
+      summaryInputs.primary.value = finalTotals.primary;
+      summaryInputs.upperPrimary.value = finalTotals.upperPrimary;
+      summaryInputs.all.value = finalTotals.all;
+
+      document.querySelectorAll('.total-meals-month-input').forEach((input, index) => {
+        input.value = [finalTotals.balVatika, finalTotals.primary, finalTotals.upperPrimary][index];
+      });
+      updateCookingCostExpenditure();
+      updateGrainConsumption();
+      updateSchoolDaysCount();
+      updateActualMealDaysCount();
+    }
+
+    function updateSchoolDaysCount() {
+      const schoolDays = [...dailyMealRows.querySelectorAll('tr')].filter(row =>
+        !row.classList.contains('sunday-row') && row.dataset.holiday !== 'true'
+      ).length;
+      document.querySelectorAll('.school-days-input').forEach(input => {
+        input.value = schoolDays;
+      });
+    }
+
+    function limitActualMealDays(input) {
+      const index = [...document.querySelectorAll('.actual-meal-days-input')].indexOf(input);
+      const schoolDaysInput = document.querySelectorAll('.school-days-input')[index];
+      const schoolDays = Number(schoolDaysInput?.value) || 0;
+      const value = Math.max(0, Number(input.value) || 0);
+      input.value = Math.min(value, schoolDays);
+    }
+
+    function updateActualMealDaysCount() {
+      const mealDays = [0, 0, 0];
+      dailyMealRows.querySelectorAll('tr').forEach(row => {
+        if (row.classList.contains('sunday-row') || row.dataset.holiday === 'true') return;
+        [...row.querySelectorAll('.daily-meal-value')].forEach((input, index) => {
+          const value = Number(input.value.replace(/\D/g, '').slice(0, 5)) || 0;
+          if (value > 0) mealDays[index]++;
+        });
+      });
+      document.querySelectorAll('.actual-meal-days-input').forEach((input, index) => {
+        input.value = mealDays[index];
+      });
+    }
+
+    function updateCookingCostExpenditure() {
+      const mealTotals = [...document.querySelectorAll('.total-meals-month-input')].map(input => Number(input.value) || 0);
+      const rates = [...document.querySelectorAll('.rupees-per-student')].map(input => Number(input.value) || 0);
+      document.querySelectorAll('.cooking-cost-expenditure').forEach((input, index) => {
+        input.value = (mealTotals[index] * rates[index]).toFixed(2);
+      });
+      updateFundClosingBalances();
+    }
+
+    function updateGrainConsumption() {
+      const mealTotals = [...document.querySelectorAll('.total-meals-month-input')].map(input => Number(input.value) || 0);
+      const riceRates = [...document.querySelectorAll('.rice-per-student')].map(input => Number(input.value) || 0);
+      const wheatRates = [...document.querySelectorAll('.wheat-per-student')].map(input => Number(input.value) || 0);
+      document.querySelectorAll('#grain-rows tr').forEach(row => {
+        const categoryIndex = ['Bal Vatika', 'Primary', 'Upper Primary'].indexOf(row.dataset.grainCategory);
+        const rate = row.dataset.grainItem === 'Rice' ? riceRates[categoryIndex] : wheatRates[categoryIndex];
+        const consumption = row.querySelector('.grain-consumption');
+        if (consumption && categoryIndex >= 0) consumption.value = (((mealTotals[categoryIndex] || 0) * rate) / 1000).toFixed(3);
+      });
+      updateGrainClosingBalances();
+    }
+
+    function updateGrainClosingBalances() {
+      document.querySelectorAll('#grain-rows tr').forEach(row => {
+        const openingInput = row.querySelector('.grain-opening');
+        const receivedInput = row.querySelector('.grain-received');
+        const consumptionInput = row.querySelector('.grain-consumption');
+        const closingInput = row.querySelector('.grain-closing');
+        if (!openingInput || !receivedInput || !consumptionInput || !closingInput) return;
+
+        const opening = Number(openingInput.value) || 0;
+        const received = Number(receivedInput.value) || 0;
+        const consumption = Number(consumptionInput.value) || 0;
+        const closing = opening + received - consumption;
+        closingInput.value = Number.isInteger(closing) ? String(closing) : closing.toFixed(3);
+      });
+    }
+
+    function applyDefaultGrainSelection() {
+      const riceCheckbox = document.querySelector('input[name="grain-entry-type"][value="rice"]');
+      const wheatCheckbox = document.querySelector('input[name="grain-entry-type"][value="wheat"]');
+      if (riceCheckbox) riceCheckbox.checked = true;
+      if (wheatCheckbox) wheatCheckbox.checked = false;
+      updateGrainSectionState();
+    }
+
+    function updateGrainSectionState() {
+      const riceCheckbox = document.querySelector('input[name="grain-entry-type"][value="rice"]');
+      const wheatCheckbox = document.querySelector('input[name="grain-entry-type"][value="wheat"]');
+      const riceInputs = [...document.querySelectorAll('.rice-per-student')];
+      const wheatInputs = [...document.querySelectorAll('.wheat-per-student')];
+      if (!riceCheckbox || !wheatCheckbox) return;
+
+      wheatInputs.forEach(input => {
+        input.disabled = !wheatCheckbox.checked;
+        input.value = wheatCheckbox.checked ? input.dataset.defaultValue || '0' : '0';
+      });
+      riceInputs.forEach(input => {
+        input.disabled = !riceCheckbox.checked;
+        input.value = riceCheckbox.checked ? input.dataset.defaultValue || '0' : '0';
+      });
+      updateGrainConsumption();
+      updateGrainClosingBalances();
+    }
+
+    function updateFundClosingBalances() {
+      document.querySelectorAll('.fund-table tr').forEach(row => {
+        const opening = row.querySelector('.fund-opening');
+        const received = row.querySelector('.fund-received');
+        const expenditure = row.querySelector('.fund-expenditure');
+        const closing = row.querySelector('.fund-closing');
+        if (!opening || !received || !expenditure || !closing) return;
+        const closingValue = (Number(opening.value) || 0) + (Number(received.value) || 0) - (Number(expenditure.value) || 0);
+        closing.value = Number(closingValue).toFixed(2);
+      });
+    }
+
+    function buildDailyMealRow(dateValue, rowNumber, values = [], holiday = false) {
+      const day = dateValue.slice(-2).replace(/^0/, '');
+      const isSunday = new Date(`${dateValue}T00:00:00Z`).getUTCDay() === 0;
+      const isHoliday = holiday && !isSunday;
+      const rowClass = isHoliday ? ' class="holiday-row"' : isSunday ? ' class="sunday-row"' : '';
+      const disabled = isSunday || isHoliday ? ' disabled' : '';
+      const action = isSunday
+        ? '<span class="sunday-label">Sunday</span>'
+        : `<button class="${isHoliday ? 'undo-holiday-button' : 'holiday-button'}" type="button" title="${isHoliday ? 'Restore meal inputs' : 'Mark this date as a holiday'}">${isHoliday ? 'Undo' : 'Holiday'}</button>`;
+      return `<tr${rowClass} data-date="${dateValue}" data-holiday="${isHoliday}"><td><span class="daily-day" aria-label="Meal date ${dateValue}">${day}</span>${action}</td><td><input class="daily-meal-value" type="text" value="${values[0] || ''}" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Bal Vatika meals ${rowNumber}"${disabled}></td><td><input class="daily-meal-value" type="text" value="${values[1] || ''}" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Primary meals ${rowNumber}"${disabled}></td><td><input class="daily-meal-value" type="text" value="${values[2] || ''}" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Upper Primary meals ${rowNumber}"${disabled}></td><td><input class="daily-row-total" type="text" value="${values[3] || ''}" inputmode="numeric" maxlength="5" pattern="[0-9]*" aria-label="Total meals for date ${rowNumber}" readonly tabindex="-1"></td></tr>`;
+    }
+
+    function addDailyMealRow(dateValue, rowNumber, values = [], holiday = false) {
+      dailyMealRows.insertAdjacentHTML('beforeend', buildDailyMealRow(dateValue, rowNumber, values, holiday));
+    }
+
+    function toggleHoliday(button) {
+      const row = button.closest('tr[data-date]');
+      if (!row) return;
+      const rowNumber = [...dailyMealRows.children].indexOf(row) + 1;
+      const values = [...row.querySelectorAll('.daily-meal-value')].map(input => input.value);
+      const isHoliday = row.dataset.holiday === 'true';
+      row.outerHTML = buildDailyMealRow(row.dataset.date, rowNumber, values, !isHoliday);
+      updateDailyMealTotals();
+      saveCurrentMonthData();
+    }
+
+    function applySavedDailyMeals(savedMeals) {
+      savedMeals.forEach((savedMeal, index) => {
+        const row = dailyMealRows.children[index];
+        if (!row || row.dataset.date !== savedMeal.date) return;
+        row.outerHTML = buildDailyMealRow(savedMeal.date, index + 1, savedMeal.values || [], savedMeal.holiday);
+      });
+      updateGrainSectionState();
+      if (savedMeals.some(savedMeal => (savedMeal.values || []).some(value => Number(value) > 0))) {
+        updateDailyMealTotals();
+      } else {
+        updateSchoolDaysCount();
+        document.querySelectorAll('.actual-meal-days-input').forEach(limitActualMealDays);
+      }
+    }
+
+    function renderDailyMealRows(monthValue) {
+      if (!monthValue) {
+        dailyMealRows.innerHTML = '';
+        updateDailyMealTotals();
+        return;
+      }
+
+      const [year, month] = monthValue.split('-').map(Number);
+      const daysInMonth = new Date(Date.UTC(year, month, 0)).getUTCDate();
+      dailyMealRows.innerHTML = '';
+      for (let day = 1; day <= daysInMonth; day++) {
+        addDailyMealRow(`${monthValue}-${String(day).padStart(2, '0')}`, day);
+      }
+      updateDailyMealTotals();
+    }
+
+    document.addEventListener('input', event => {
+      if (event.target.matches('.daily-meal-value, .daily-row-total')) {
+        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 5);
+      }
+      if (event.target === udiseCodeField) {
+        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 11);
+      }
+      if (event.target.matches('.actual-meal-days-input')) {
+        limitActualMealDays(event.target);
+        saveCurrentMonthData();
+      }
+      if (event.target.matches('.total-meals-month-input')) {
+        event.target.value = Math.max(0, Number(event.target.value) || 0);
+        updateCookingCostExpenditure();
+        updateGrainConsumption();
+        saveCurrentMonthData();
+      }
+      if (event.target.closest('.daily-table')) updateDailyMealTotals();
+    });
+
+    dailyMealRows.addEventListener('click', event => {
+      const button = event.target.closest('.holiday-button, .undo-holiday-button');
+      if (button) {
+        toggleHoliday(button);
+      }
+    });
+
+    const links = [...document.querySelectorAll('.sidebar a')];
+    const sections = links.map(link => document.querySelector(link.getAttribute('href'))).filter(Boolean);
+    const firstSection = sections[0];
+    if (firstSection) {
+      new IntersectionObserver(entries => entries.forEach(entry => {
+        if (entry.isIntersecting) links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`));
+      }), { rootMargin: '-20% 0px -70% 0px' }).observe(firstSection);
+
+      sections.slice(1).forEach(section => new IntersectionObserver(entries => entries.forEach(entry => {
+        if (entry.isIntersecting) links.forEach(link => link.classList.toggle('active', link.getAttribute('href') === `#${entry.target.id}`));
+      }), { rootMargin: '-20% 0px -70% 0px' }).observe(section));
+    }
+
+    const monthField = document.querySelector('input[type="month"]');
+    const udiseCodeField = document.querySelector('#udise-code');
+    const schoolNameField = document.querySelector('#school-name');
+    let activeMonth = '';
+
+    function saveUdiseCode() {
+      if (udiseCodeField) localStorage.setItem(UDISE_STORAGE_KEY, udiseCodeField.value);
+    }
+
+    function restoreUdiseCode() {
+      if (udiseCodeField) udiseCodeField.value = localStorage.getItem(UDISE_STORAGE_KEY) || '';
+    }
+
+    function saveSchoolName() {
+      if (schoolNameField) localStorage.setItem(SCHOOL_NAME_STORAGE_KEY, schoolNameField.value);
+    }
+
+    function restoreSchoolName() {
+      if (schoolNameField) schoolNameField.value = localStorage.getItem(SCHOOL_NAME_STORAGE_KEY) || '';
+    }
+
+    function saveSchoolType() {
+      const selectedTypes = [...document.querySelectorAll('.school-type-option')].map(input => input.checked);
+      localStorage.setItem(SCHOOL_TYPE_STORAGE_KEY, JSON.stringify(selectedTypes));
+    }
+
+    function restoreSchoolType() {
+      const savedTypes = readStorage(SCHOOL_TYPE_STORAGE_KEY, null);
+      if (!Array.isArray(savedTypes)) return;
+      document.querySelectorAll('.school-type-option').forEach((input, index) => {
+        input.checked = !!savedTypes[index];
+      });
+    }
+
+    function saveSchoolCategory() {
+      const selectedCategories = [...document.querySelectorAll('.school-category-option')].map(input => input.checked);
+      localStorage.setItem(SCHOOL_CATEGORY_STORAGE_KEY, JSON.stringify(selectedCategories));
+    }
+
+    function restoreSchoolCategory() {
+      const savedCategories = readStorage(SCHOOL_CATEGORY_STORAGE_KEY, null);
+      if (!Array.isArray(savedCategories)) return;
+      document.querySelectorAll('.school-category-option').forEach((input, index) => {
+        input.checked = !!savedCategories[index];
+      });
+    }
+
+    function savePersistentFields() {
+      const values = {};
+      document.querySelectorAll('.persistent-field').forEach(field => {
+        values[field.dataset.persistentKey] = field.value;
+      });
+      localStorage.setItem(PERSISTENT_FIELDS_STORAGE_KEY, JSON.stringify(values));
+    }
+
+    function restorePersistentFields() {
+      const values = readStorage(PERSISTENT_FIELDS_STORAGE_KEY, {});
+      document.querySelectorAll('.persistent-field').forEach(field => {
+        if (Object.prototype.hasOwnProperty.call(values, field.dataset.persistentKey)) {
+          field.value = values[field.dataset.persistentKey];
+        }
+      });
+    }
+
+    function getFormFields() {
+      return [...document.querySelectorAll('input, select, textarea')].filter(field => field.type !== 'hidden' && !field.closest('.upi-qr-popup'));
+    }
+
+    function getFieldKey(field, index) {
+      return field.id || field.name || field.getAttribute('aria-label') || field.placeholder || `field-${index}`;
+    }
+
+    function serializeForm() {
+      const data = {};
+      const fields = getFormFields();
+      fields.forEach((field, index) => {
+        const key = getFieldKey(field, index);
+        if (field.type === 'checkbox' || field.type === 'radio') {
+          data[key] = { type: field.type, checked: field.checked, value: field.value };
+        } else {
+          data[key] = { type: field.type, value: field.value };
+        }
+      });
+      data.__dailyMeals = [...dailyMealRows.querySelectorAll('tr')].map(row => ({
+        date: row.dataset.date,
+        holiday: row.dataset.holiday === 'true',
+        values: [...row.querySelectorAll('.daily-meal-value')].map(input => input.value)
+      }));
+      return data;
+    }
+
+    function saveCurrentMonthData() {
+      if (!monthField || !monthField.value) return;
+      const storage = readStorage(STORAGE_KEY, {});
+      storage[monthField.value] = serializeForm();
+      writeStorage(STORAGE_KEY, storage);
+      activeMonth = monthField.value;
+      saveSessionState();
+    }
+
+    function saveSessionState() {
+      const expandedSections = [...document.querySelectorAll('.quick-entry h3')].map(section => section.getAttribute('aria-expanded') === 'true');
+      writeStorage(SESSION_STATE_KEY, {
+        month: monthField?.value || activeMonth || '',
+        expandedSections
+      });
+    }
+
+    function restoreSessionState() {
+      const savedState = readStorage(SESSION_STATE_KEY, {});
+      if (Array.isArray(savedState.expandedSections)) {
+        document.querySelectorAll('.quick-entry h3').forEach((section, index) => {
+          const isExpanded = !!savedState.expandedSections[index];
+          section.closest('.quick-entry-group')?.classList.toggle('is-expanded', isExpanded);
+          section.setAttribute('aria-expanded', String(isExpanded));
+        });
+      }
+      return savedState;
+    }
+
+    function getPreviousMonthValue(monthValue) {
+      const [year, month] = monthValue.split('-').map(Number);
+      const previousMonth = new Date(Date.UTC(year, month - 2, 1));
+      return `${previousMonth.getUTCFullYear()}-${String(previousMonth.getUTCMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function getSavedFieldValue(savedData, field, fieldIndex) {
+      const saved = savedData[getFieldKey(field, fieldIndex)];
+      return saved ? saved.value : '';
+    }
+
+    function applyPreviousMonthClosingBalances(monthValue) {
+      const storage = readStorage(STORAGE_KEY, {});
+      const previousMonthData = storage[getPreviousMonthValue(monthValue)];
+      if (!previousMonthData) return;
+
+      const fields = getFormFields();
+      const fieldIndexes = new Map(fields.map((field, index) => [field, index]));
+      const closingValues = new Map();
+      document.querySelectorAll('.fund-closing, .grain-closing').forEach(field => {
+        closingValues.set(field, getSavedFieldValue(previousMonthData, field, fieldIndexes.get(field)));
+      });
+
+      document.querySelectorAll('.fund-opening, .grain-opening').forEach(openingField => {
+        const closingField = openingField.closest('tr')?.querySelector('.fund-closing, .grain-closing');
+        const closingValue = closingValues.get(closingField);
+        if (closingValue !== undefined && closingValue !== '') openingField.value = closingValue;
+      });
+    }
+
+    function restoreMonthData(monthValue) {
+      const storage = readStorage(STORAGE_KEY, {});
+      const savedData = storage[monthValue] || {};
+      const fields = getFormFields();
+
+      fields.forEach((field, index) => {
+        if (field === monthField || field.closest('.upi-qr-popup')) return;
+        const key = getFieldKey(field, index);
+        const saved = savedData[key];
+        if (!saved) {
+          if (field.type === 'checkbox' || field.type === 'radio') field.checked = false;
+          else field.value = field.dataset.defaultValue || '';
+          return;
+        }
+
+        if (field.type === 'checkbox' || field.type === 'radio') {
+          field.checked = !!saved.checked;
+          if (saved.value) field.value = saved.value;
+        } else {
+          field.value = saved.value || field.dataset.defaultValue || '';
+        }
+      });
+
+      applySavedDailyMeals(savedData.__dailyMeals || []);
+      if (!savedData || Object.keys(savedData).length === 0) {
+        applyDefaultGrainSelection();
+      } else {
+        updateGrainSectionState();
+      }
+
+      if (monthField) monthField.value = monthValue;
+      restoreUdiseCode();
+      restoreSchoolName();
+      restoreSchoolType();
+      restoreSchoolCategory();
+      restorePersistentFields();
+      applyPreviousMonthClosingBalances(monthValue);
+      document.querySelectorAll('.actual-meal-days-input').forEach(limitActualMealDays);
+      updateFundClosingBalances();
+      updateGrainClosingBalances();
+    }
+
+    function updateMonthYearPrintDisplay(monthValue) {
+      const display = document.querySelector('#month-year-print');
+      const selectedMonthYear = document.querySelector('#selected-month-year');
+      if (!monthValue) {
+        if (display) display.textContent = '';
+        if (selectedMonthYear) selectedMonthYear.textContent = '';
+        return;
+      }
+      const [year, month] = monthValue.split('-').map(Number);
+      const monthName = new Date(Date.UTC(year, month - 1, 1)).toLocaleString('en', { month: 'long', timeZone: 'UTC' });
+      const formattedMonthYear = `${monthName} - ${year}`;
+      if (display) display.textContent = formattedMonthYear;
+      if (selectedMonthYear) selectedMonthYear.textContent = `(${formattedMonthYear})`;
+    }
+
+    function handleMonthChange(nextMonth) {
+      if (activeMonth && activeMonth !== nextMonth) {
+        const storage = readStorage(STORAGE_KEY, {});
+        storage[activeMonth] = serializeForm();
+        writeStorage(STORAGE_KEY, storage);
+      }
+
+      activeMonth = nextMonth;
+      saveSessionState();
+      updateDailyMonthLabel(nextMonth);
+      updateMonthYearPrintDisplay(nextMonth);
+      if (nextMonth) {
+        restoreSavedCookRows(nextMonth);
+        renderDailyMealRows(nextMonth);
+        restoreMonthData(nextMonth);
+      } else {
+        renderDailyMealRows('');
+      }
+    }
+
+    function updateDailyMonthLabel(monthValue) {
+      const label = document.querySelector('#daily-month-label');
+      if (!label) return;
+      if (!monthValue) {
+        label.textContent = '';
+        return;
+      }
+      const [year, month] = monthValue.split('-').map(Number);
+      label.textContent = `(${new Date(Date.UTC(year, month - 1, 1)).toLocaleString('en', { month: 'long', year: 'numeric', timeZone: 'UTC' })})`;
+    }
+
+    function toggleDailyMealPopup(isOpen) {
+      document.querySelector('#daily-meal-popup')?.classList.toggle('is-open', isOpen);
+    }
+
+    function getCurrentMonthValue() {
+      const now = new Date();
+      return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    }
+
+    function shiftMonth(offset) {
+      if (!monthField) return;
+      const currentMonth = monthField.value || getCurrentMonthValue();
+      const [year, month] = currentMonth.split('-').map(Number);
+      const shifted = new Date(Date.UTC(year, month - 1 + offset, 1));
+      const nextMonth = `${shifted.getUTCFullYear()}-${String(shifted.getUTCMonth() + 1).padStart(2, '0')}`;
+      handleMonthChange(nextMonth);
+    }
+
+    document.querySelector('#previous-month')?.addEventListener('click', () => shiftMonth(-1));
+    document.querySelector('#next-month')?.addEventListener('click', () => shiftMonth(1));
+
+    if (monthField) {
+      const savedState = readStorage(SESSION_STATE_KEY, {});
+      const defaultMonth = savedState.month || getPreviousMonthValue(getCurrentMonthValue());
+
+      monthField.value = defaultMonth;
+
+      monthField.addEventListener('change', event => {
+        handleMonthChange(event.target.value);
+      });
+
+      monthField.addEventListener('input', event => {
+        handleMonthChange(event.target.value);
+      });
+
+      restoreSessionState();
+      if (monthField.value) {
+        handleMonthChange(monthField.value);
+      }
+    }
+
+    restoreUdiseCode();
+    restoreSchoolName();
+    restoreSchoolType();
+    restoreSchoolCategory();
+    restorePersistentFields();
+    applyDefaultGrainSelection();
+    restoreSessionState();
+
+    document.addEventListener('input', event => {
+      if (event.target.matches('input, select, textarea')) {
+        if (event.target === udiseCodeField) saveUdiseCode();
+        if (event.target === schoolNameField) saveSchoolName();
+        if (event.target.matches('.school-type-option')) saveSchoolType();
+        if (event.target.matches('.school-category-option')) saveSchoolCategory();
+        if (event.target.matches('.persistent-field')) savePersistentFields();
+        if (event.target.closest('.fund-table')) updateFundClosingBalances();
+        if (event.target.matches('.rupees-per-student')) updateCookingCostExpenditure();
+        if (event.target.matches('.rice-per-student, .wheat-per-student')) updateGrainConsumption();
+        if (event.target.matches('.grain-opening, .grain-received, .grain-consumption')) updateGrainClosingBalances();
+        if (event.target.matches('.grain-checkbox')) updateGrainSectionState();
+        saveCurrentMonthData();
+      }
+    });
+
+    document.addEventListener('change', event => {
+      if (event.target.matches('input, select, textarea')) {
+        if (event.target === udiseCodeField) saveUdiseCode();
+        if (event.target === schoolNameField) saveSchoolName();
+        if (event.target.matches('.school-type-option')) saveSchoolType();
+        if (event.target.matches('.school-category-option')) saveSchoolCategory();
+        if (event.target.matches('.persistent-field')) savePersistentFields();
+        if (event.target.closest('.fund-table')) updateFundClosingBalances();
+        if (event.target.matches('.rupees-per-student')) updateCookingCostExpenditure();
+        if (event.target.matches('.rice-per-student, .wheat-per-student')) updateGrainConsumption();
+        if (event.target.matches('.grain-opening, .grain-received, .grain-consumption')) updateGrainClosingBalances();
+        if (event.target.matches('.grain-checkbox')) updateGrainSectionState();
+        saveCurrentMonthData();
+      }
+    });
+
+    document.querySelectorAll('.quick-entry h3').forEach(section => {
+      section.addEventListener('click', event => {
+        const checkbox = section.querySelector('.grain-checkbox');
+        if (checkbox && event.target === checkbox) return;
+        const group = section.closest('.quick-entry-group');
+        const isExpanded = group.classList.toggle('is-expanded');
+        section.setAttribute('aria-expanded', String(isExpanded));
+        saveSessionState();
+      });
+    });
+
+    window.addEventListener('beforeunload', () => {
+      saveCurrentMonthData();
+      saveSessionState();
+    });
+
+    function printForm() {
+      saveCurrentMonthData();
+      window.print();
+    }
+
+    function getSelectedMonthFilename() {
+      const value = monthField ? monthField.value : '';
+      if (!value) return 'PM-POSHAN-MDCF.pdf';
+      const [year, month] = value.split('-').map(Number);
+      const monthName = new Date(Date.UTC(year, month - 1, 1)).toLocaleString('en', { month: 'long', timeZone: 'UTC' });
+      return `${monthName}-${year}.pdf`;
+    }
+
+    function exportExcel() {
+      saveCurrentMonthData();
+      const exportButton = document.querySelector('.export-excel-button');
+      if (typeof XLSX === 'undefined') {
+        alert('The Excel exporter could not load. Please check your internet connection and try again.');
+        return;
+      }
+
+      if (exportButton) {
+        exportButton.disabled = true;
+        exportButton.textContent = 'Exporting…';
+      }
+
+      try {
+        const formData = [['Field', 'Value']];
+        getFormFields().forEach((field, index) => {
+          const label = field.getAttribute('aria-label') || field.id || field.name || `Field ${index + 1}`;
+          const value = field.type === 'checkbox' || field.type === 'radio'
+            ? (field.checked ? 'Yes' : 'No')
+            : field.value;
+          formData.push([label, value]);
+        });
+
+        const dailyData = [['Date', 'Bal Vatika', 'Primary', 'Upper Primary', 'Total']];
+        dailyMealRows.querySelectorAll('tr[data-date]').forEach(row => {
+          const values = [...row.querySelectorAll('.daily-meal-value')].map(input => input.value);
+          dailyData.push([row.dataset.date, ...values, row.querySelector('.daily-row-total')?.value || '']);
+        });
+
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(formData), 'Form Data');
+        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(dailyData), 'Daily Meal Data');
+        const filename = getSelectedMonthFilename().replace(/\.pdf$/i, '.xlsx');
+        XLSX.writeFile(workbook, filename);
+      } finally {
+        if (exportButton) {
+          exportButton.disabled = false;
+          exportButton.textContent = 'Export all as Excel';
+        }
+      }
+    }
+
+    const PDF_EXPORT_STYLES = `
+      body.pdf-export { width:700px; min-width:700px; margin:0; background:#fff; color:#000; font-size:12px; }
+      .pdf-export .app-shell { display:block; }
+      .pdf-export .sidebar, .pdf-export .daily-sidebar { display:none; }
+      .pdf-export main { box-shadow:none; width:100%; margin:0; padding:0; }
+      .pdf-export header { margin-top:8px; margin-bottom:10px; }
+      .pdf-export h1 { font-size:15px; font-weight:700; }
+      .pdf-export header p { font-size:14px; font-weight:700; color:#000; margin-top:4px; }
+      .pdf-export h2 { color:#000; margin:32px 0 8px; font-size:13px; font-weight:normal; }
+      .pdf-export .note { margin:6px 0 12px; padding:4px 0; font-size:13px; background:#fff; }
+      .pdf-export .note strong { font-weight:700; }
+      .pdf-export .table-wrap { border:0; border-radius:0; margin-bottom:12px; }
+      .pdf-export table, .pdf-export th, .pdf-export td { border:1px solid #555; }
+      .pdf-export th, .pdf-export td { padding:4px 6px; font-size:10px; }
+      .pdf-export th { background:#fff; color:#000; font-weight:normal; }
+      .pdf-export .label { font-weight:normal; }
+      .pdf-export input, .pdf-export select { color:#000; font-size:10px; padding:2px 3px; }
+      .pdf-export .school-details #school-name { font-size:10px; }
+      .pdf-export .signature { border-top-color:#000; font-weight:normal; }
+      .pdf-export .signatures { margin-top:55px; }
+      .pdf-export #food-grains { margin-top:36px; }
+      .pdf-export input[type="month"] { display:none; }
+      .pdf-export .month-year-print { display:inline; }
+      .pdf-export .site-footer { display:none; }
+      .pdf-export .table-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; }
+      .pdf-export .payment-table tfoot { display:none; }
+      .pdf-export .form-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; }
+      .pdf-export .app-shell { width:100%; margin:0; }
+      .pdf-export main { width:700px !important; max-width:700px; margin:0 auto !important; padding:20px 0 !important; }
+      .pdf-export main { font-size:10px; }
+      .pdf-export h1 { font-size:14px; }
+      .pdf-export header p { font-size:13px; }
+      .pdf-export h2 { font-size:12px; }
+      .pdf-export .table-wrap, .pdf-export .daily-table-wrap { overflow:visible !important; }
+      .pdf-export table { width:100% !important; min-width:0 !important; table-layout:fixed; }
+      .pdf-export .payment-table th, .pdf-export .payment-table td { overflow-wrap:anywhere; word-break:break-word; }
+    `;
+
+    function downloadPDF() {
+      saveCurrentMonthData();
+      const filename = getSelectedMonthFilename();
+      const downloadBtn = document.querySelector('.download-pdf-button');
+
+      if (typeof html2pdf === 'undefined') {
+        alert('The PDF generator could not load (check your internet connection). Opening the print dialog instead — choose "Save as PDF" there.');
+        printForm();
+        return;
+      }
+
+      if (downloadBtn) {
+        downloadBtn.disabled = true;
+        downloadBtn.textContent = 'Generating PDF…';
+      }
+
+      const restoreButton = () => {
+        if (downloadBtn) {
+          downloadBtn.disabled = false;
+          downloadBtn.textContent = 'Download PDF';
+        }
+      };
+
+      const opt = {
+        margin: [6, 12.4, 6, 12.4],
+        filename,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          useCORS: true,
+          width: 700,
+          windowWidth: 700,
+          scrollX: 0,
+          scrollY: 0,
+          x: 0, 
+          y: 0,
+          onclone: (clonedDoc) => {
+            clonedDoc.body.classList.add('pdf-export');
+            const clonedMain = clonedDoc.querySelector('main');
+            clonedDoc.documentElement.style.width = '700px';
+            clonedDoc.documentElement.style.minWidth = '700px';
+            clonedDoc.body.style.width = '700px';
+            clonedDoc.body.style.minWidth = '700px';
+            clonedDoc.body.style.margin = '0 auto';
+            clonedMain.style.width = '700px';
+            clonedMain.style.maxWidth = '700px';
+            clonedMain.style.margin = '0 auto';
+            const style = clonedDoc.createElement('style');
+            style.textContent = PDF_EXPORT_STYLES;
+            clonedDoc.head.appendChild(style);
+          }
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak: { mode: ['css', 'legacy'] }
+      };
+
+      html2pdf().set(opt).from(document.body).save()
+        .then(restoreButton)
+        .catch(err => {
+          console.error('PDF generation failed', err);
+          alert('Could not generate the PDF. Please try the Print button instead.');
+          restoreButton();
+        });
+    }
+
+  </script>
+</body>
+</html>
