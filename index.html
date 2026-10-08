@@ -118,6 +118,17 @@
 		.storage-topic { margin-top:10px; padding-top:10px; border-top:1px solid #c5d8ed; }
 		.storage-topic:first-of-type { margin-top:0; padding-top:0; border-top:0; }
 		.storage-topic strong { color:var(--navy); }
+		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
+		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
+		.reminder-setting { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 16px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); font:13px/1.4 Arial, sans-serif; }
+		.reminder-setting-copy { display:flex; flex-direction:column; gap:3px; }
+		.reminder-setting-copy strong { color:var(--navy); }
+		.reminder-setting-copy span { color:var(--muted); font-size:12px; }
+		.reminder-setting input { position:relative; flex:0 0 auto; appearance:none; width:40px; height:22px; margin:0; border:1px solid #8998aa; border-radius:999px; background:#d9e1ea; cursor:pointer; transition:background .15s, border-color .15s; }
+		.reminder-setting input::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
+		.reminder-setting input:checked { border-color:var(--blue); background:var(--blue); }
+		.reminder-setting input:checked::after { transform:translateX(18px); }
+		.reminder-setting input:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
@@ -165,13 +176,20 @@
 				<div class="storage-notice" role="note" aria-label="Important data storage notice">
 					<strong class="storage-notice-title">Important Data Storage Notice</strong>
 					<div class="storage-topic"><strong>Where your data is stored:</strong> Your data is saved only in your browser on your device.</div>
-					<div class="storage-topic"><strong>Privacy:</strong> ucmdm.in does not store or transmit your data to its server.</div>
-					<div class="storage-topic"><strong>Protect your records:</strong> Please do not clear this browser's site data, browser storage, or app data if you want to keep your records.</div>
-					<div class="storage-topic"><strong>How to recover data:</strong> If you delete the browser storage or remove the app , your saved records will be permanently deleted and cannot be recovered.</div>
-					<div class="storage-topic"><strong>Offline use:</strong> After you install the app, it works offline and does not require an internet connection.</div>
-					<div class="storage-topic"><strong>Tip:</strong> Download the completed PDF to keep a copy of your filled form.</div>
+					<div class="storage-notice-details" id="storage-notice-details" hidden>
+						<div class="storage-topic"><strong>Privacy:</strong> ucmdm.in does not store or transmit your data to its server.</div>
+						<div class="storage-topic"><strong>Protect your records:</strong> Please do not clear this browser's site data, browser storage, or app data if you want to keep your records.</div>
+						<div class="storage-topic"><strong>How to recover data:</strong> If you delete the browser storage or remove the app , your saved records will be permanently deleted and cannot be recovered.</div>
+						<div class="storage-topic"><strong>Offline use:</strong> After you install the app, it works offline and does not require an internet connection.</div>
+						<div class="storage-topic"><strong>Tip:</strong> Download the completed PDF to keep a copy of your filled form.</div>
+					</div>
+					<button class="storage-notice-more" id="storage-notice-more" type="button" aria-expanded="false" aria-controls="storage-notice-details">Read more</button>
           
 				</div>
+				<label class="reminder-setting" for="daily-reminder-toggle">
+					<span class="reminder-setting-copy"><strong>Enable reminder</strong><span>12:30 PM, Monday to Saturday</span></span>
+					<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
+				</label>
 				
 				<button class="install-app-button" id="install-app-button" type="button">
 					<span>Install app</span>
@@ -206,6 +224,83 @@
 		}
 		const UPI_ID = 'rajibbandhu-2@okicici';
 		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
+		const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
+		const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
+		const reminderToggle = document.querySelector('#daily-reminder-toggle');
+		let reminderIntervalId = null;
+		const storageNoticeButton = document.querySelector('#storage-notice-more');
+		const storageNoticeDetails = document.querySelector('#storage-notice-details');
+		storageNoticeButton?.addEventListener('click', () => {
+			const isExpanded = storageNoticeButton.getAttribute('aria-expanded') === 'true';
+			storageNoticeButton.setAttribute('aria-expanded', String(!isExpanded));
+			storageNoticeButton.textContent = isExpanded ? 'Read more' : 'Read less';
+			if (storageNoticeDetails) storageNoticeDetails.hidden = isExpanded;
+		});
+		const syncReminderToggle = () => {
+			if (reminderToggle) reminderToggle.checked = localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true';
+		};
+		const openDailyEntryApp = () => {
+			window.location.href = 'main_ucmdm.html';
+		};
+		const showDailyReminderNotification = () => {
+			if (!('Notification' in window) || Notification.permission !== 'granted') return;
+			const notification = new Notification(DAILY_REMINDER_TITLE, {
+				body: 'Please open the app and enter today’s daily data entry.',
+				icon: 'app-icon.svg',
+				tag: 'mdm-daily-reminder',
+				requireInteraction: true,
+				actions: [
+					{ action: 'open', title: 'Open' },
+					{ action: 'dismiss', title: 'No need' }
+				]
+			});
+			notification.addEventListener('click', event => {
+				event.preventDefault();
+				if (event.action === 'open' || !event.action) openDailyEntryApp();
+				notification.close();
+			});
+			notification.addEventListener('action', event => {
+				if (event.action === 'open') openDailyEntryApp();
+				notification.close();
+			});
+		};
+		const scheduleDailyReminder = () => {
+			if (!('Notification' in window) || Notification.permission !== 'granted') return;
+			if (reminderIntervalId) clearInterval(reminderIntervalId);
+			const checkReminder = () => {
+				if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) !== 'true') return;
+				const now = new Date();
+				if (now.getDay() < 1 || now.getDay() > 6) return;
+				if (now.getHours() === 12 && now.getMinutes() >= 30 && now.getMinutes() <= 31) {
+					showDailyReminderNotification();
+				}
+			};
+			checkReminder();
+			reminderIntervalId = setInterval(checkReminder, 60000);
+		};
+		reminderToggle?.addEventListener('change', async () => {
+			if (!reminderToggle.checked) {
+				localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
+				if (reminderIntervalId) clearInterval(reminderIntervalId);
+				reminderIntervalId = null;
+				return;
+			}
+			if (!('Notification' in window)) {
+				localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
+				syncReminderToggle();
+				return;
+			}
+			const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
+			const enabled = permission === 'granted';
+			localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, String(enabled));
+			syncReminderToggle();
+			if (enabled) scheduleDailyReminder();
+		});
+		window.addEventListener('storage', event => {
+			if (event.key === DAILY_REMINDER_STORAGE_KEY) syncReminderToggle();
+		});
+		syncReminderToggle();
+		if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true') scheduleDailyReminder();
 		let installPromptEvent;
 		const installAppButton = document.querySelector('#install-app-button');
 		const hideInstallButton = () => {
