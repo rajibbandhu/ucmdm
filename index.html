@@ -208,25 +208,86 @@
 		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
 		let installPromptEvent;
 		const installAppButton = document.querySelector('#install-app-button');
+		const hideInstallButton = () => {
+			if (installAppButton) installAppButton.hidden = true;
+		};
+		const showInstallButton = () => {
+			if (installAppButton) installAppButton.hidden = false;
+		};
+		if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+			hideInstallButton();
+		}
 		window.addEventListener('beforeinstallprompt', event => {
 			event.preventDefault();
 			installPromptEvent = event;
+			showInstallButton();
 		});
 		installAppButton?.addEventListener('click', async () => {
 			if (!installPromptEvent) {
 				window.alert('To install this app, use your browser menu and choose "Install app" or "Add to Home Screen".');
 				return;
 			}
-			installPromptEvent.prompt();
-			await installPromptEvent.userChoice;
-			installPromptEvent = null;
+			try {
+				installPromptEvent.prompt();
+				const choice = await installPromptEvent.userChoice;
+				if (choice.outcome === 'accepted') {
+					hideInstallButton();
+				}
+			} catch (error) {
+				console.error('Install prompt failed:', error);
+				window.alert('The app could not be installed from this browser. Please use the browser menu to add it to your home screen.');
+			} finally {
+				installPromptEvent = null;
+			}
 		});
 		window.addEventListener('appinstalled', () => {
 			installPromptEvent = null;
-			if (installAppButton) installAppButton.hidden = true;
+			hideInstallButton();
 		});
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.register('service-worker.js');
+			window.addEventListener('load', () => {
+				const hadControllerAtStart = Boolean(navigator.serviceWorker.controller);
+				let reloadingForUpdate = false;
+				let initialHtml = null;
+				const reloadForUpdate = () => {
+					if (reloadingForUpdate) return;
+					reloadingForUpdate = true;
+					window.location.reload();
+				};
+				const checkForPageUpdate = async () => {
+					if (!navigator.onLine || reloadingForUpdate) return;
+					try {
+						const response = await fetch(window.location.href, { cache: 'no-store' });
+						if (!response.ok) return;
+						const latestHtml = await response.text();
+						if (initialHtml === null) {
+							initialHtml = latestHtml;
+							return;
+						}
+						if (latestHtml !== initialHtml) reloadForUpdate();
+					} catch {}
+				};
+				navigator.serviceWorker.addEventListener('controllerchange', () => {
+					if (hadControllerAtStart) reloadForUpdate();
+				});
+				navigator.serviceWorker.register('./service-worker.js', { scope: './' }).then(registration => {
+					const checkForWorkerUpdate = () => {
+						if (navigator.onLine) registration.update().catch(() => {});
+					};
+					checkForWorkerUpdate();
+					setInterval(checkForWorkerUpdate, 5 * 60 * 1000);
+					window.addEventListener('online', checkForWorkerUpdate);
+					window.addEventListener('online', checkForPageUpdate);
+					window.addEventListener('focus', checkForPageUpdate);
+					document.addEventListener('visibilitychange', () => {
+						if (document.visibilityState === 'visible') checkForPageUpdate();
+					});
+					checkForPageUpdate();
+					setInterval(checkForPageUpdate, 5 * 60 * 1000);
+				}).catch(error => {
+					console.error('Service worker registration failed:', error);
+				});
+			});
 		}
 		const upiQrPopup = document.querySelector('#upi-qr-popup');
 		const upiIdField = document.querySelector('#upi-id-field');

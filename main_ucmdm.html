@@ -56,6 +56,15 @@
     .quick-entry input { min-width:0; border:1px solid #ffffff3b; border-radius:5px; padding:5px 6px; background:#fff; color:var(--ink); font-size:12px; }
     .note-button { width:100%; margin-top:auto; padding:9px 12px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
     .note-button:hover, .note-button:focus-visible { background:#2d76c3; outline:none; }
+    .reminder-toggle { position:relative; display:flex; align-items:center; justify-content:space-between; gap:10px; width:100%; margin:0 0 18px; padding:8px 10px; border:1px solid #ffffff2d; border-radius:8px; background:#ffffff10; color:#fff; cursor:pointer; }
+    .reminder-toggle-label { display:flex; flex-direction:column; gap:2px; }
+    .reminder-toggle-label strong { font-size:12px; }
+    .reminder-toggle-label span { color:#c9dcf3; font-size:10px; }
+    .reminder-toggle input { position:absolute; opacity:0; pointer-events:none; }
+    .reminder-toggle-track { position:relative; display:inline-block; width:38px; height:20px; border:1px solid rgba(255,255,255,.5); border-radius:999px; background:rgba(255,255,255,.18); transition:background .15s ease; }
+    .reminder-toggle-track::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,.2); transition:transform .15s ease; }
+    .reminder-toggle input:checked + .reminder-toggle-track { background:#8fe9f5; }
+    .reminder-toggle input:checked + .reminder-toggle-track::after { transform:translateX(18px); }
     main { width:min(1180px, 100%); margin:0 auto; background:var(--paper); padding:34px 38px; }
     header { text-align:center; margin-bottom:20px; }
     .print-button { display:block; width:100%; margin:18px 0 18px; padding:9px 14px; border:1px solid #81b7ed; border-radius:6px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
@@ -203,6 +212,11 @@
         </div>
       </section>
       <button class="data-entry-button" type="button" onclick="toggleDailyMealPopup(true)">Daily Data Entry</button>
+      <label class="reminder-toggle" aria-label="Enable daily data reminder">
+        <span class="reminder-toggle-label"><strong>Enable reminder</strong><span>12:30 PM daily</span></span>
+        <input id="reminder-toggle-checkbox" type="checkbox">
+        <span class="reminder-toggle-track" aria-hidden="true"></span>
+      </label>
       <nav aria-label="Form sections">
       </nav>
       <section class="quick-entry">
@@ -399,6 +413,141 @@
     noticePopup?.addEventListener('click', event => {
       if (event.target === noticePopup) noticePopup.classList.remove('is-open');
     });
+
+    const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
+    const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
+    const reminderToggleCheckbox = document.querySelector('#reminder-toggle-checkbox');
+    let reminderIntervalId = null;
+
+    function syncReminderToggle() {
+      if (!reminderToggleCheckbox) return;
+      const isEnabled = localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true';
+      reminderToggleCheckbox.checked = isEnabled;
+    }
+
+    function openDailyEntryApp() {
+      const targetUrl = 'main_ucmdm.html';
+      if (window.location.pathname.endsWith(targetUrl)) {
+        window.focus();
+        return;
+      }
+      window.location.href = targetUrl;
+    }
+
+    function showDailyReminderNotification() {
+      if (!('Notification' in window)) return;
+      if (Notification.permission !== 'granted') return;
+
+      const notification = new Notification(DAILY_REMINDER_TITLE, {
+        body: 'Please open the app and enter today’s daily data entry.',
+        icon: 'app-icon.svg',
+        tag: 'mdm-daily-reminder',
+        requireInteraction: true,
+        actions: [
+          { action: 'open', title: 'Open' },
+          { action: 'dismiss', title: 'No need' }
+        ]
+      });
+
+      notification.addEventListener('click', event => {
+        event.preventDefault();
+        if (event.action === 'open' || !event.action) {
+          openDailyEntryApp();
+        }
+        notification.close();
+      });
+
+      notification.addEventListener('action', event => {
+        if (event.action === 'open') {
+          openDailyEntryApp();
+        }
+        notification.close();
+      });
+    }
+
+    function scheduleDailyReminder() {
+      if (!('Notification' in window) || Notification.permission !== 'granted') return;
+      localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'true');
+
+      if (reminderIntervalId) {
+        clearInterval(reminderIntervalId);
+      }
+
+      const checkReminder = () => {
+        const now = new Date();
+        const day = now.getDay();
+        if (day < 1 || day > 6) return;
+
+        const currentHour = now.getHours();
+        const currentMinute = now.getMinutes();
+        const isReminderTime = currentHour === 12 && currentMinute >= 30 && currentMinute <= 31;
+
+        if (isReminderTime) {
+          showDailyReminderNotification();
+        }
+      };
+
+      checkReminder();
+      reminderIntervalId = setInterval(checkReminder, 60000);
+    }
+
+    function stopDailyReminderScheduler() {
+      if (reminderIntervalId) {
+        clearInterval(reminderIntervalId);
+        reminderIntervalId = null;
+      }
+    }
+
+    function enableDailyReminder() {
+      if (!('Notification' in window)) {
+        localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
+        syncReminderToggle();
+        return;
+      }
+
+      if (Notification.permission === 'granted') {
+        localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'true');
+        syncReminderToggle();
+        scheduleDailyReminder();
+        return;
+      }
+
+      Notification.requestPermission().then(permission => {
+        if (permission === 'granted') {
+          localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'true');
+        } else {
+          localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
+        }
+        syncReminderToggle();
+        if (permission === 'granted') {
+          scheduleDailyReminder();
+        }
+      });
+    }
+
+    function disableDailyReminder() {
+      localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
+      stopDailyReminderScheduler();
+      syncReminderToggle();
+    }
+
+    reminderToggleCheckbox?.addEventListener('change', () => {
+      if (reminderToggleCheckbox.checked) {
+        enableDailyReminder();
+      } else {
+        disableDailyReminder();
+      }
+    });
+
+    syncReminderToggle();
+
+    if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) {
+      const reminderEnabled = localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true';
+      if (reminderEnabled && Notification.permission === 'granted') {
+        scheduleDailyReminder();
+      }
+    }
+
     const STORAGE_KEY = 'pm-poshan-uc-monthly-data';
     const SESSION_STATE_KEY = 'pm-poshan-uc-session-state';
     const UDISE_STORAGE_KEY = 'pm-poshan-uc-udise-code';
@@ -1201,6 +1350,51 @@
         });
     }
 
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        const hadControllerAtStart = Boolean(navigator.serviceWorker.controller);
+        let reloadingForUpdate = false;
+        let initialHtml = null;
+        const reloadForUpdate = () => {
+          if (reloadingForUpdate) return;
+          reloadingForUpdate = true;
+          window.location.reload();
+        };
+        const checkForPageUpdate = async () => {
+          if (!navigator.onLine || reloadingForUpdate) return;
+          try {
+            const response = await fetch(window.location.href, { cache: 'no-store' });
+            if (!response.ok) return;
+            const latestHtml = await response.text();
+            if (initialHtml === null) {
+              initialHtml = latestHtml;
+              return;
+            }
+            if (latestHtml !== initialHtml) reloadForUpdate();
+          } catch {}
+        };
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          if (hadControllerAtStart) reloadForUpdate();
+        });
+        navigator.serviceWorker.register('./service-worker.js', { scope: './' }).then(registration => {
+          const checkForWorkerUpdate = () => {
+            if (navigator.onLine) registration.update().catch(() => {});
+          };
+          checkForWorkerUpdate();
+          setInterval(checkForWorkerUpdate, 5 * 60 * 1000);
+          window.addEventListener('online', checkForWorkerUpdate);
+          window.addEventListener('online', checkForPageUpdate);
+          window.addEventListener('focus', checkForPageUpdate);
+          document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') checkForPageUpdate();
+          });
+          checkForPageUpdate();
+          setInterval(checkForPageUpdate, 5 * 60 * 1000);
+        }).catch(error => {
+          console.error('Service worker registration failed:', error);
+        });
+      });
+    }
   </script>
 </body>
 </html>

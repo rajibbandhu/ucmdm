@@ -1,12 +1,15 @@
 {
+  "id": "/",
   "name": "ucmdm.in PM POSHAN Monthly Data Entry",
   "short_name": "ucmdm.in",
   "description": "Fill up the PM POSHAN Monthly Data Entry Form.",
-  "start_url": "./index.html",
-  "scope": "./",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
   "background_color": "#edf3f9",
   "theme_color": "#173b63",
+  "orientation": "portrait",
   "icons": [
     {
       "src": "./app-icon.svg",
