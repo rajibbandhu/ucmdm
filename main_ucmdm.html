@@ -150,25 +150,7 @@
     .site-footer { max-width:1180px; margin:16px auto 24px; padding:0 38px; text-align:center; font:13px Arial, sans-serif; color:#5a6b80; }
     .site-footer a { color:#245b91; text-decoration:none; }
     .site-footer a:hover { text-decoration:underline; }
-    .upi-qr-button { display:inline-flex; align-items:center; justify-content:center; gap:6px; max-width:100%; box-sizing:border-box; margin-left:8px; padding:8px 12px; border:0; border-radius:999px; background:linear-gradient(135deg, #245b91 0%, #2d76c3 42%, #49b9d9 100%); color:#fff; cursor:pointer; font:700 12px/1.2 Arial, sans-serif; letter-spacing:.2px; vertical-align:middle; box-shadow:0 8px 18px rgba(36, 91, 145, .28); }
-    .upi-qr-button .upi-donate-prefix { font-size:10px; }
-    .upi-qr-button .upi-qr-label { min-width:0; max-width:100%; color:#fff; font-size:11px; font-weight:700; line-height:1.1; text-align:center; overflow-wrap:anywhere; }
-    .upi-qr-button::before { content:'✦'; font-size:13px; line-height:1; }
-    .upi-qr-button:hover, .upi-qr-button:focus-visible { filter:brightness(1.04); outline:none; }
     .reset-storage-button { display:none; }
-    .upi-qr-popup { display:none; position:fixed; z-index:30; inset:0; align-items:center; justify-content:center; padding:20px; background:#17203399; }
-    .upi-qr-popup.is-open { display:flex; }
-    .upi-qr-dialog { position:relative; max-width:min(380px, 100%); padding:18px; border-radius:10px; background:#fff; box-shadow:0 16px 40px #17203366; text-align:center; }
-    .upi-qr-dialog img { display:block; width:100%; max-width:320px; height:auto; margin:10px auto 0; }
-    .upi-qr-field-row { display:flex; align-items:center; gap:8px; margin-top:12px; }
-    .upi-qr-field { flex:1; min-width:0; height:40px; padding:8px 10px; border:1px solid #cfe0f4; border-radius:8px; background:#f8fbff; color:var(--navy); font:600 14px Arial, sans-serif; text-align:center; }
-    .upi-qr-copy-button, .upi-qr-open-button { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:8px 14px; border:1px solid #245b91; border-radius:8px; background:#245b91; color:#fff; cursor:pointer; font:700 12px Arial, sans-serif; text-decoration:none; }
-    .upi-qr-copy-button:hover, .upi-qr-copy-button:focus-visible, .upi-qr-open-button:hover, .upi-qr-open-button:focus-visible { background:#2d76c3; outline:none; }
-    .upi-qr-open-button { display:block; width:100%; margin-top:10px; }
-    .upi-qr-dialog h2 { margin:0; color:var(--navy); font-size:17px; }
-    .upi-qr-close { position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted); cursor:pointer; font:700 22px/1 Arial, sans-serif; }
-    .upi-qr-close:hover, .upi-qr-close:focus-visible { color:var(--navy); outline:none; }
-    @media print { .upi-qr-popup { display:none !important; } }
     @media print { @page { size:A4; margin:6mm 5mm; } body { background:white; color:#000; font-size:12px; } .app-shell { display:block; } .sidebar, .daily-sidebar { display:none; } main { box-shadow:none; width:100%; margin:0; padding:0; } header { margin-top:8px; margin-bottom:10px; } h1 { font-size:15px; font-weight:700; } header p { font-size:14px; font-weight:700; color:#000; margin-top:4px; } h2 { color:#000; margin:32px 0 8px; font-size:13px; font-weight:normal; } .school-details + h2 { margin-top:28px; } .note { margin:6px 0 12px; padding:4px 0; font-size:13px; } .note strong { font-weight:700; } .table-wrap { border:0; border-radius:0; margin-bottom:12px; } table, th, td { border:1px solid #555; } th, td { padding:4px 6px; font-size:11px; } th { background:#fff; color:#000; font-weight:normal; } .label { font-weight:normal; } .note { background:white; } input, select { color:#000; font-size:11px; padding:2px 3px; } .school-details #school-name { font-size:10px; } .signature { border-top-color:#000; font-weight:normal; } .signatures { margin-top:55px; } #food-grains { margin-top:36px; } input[type="month"] { display:none; } .month-year-print { display:inline; } .site-footer { display:none; } .table-actions, .form-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; } }
     @media print { @page { size:A4; margin:6mm 5mm; } body { background:white; color:#000; font-size:12px; } .app-shell { display:block; } .sidebar, .daily-sidebar { display:none; } main { box-shadow:none; width:100%; margin:0; padding:0; } header { margin-top:8px; margin-bottom:10px; } h1 { font-size:15px; font-weight:700; } header p { font-size:14px; font-weight:700; color:#000; margin-top:4px; } h2 { color:#000; margin:32px 0 8px; font-size:13px; font-weight:normal; } .school-details + h2 { margin-top:28px; } .note { margin:6px 0 12px; padding:4px 0; font-size:13px; } .note strong { font-weight:700; } .table-wrap { border:0; border-radius:0; margin-bottom:12px; } table, th, td { border:1px solid #555; } th, td { padding:4px 6px; font-size:11px; } th { background:#fff; color:#000; font-weight:normal; } .label { font-weight:normal; } .note { background:white; } input, select { color:#000; font-size:11px; padding:2px 3px; } .school-details #school-name { font-size:10px; } .signature { border-top-color:#000; font-weight:normal; } .signatures { margin-top:55px; } #food-grains { margin-top:36px; } input[type="month"] { display:none; } .month-year-print { display:inline; } .site-footer { display:none; } .table-actions, .form-actions { display:none; margin:0; padding:0; height:0; overflow:hidden; } }
   </style>
@@ -308,25 +290,11 @@
       </div>
     </aside>
   </div>
-  <footer class="site-footer"><div>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><button class="upi-qr-button" id="upi-qr-button" type="button"><span class="upi-donate-prefix">Donate with</span> <span class="upi-qr-label">UPI QR code</span></button><button class="reset-storage-button" id="reset-storage-button" type="button">Reset all saved data</button></div></footer>
-  <div class="upi-qr-popup" id="upi-qr-popup" role="dialog" aria-modal="true" aria-labelledby="upi-qr-title">
-    <div class="upi-qr-dialog">
-      <button class="upi-qr-close" id="upi-qr-close" type="button" aria-label="Close Donate with UPI QR code">&times;</button>
-      <h2 id="upi-qr-title">Donate with UPI QR code</h2>
-      <img src="UPI.jpeg" alt="UPI QR code for donations">
-      <div class="upi-qr-field-row">
-        <input class="upi-qr-field" id="upi-id-field" type="text" value="rajibbandhu-2@okicici" readonly aria-label="UPI ID">
-        <button class="upi-qr-copy-button" id="upi-copy-button" type="button">Copy</button>
-      </div>
-      
-    </div>
-  </div>
+  <footer class="site-footer"><div>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><button class="reset-storage-button" id="reset-storage-button" type="button">Reset all saved data</button></div></footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const START_PAGE_KEY = 'ucmdm-default-page';
-    const UPI_ID = 'rajibbandhu-2@okicici';
-		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
     const firstPageToggle = document.querySelector('#first-page-toggle');
     const syncStartPageToggle = () => {
       if (!firstPageToggle) return;
@@ -337,37 +305,6 @@
       localStorage.setItem(START_PAGE_KEY, firstPageToggle.checked ? 'main' : 'index');
     });
     syncStartPageToggle();
-    const upiQrPopup = document.querySelector('#upi-qr-popup');
-    const upiIdField = document.querySelector('#upi-id-field');
-    const upiCopyButton = document.querySelector('#upi-copy-button');
-    const upiOpenButton = document.querySelector('#upi-open-button');
-    document.querySelector('#upi-qr-button')?.addEventListener('click', () => {
-      upiQrPopup?.classList.add('is-open');
-      if (upiIdField) {
-        upiIdField.value = UPI_ID;
-        upiIdField.setAttribute('value', UPI_ID);
-      }
-      if (upiCopyButton) upiCopyButton.textContent = 'Copy';
-    });
-    document.querySelector('#upi-qr-close')?.addEventListener('click', () => upiQrPopup?.classList.remove('is-open'));
-    if (upiIdField) upiIdField.value = UPI_ID;
-    upiCopyButton?.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(UPI_ID);
-        upiCopyButton.textContent = 'Copied';
-      } catch {
-        upiIdField?.select();
-        document.execCommand('copy');
-        upiCopyButton.textContent = 'Copied';
-      }
-      setTimeout(() => {
-        upiCopyButton.textContent = 'Copy';
-      }, 1200);
-    });
-    upiOpenButton?.setAttribute('href', UPI_PAYMENT_URL);
-    upiQrPopup?.addEventListener('click', event => {
-      if (event.target === upiQrPopup) upiQrPopup.classList.remove('is-open');
-    });
     const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
     const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
     const DAILY_REMINDER_TIME_STORAGE_KEY = 'ucmdm-daily-reminder-time';
@@ -824,7 +761,7 @@
     }
 
     function getFormFields() {
-      return [...document.querySelectorAll('input, select, textarea')].filter(field => field.type !== 'hidden' && !field.closest('.upi-qr-popup'));
+      return [...document.querySelectorAll('input, select, textarea')].filter(field => field.type !== 'hidden');
     }
 
     function getFieldKey(field, index) {
@@ -915,7 +852,7 @@
       const fields = getFormFields();
 
       fields.forEach((field, index) => {
-        if (field === monthField || field.closest('.upi-qr-popup')) return;
+        if (field === monthField) return;
         const key = getFieldKey(field, index);
         const saved = savedData[key];
         if (!saved) {

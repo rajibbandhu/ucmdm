@@ -92,27 +92,9 @@
 		.download-action-icon svg { display:block; width:24px; height:24px; }
 		.action-detail { display:block; margin-top:6px; color:var(--muted); font:13px/1.4 Arial, sans-serif; }
 		.action.primary .action-detail { color:#dbeafa; }
-		.upi-qr-button { display:inline-flex; align-items:center; justify-content:center; gap:6px; max-width:100%; box-sizing:border-box; margin-left:8px; padding:8px 12px; border:0; border-radius:999px; background:linear-gradient(135deg, #245b91 0%, #2d76c3 42%, #49b9d9 100%); color:#fff; cursor:pointer; font:700 12px/1.2 Arial, sans-serif; letter-spacing:.2px; vertical-align:middle; box-shadow:0 8px 18px rgba(36, 91, 145, .28); }
-		.upi-qr-button .upi-donate-prefix { font-size:10px; }
-		.upi-qr-button .upi-qr-label { min-width:0; max-width:100%; color:#fff; font-size:11px; font-weight:700; line-height:1.1; text-align:center; overflow-wrap:anywhere; }
-		.upi-qr-button::before { content:'✦'; font-size:13px; line-height:1; }
-		.upi-qr-button:hover, .upi-qr-button:focus-visible { filter:brightness(1.04); outline:none; }
-		
 		.install-app-button { display:inline-flex; align-items:center; justify-content:center; gap:6px; margin-left:8px; padding:9px 15px; border:1px solid #245b91; border-radius:999px; background:#245b91; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; vertical-align:middle; }
 		.install-app-button:hover, .install-app-button:focus-visible { background:#2d76c3; outline:none; }
 		.install-app-button svg { display:block; width:16px; height:16px; }
-		.upi-qr-popup { display:none; position:fixed; z-index:30; inset:0; align-items:center; justify-content:center; padding:20px; background:#17203399; }
-		.upi-qr-popup.is-open { display:flex; }
-		.upi-qr-dialog { position:relative; max-width:min(380px, 100%); padding:18px; border-radius:10px; background:#fff; box-shadow:0 16px 40px #17203366; text-align:center; }
-		.upi-qr-dialog img { display:block; width:100%; max-width:320px; height:auto; margin:10px auto 0; }
-		.upi-qr-field-row { display:flex; align-items:center; gap:8px; margin-top:12px; }
-		.upi-qr-field { flex:1; min-width:0; height:40px; padding:8px 10px; border:1px solid #cfe0f4; border-radius:8px; background:#f8fbff; color:var(--navy); font:600 14px Arial, sans-serif; text-align:center; }
-		.upi-qr-copy-button, .upi-qr-open-button { display:inline-flex; align-items:center; justify-content:center; min-height:40px; padding:8px 14px; border:1px solid #245b91; border-radius:8px; background:#245b91; color:#fff; cursor:pointer; font:700 12px Arial, sans-serif; text-decoration:none; }
-		.upi-qr-copy-button:hover, .upi-qr-copy-button:focus-visible, .upi-qr-open-button:hover, .upi-qr-open-button:focus-visible { background:#2d76c3; outline:none; }
-		.upi-qr-open-button { display:block; width:100%; margin-top:10px; }
-		.upi-qr-dialog h2 { margin:0; color:var(--navy); font-size:17px; }
-		.upi-qr-close { position:absolute; top:7px; right:9px; border:0; background:transparent; color:var(--muted); cursor:pointer; font:700 22px/1 Arial, sans-serif; }
-		.upi-qr-close:hover, .upi-qr-close:focus-visible { color:var(--navy); outline:none; }
 		.action-separator { margin:0; color:var(--muted); font:700 12px/1 Arial, sans-serif; text-align:center; text-transform:lowercase; }
 		.storage-notice { margin-top:4px; padding:18px 20px; border:1px solid var(--line); border-left:5px solid var(--blue); border-radius:8px; background:var(--blue-light); color:var(--muted); font:13px/1.55 Arial, sans-serif; box-shadow:0 8px 20px #173b6314; transition:transform .15s, box-shadow .15s, background .15s; }
 		.storage-notice:hover { background:#dceafa; box-shadow:0 12px 26px #173b6324; transform:translateY(-2px); }
@@ -240,28 +222,14 @@
 			</nav>
 		</main>
 		<footer>
-			<div>&copy; 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><span class="footer-data-tools" role="group" aria-label="JSON data import and export"><button class="footer-data-button" id="import-data-button" type="button" aria-label="Import data from JSON" title="Import data (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="m7 8 5-5 5 5"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"></path></svg></button><button class="footer-data-button" id="export-data-button" type="button" aria-label="Export data as JSON" title="Export data (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg></button><input id="import-data-file" type="file" accept="application/json,.json" hidden></span><button class="upi-qr-button" id="upi-qr-button" type="button"><span class="upi-donate-prefix">Donate with</span> <span class="upi-qr-label">UPI QR code</span></button></div>
+			<div>&copy; 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><span class="footer-data-tools" role="group" aria-label="JSON data import and export"><button class="footer-data-button" id="import-data-button" type="button" aria-label="Import data from JSON" title="Import data (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="m7 8 5-5 5 5"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"></path></svg></button><button class="footer-data-button" id="export-data-button" type="button" aria-label="Export data as JSON" title="Export data (JSON)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg></button><input id="import-data-file" type="file" accept="application/json,.json" hidden></span></div>
 		</footer>
-	</div>
-	<div class="upi-qr-popup" id="upi-qr-popup" role="dialog" aria-modal="true" aria-labelledby="upi-qr-title">
-		<div class="upi-qr-dialog">
-			<button class="upi-qr-close" id="upi-qr-close" type="button" aria-label="Close Donate with UPI QR code">&times;</button>
-			<h2 id="upi-qr-title">Donate with UPI QR code</h2>
-			<img src="UPI.jpeg" alt="UPI QR code for donations">
-			<div class="upi-qr-field-row">
-				<input class="upi-qr-field" id="upi-id-field" type="text" value="rajibbandhu-2@okicici" readonly aria-label="UPI ID">
-				<button class="upi-qr-copy-button" id="upi-copy-button" type="button">Copy</button>
-			</div>
-			
-		</div>
 	</div>
 	<script>
 		const START_PAGE_KEY = 'ucmdm-default-page';
 		if ((localStorage.getItem(START_PAGE_KEY) || 'index') === 'main') {
 			window.location.replace('main_ucmdm.html');
 		}
-		const UPI_ID = 'rajibbandhu-2@okicici';
-		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
 		const APP_BACKUP_FORMAT = 'ucmdm-data-backup';
 		const APP_BACKUP_VERSION = 1;
 		const APP_BACKUP_SETTING_KEYS = new Set([
@@ -555,38 +523,6 @@
 				});
 			});
 		}
-		const upiQrPopup = document.querySelector('#upi-qr-popup');
-		const upiIdField = document.querySelector('#upi-id-field');
-		const upiCopyButton = document.querySelector('#upi-copy-button');
-		const upiOpenButton = document.querySelector('#upi-open-button');
-		document.querySelector('#upi-qr-button')?.addEventListener('click', () => {
-			upiQrPopup?.classList.add('is-open');
-			if (upiIdField) {
-				upiIdField.value = UPI_ID;
-				upiIdField.setAttribute('value', UPI_ID);
-			}
-			if (upiCopyButton) upiCopyButton.textContent = 'Copy';
-		});
-		document.querySelector('#upi-qr-close')?.addEventListener('click', () => upiQrPopup?.classList.remove('is-open'));
-		if (upiIdField) upiIdField.value = UPI_ID;
-		upiCopyButton?.addEventListener('click', async () => {
-			try {
-				await navigator.clipboard.writeText(UPI_ID);
-				upiCopyButton.textContent = 'Copied';
-			} catch {
-				upiIdField?.select();
-				document.execCommand('copy');
-				upiCopyButton.textContent = 'Copied';
-			}
-			setTimeout(() => {
-				upiCopyButton.textContent = 'Copy';
-			}, 1200);
-		});
-		upiOpenButton?.setAttribute('href', UPI_PAYMENT_URL);
-		upiQrPopup?.addEventListener('click', event => {
-			if (event.target === upiQrPopup) upiQrPopup.classList.remove('is-open');
-		});
-		
 	</script>
 </body>
 </html>
