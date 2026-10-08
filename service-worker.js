@@ -4,6 +4,7 @@ const APP_FILES = [
   './index.html',
   './main_ucmdm.html',
   './MonthlyDataEntry.pdf',
+  './MDM_YEARKY_REPORT.xlsx',
   './manifest.webmanifest',
   './app-icon.svg',
   './UPI.jpeg'
