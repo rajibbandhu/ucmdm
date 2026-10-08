@@ -122,7 +122,7 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.header-tools { display:flex; align-items:center; gap:6px; }
+		.header-tools { display:flex; align-items:center; gap:6px; margin-left:auto; }
 		.header-tool-button, .reminder-settings-button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
 		.header-tool-button:hover, .reminder-settings-button:hover, .reminder-settings-button[aria-expanded="true"] { background:#ffffff24; }
 		.header-tool-button:focus-visible, .reminder-settings-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
@@ -154,7 +154,7 @@
 
 		@media (max-width:760px) {
 			.header-inner { align-items:flex-start; flex-direction:column; gap:16px; }
-			.reminder-header-controls { align-self:flex-end; }
+			.header-tools { align-self:flex-end; }
 			main { display:block; padding:58px 0; }
 			.intro { margin-bottom:36px; }
 			.intro p { font-size:18px; }
