@@ -122,17 +122,19 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.reminder-setting { display:flex; align-items:center; gap:8px; min-height:36px; padding:4px 8px; border:1px solid #ffffff30; border-radius:6px; background:#ffffff0d; color:#fff; font:12px/1.3 Arial, sans-serif; }
-		.reminder-switch { display:flex; align-items:center; gap:7px; color:#fff; cursor:pointer; }
+		.reminder-setting { display:grid; grid-template-columns:auto; gap:2px; min-height:42px; padding:5px 8px; border:1px solid #ffffff30; border-radius:6px; background:#ffffff0d; color:#fff; font:12px/1.2 Arial, sans-serif; }
+		.reminder-first-line { display:flex; align-items:center; gap:6px; }
 		.reminder-setting-copy { color:#fff; font-weight:700; white-space:nowrap; }
+		.reminder-switch { display:inline-flex; align-items:center; margin-left:2px; cursor:pointer; }
 		.reminder-switch input { position:relative; flex:0 0 auto; appearance:none; width:34px; height:18px; margin:0; border:1px solid #c9dcf3; border-radius:999px; background:#ffffff30; cursor:pointer; transition:background .15s, border-color .15s; }
 		.reminder-switch input::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
 		.reminder-switch input:checked { border-color:#8fe9f5; background:#2d76c3; }
 		.reminder-switch input:checked::after { transform:translateX(16px); }
 		.reminder-switch input:focus-visible { outline:2px solid #8fe9f5; outline-offset:3px; }
-		.reminder-time-inline { display:flex; align-items:center; gap:4px; min-height:24px; padding-left:8px; border-left:1px solid #ffffff30; color:#dbeafa; font:11px Arial, sans-serif; }
-		.reminder-time-inline input { width:88px; min-width:0; padding:3px 0; border:0; background:transparent; color:#fff; color-scheme:dark; cursor:pointer; font:700 12px Arial, sans-serif; }
-		.reminder-time-inline input:focus-visible { border-radius:3px; outline:2px solid #8fe9f5; outline-offset:3px; }
+		.reminder-time-inline { display:flex; align-items:center; color:#dbeafa; font:12px Arial, sans-serif; }
+		.reminder-time-inline input { width:91px; min-width:0; padding:1px 0; border:0; background:transparent; color:#fff; color-scheme:dark; cursor:text; font:700 12px Arial, sans-serif; }
+		.reminder-time-inline input:focus-visible { border-radius:3px; outline:2px solid #8fe9f5; outline-offset:2px; }
+		.reminder-schedule { color:#dbeafa; font:10px/1.2 Arial, sans-serif; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
@@ -154,14 +156,17 @@
 			<div class="header-inner">
 				<p class="brand"><a href="index.html">ucmdm.in</a></p>
 				<div class="reminder-header-controls">
-					<div class="reminder-setting" aria-label="Daily data entry reminder settings">
-						<label class="reminder-switch" for="daily-reminder-toggle">
-							<span class="reminder-setting-copy">Enable reminder</span>
-							<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
-						</label>
-						<label class="reminder-time-inline" for="daily-reminder-time">at
-							<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
-						</label>
+					<div class="reminder-setting" role="group" aria-label="Daily data entry reminder settings">
+						<div class="reminder-first-line">
+							<span class="reminder-setting-copy">Enable reminder at</span>
+							<label class="reminder-time-inline" for="daily-reminder-time">
+								<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
+							</label>
+							<label class="reminder-switch" for="daily-reminder-toggle">
+								<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
+							</label>
+						</div>
+						<span class="reminder-schedule">Monday to Saturday</span>
 					</div>
 				</div>
 			</div>
