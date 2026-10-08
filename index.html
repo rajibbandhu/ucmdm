@@ -122,18 +122,17 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.reminder-setting { display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:44px; padding:8px 12px; border:1px solid #ffffff40; border-radius:8px; background:#ffffff12; color:#fff; font:13px/1.4 Arial, sans-serif; cursor:pointer; }
-		.reminder-setting-copy { display:flex; flex-direction:column; gap:3px; }
-		.reminder-setting-copy strong { color:#fff; }
-		.reminder-setting-copy span { color:#dbeafa; font-size:11px; }
-		.reminder-setting input { position:relative; flex:0 0 auto; appearance:none; width:40px; height:22px; margin:0; border:1px solid #c9dcf3; border-radius:999px; background:#ffffff30; cursor:pointer; transition:background .15s, border-color .15s; }
-		.reminder-setting input::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
-		.reminder-setting input:checked { border-color:#8fe9f5; background:#2d76c3; }
-		.reminder-setting input:checked::after { transform:translateX(18px); }
-		.reminder-setting input:focus-visible { outline:2px solid #8fe9f5; outline-offset:3px; }
-		.reminder-time-setting { display:flex; align-items:center; gap:8px; color:#dbeafa; font:700 12px Arial, sans-serif; }
-		.reminder-time-setting input { width:108px; min-height:40px; padding:6px 8px; border:1px solid #ffffff55; border-radius:6px; background:#fff; color:var(--navy); font:700 14px Arial, sans-serif; }
-		.reminder-time-setting input:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
+		.reminder-setting { display:flex; align-items:center; gap:12px; min-height:44px; padding:7px 11px; border:1px solid #ffffff40; border-radius:8px; background:#ffffff12; color:#fff; font:13px/1.4 Arial, sans-serif; }
+		.reminder-switch { display:flex; align-items:center; gap:10px; color:#fff; cursor:pointer; }
+		.reminder-setting-copy { color:#fff; font-weight:700; white-space:nowrap; }
+		.reminder-switch input { position:relative; flex:0 0 auto; appearance:none; width:40px; height:22px; margin:0; border:1px solid #c9dcf3; border-radius:999px; background:#ffffff30; cursor:pointer; transition:background .15s, border-color .15s; }
+		.reminder-switch input::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
+		.reminder-switch input:checked { border-color:#8fe9f5; background:#2d76c3; }
+		.reminder-switch input:checked::after { transform:translateX(18px); }
+		.reminder-switch input:focus-visible { outline:2px solid #8fe9f5; outline-offset:3px; }
+		.reminder-time-inline { display:flex; align-items:center; gap:6px; min-height:30px; padding-left:11px; border-left:1px solid #ffffff40; color:#dbeafa; font:12px Arial, sans-serif; }
+		.reminder-time-inline input { width:104px; min-width:0; padding:3px 0; border:0; background:transparent; color:#fff; color-scheme:dark; cursor:pointer; font:700 13px Arial, sans-serif; }
+		.reminder-time-inline input:focus-visible { border-radius:3px; outline:2px solid #8fe9f5; outline-offset:3px; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
@@ -154,14 +153,16 @@
 		<header>
 			<div class="header-inner">
 				<p class="brand"><a href="index.html">ucmdm.in</a></p>
-				<div class="reminder-header-controls" aria-label="Daily data entry reminder settings">
-					<label class="reminder-setting" for="daily-reminder-toggle">
-						<span class="reminder-setting-copy"><strong>Enable reminder</strong><span>Monday to Saturday</span></span>
-						<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
-					</label>
-					<label class="reminder-time-setting" for="daily-reminder-time">Time
-						<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
-					</label>
+				<div class="reminder-header-controls">
+					<div class="reminder-setting" aria-label="Daily data entry reminder settings">
+						<label class="reminder-switch" for="daily-reminder-toggle">
+							<span class="reminder-setting-copy">Enable reminder</span>
+							<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
+						</label>
+						<label class="reminder-time-inline" for="daily-reminder-time">at
+							<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
+						</label>
+					</div>
 				</div>
 			</div>
 		</header>
