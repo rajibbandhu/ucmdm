@@ -122,10 +122,11 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.reminder-header-controls { position:relative; display:flex; align-items:center; }
-		.reminder-settings-button { display:grid; place-items:center; width:38px; height:38px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
-		.reminder-settings-button:hover, .reminder-settings-button[aria-expanded="true"] { background:#ffffff24; }
-		.reminder-settings-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
+		.header-tools { display:flex; align-items:center; gap:6px; }
+		.header-tool-button, .reminder-settings-button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
+		.header-tool-button:hover, .reminder-settings-button:hover, .reminder-settings-button[aria-expanded="true"] { background:#ffffff24; }
+		.header-tool-button:focus-visible, .reminder-settings-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
+		.header-tool-button svg { width:18px; height:18px; }
 		.reminder-settings-button svg { width:19px; height:19px; }
 		.reminder-settings-popover { position:absolute; z-index:15; top:calc(100% + 9px); right:0; display:grid; gap:12px; width:min(290px, calc(100vw - 36px)); padding:14px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); box-shadow:0 12px 30px #17203330; font:13px/1.4 Arial, sans-serif; }
 		.reminder-settings-popover[hidden] { display:none; }
@@ -161,11 +162,19 @@
 		<header>
 			<div class="header-inner">
 				<p class="brand"><a href="index.html">ucmdm.in</a></p>
-				<div class="reminder-header-controls">
-					<button class="reminder-settings-button" id="reminder-settings-button" type="button" aria-label="Reminder settings" aria-haspopup="dialog" aria-expanded="false" aria-controls="reminder-settings-popover" title="Reminder settings">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.4 15.8H3.5c0-1.5 2-2.5 2-8a5.5 5.5 0 0 1 11 0"></path><path d="M8.5 19a2 2 0 0 0 3.5 0"></path><circle cx="18" cy="17.5" r="4" stroke="#8fe9f5"></circle><path d="M18 15.5v2l1.4 1" stroke="#8fe9f5"></path></svg>
+				<div class="header-tools">
+					<button class="header-tool-button" id="import-data-button" type="button" aria-label="Import data from JSON" title="Import data (JSON)">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"></path><path d="m7 8 5-5 5 5"></path><path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-7"></path></svg>
 					</button>
-					<div class="reminder-settings-popover" id="reminder-settings-popover" role="dialog" aria-labelledby="reminder-settings-title" hidden>
+					<button class="header-tool-button" id="export-data-button" type="button" aria-label="Export data as JSON" title="Export data (JSON)">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 16v3a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-3"></path></svg>
+					</button>
+					<input id="import-data-file" type="file" accept="application/json,.json" hidden>
+					<div class="reminder-header-controls">
+						<button class="reminder-settings-button" id="reminder-settings-button" type="button" aria-label="Reminder settings" aria-haspopup="dialog" aria-expanded="false" aria-controls="reminder-settings-popover" title="Reminder settings">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.4 15.8H3.5c0-1.5 2-2.5 2-8a5.5 5.5 0 0 1 11 0"></path><path d="M8.5 19a2 2 0 0 0 3.5 0"></path><circle cx="18" cy="17.5" r="4" stroke="#8fe9f5"></circle><path d="M18 15.5v2l1.4 1" stroke="#8fe9f5"></path></svg>
+						</button>
+						<div class="reminder-settings-popover" id="reminder-settings-popover" role="dialog" aria-labelledby="reminder-settings-title" hidden>
 						<h2 id="reminder-settings-title">Reminder for Daily Data Entry</h2>
 						<p>Set time as you wish.</p>
 						<div class="reminder-setting-row">
@@ -177,6 +186,7 @@
 							<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
 						</div>
 						<span class="reminder-schedule">Monday to Saturday</span>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -256,6 +266,105 @@
 		}
 		const UPI_ID = 'rajibbandhu-2@okicici';
 		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
+		const APP_BACKUP_FORMAT = 'ucmdm-data-backup';
+		const APP_BACKUP_VERSION = 1;
+		const APP_BACKUP_SETTING_KEYS = new Set([
+			'ucmdm-default-page',
+			'ucmdm-daily-reminder-enabled',
+			'ucmdm-daily-reminder-time'
+		]);
+		const APP_BACKUP_JSON_KEYS = new Set([
+			'pm-poshan-uc-monthly-data',
+			'pm-poshan-uc-session-state',
+			'pm-poshan-uc-school-type',
+			'pm-poshan-uc-school-category',
+			'pm-poshan-uc-persistent-fields'
+		]);
+		const isAppBackupKey = key => key.startsWith('pm-poshan-uc-') || APP_BACKUP_SETTING_KEYS.has(key);
+		const exportDataButton = document.querySelector('#export-data-button');
+		const importDataButton = document.querySelector('#import-data-button');
+		const importDataFile = document.querySelector('#import-data-file');
+		const exportAppData = () => {
+			const data = {};
+			for (let index = 0; index < localStorage.length; index += 1) {
+				const key = localStorage.key(index);
+				if (key && isAppBackupKey(key)) data[key] = localStorage.getItem(key);
+			}
+			const backup = {
+				format: APP_BACKUP_FORMAT,
+				version: APP_BACKUP_VERSION,
+				exportedAt: new Date().toISOString(),
+				data
+			};
+			const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+			const downloadUrl = URL.createObjectURL(blob);
+			const downloadLink = document.createElement('a');
+			downloadLink.href = downloadUrl;
+			downloadLink.download = `ucmdm-data-backup-${new Date().toISOString().slice(0, 10)}.json`;
+			downloadLink.click();
+			URL.revokeObjectURL(downloadUrl);
+		};
+		const validateAppBackup = backup => {
+			if (!backup || backup.format !== APP_BACKUP_FORMAT || backup.version !== APP_BACKUP_VERSION || !backup.data || typeof backup.data !== 'object' || Array.isArray(backup.data)) {
+				throw new Error('This is not a supported ucmdm JSON backup.');
+			}
+			for (const [key, value] of Object.entries(backup.data)) {
+				if (!isAppBackupKey(key) || typeof value !== 'string') {
+					throw new Error('The backup contains unsupported data.');
+				}
+				if (APP_BACKUP_JSON_KEYS.has(key)) JSON.parse(value);
+				if (key === 'ucmdm-default-page' && !['index', 'main'].includes(value)) {
+					throw new Error('The backup contains an invalid startup page setting.');
+				}
+				if (key === 'ucmdm-daily-reminder-enabled' && !['true', 'false'].includes(value)) {
+					throw new Error('The backup contains an invalid reminder setting.');
+				}
+				if (key === 'ucmdm-daily-reminder-time' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) {
+					throw new Error('The backup contains an invalid reminder time.');
+				}
+			}
+			return Object.entries(backup.data);
+		};
+		const importAppData = async file => {
+			let entries;
+			try {
+				entries = validateAppBackup(JSON.parse(await file.text()));
+			} catch (error) {
+				window.alert(error instanceof SyntaxError ? 'The selected file is not valid JSON.' : error.message);
+				return;
+			}
+			if (!window.confirm('Importing this backup will replace saved ucmdm form data and preferences on this device. Continue?')) return;
+
+			const previousEntries = [];
+			for (let index = 0; index < localStorage.length; index += 1) {
+				const key = localStorage.key(index);
+				if (key && (isAppBackupKey(key) || key === 'ucmdm-daily-reminder-last-date')) {
+					previousEntries.push([key, localStorage.getItem(key)]);
+				}
+			}
+			try {
+				previousEntries.forEach(([key]) => localStorage.removeItem(key));
+				localStorage.removeItem('ucmdm-daily-reminder-last-date');
+				entries.forEach(([key, value]) => localStorage.setItem(key, value));
+				window.alert('Data imported. The page will reload to apply the backup.');
+				window.location.reload();
+			} catch {
+				for (let index = localStorage.length - 1; index >= 0; index -= 1) {
+					const key = localStorage.key(index);
+					if (key && (isAppBackupKey(key) || key === 'ucmdm-daily-reminder-last-date')) localStorage.removeItem(key);
+				}
+				previousEntries.forEach(([key, value]) => localStorage.setItem(key, value));
+				window.alert('Import failed. Your previous saved data was restored.');
+			}
+		};
+		exportDataButton?.addEventListener('click', exportAppData);
+		importDataButton?.addEventListener('click', () => importDataFile?.click());
+		importDataFile?.addEventListener('change', async () => {
+			const file = importDataFile.files?.[0];
+			if (!file) return;
+			await importAppData(file);
+			importDataFile.value = '';
+		});
 		const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
 		const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
 		const DAILY_REMINDER_TIME_STORAGE_KEY = 'ucmdm-daily-reminder-time';
