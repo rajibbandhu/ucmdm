@@ -122,19 +122,26 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.reminder-setting { display:grid; grid-template-columns:auto; gap:2px; min-height:42px; padding:5px 8px; border:1px solid #ffffff30; border-radius:6px; background:#ffffff0d; color:#fff; font:12px/1.2 Arial, sans-serif; }
-		.reminder-first-line { display:flex; align-items:center; gap:6px; }
-		.reminder-setting-copy { color:#fff; font-weight:700; white-space:nowrap; }
-		.reminder-switch { display:inline-flex; align-items:center; margin-left:2px; cursor:pointer; }
-		.reminder-switch input { position:relative; flex:0 0 auto; appearance:none; width:34px; height:18px; margin:0; border:1px solid #c9dcf3; border-radius:999px; background:#ffffff30; cursor:pointer; transition:background .15s, border-color .15s; }
-		.reminder-switch input::after { content:''; position:absolute; top:2px; left:2px; width:12px; height:12px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
-		.reminder-switch input:checked { border-color:#8fe9f5; background:#2d76c3; }
-		.reminder-switch input:checked::after { transform:translateX(16px); }
-		.reminder-switch input:focus-visible { outline:2px solid #8fe9f5; outline-offset:3px; }
-		.reminder-time-inline { display:flex; align-items:center; color:#dbeafa; font:12px Arial, sans-serif; }
-		.reminder-time-inline input { width:91px; min-width:0; padding:1px 0; border:0; background:transparent; color:#fff; color-scheme:dark; cursor:text; font:700 12px Arial, sans-serif; }
-		.reminder-time-inline input:focus-visible { border-radius:3px; outline:2px solid #8fe9f5; outline-offset:2px; }
-		.reminder-schedule { color:#dbeafa; font:10px/1.2 Arial, sans-serif; }
+		.reminder-header-controls { position:relative; display:flex; align-items:center; }
+		.reminder-settings-button { display:grid; place-items:center; width:38px; height:38px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
+		.reminder-settings-button:hover, .reminder-settings-button[aria-expanded="true"] { background:#ffffff24; }
+		.reminder-settings-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
+		.reminder-settings-button svg { width:19px; height:19px; }
+		.reminder-settings-popover { position:absolute; z-index:15; top:calc(100% + 9px); right:0; display:grid; gap:12px; width:min(290px, calc(100vw - 36px)); padding:14px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); box-shadow:0 12px 30px #17203330; font:13px/1.4 Arial, sans-serif; }
+		.reminder-settings-popover[hidden] { display:none; }
+		.reminder-settings-popover h2 { margin:0; color:var(--navy); font-size:15px; }
+		.reminder-settings-popover p { margin:-8px 0 0; color:var(--muted); font-size:12px; }
+		.reminder-setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+		.reminder-setting-row label { color:var(--ink); font-weight:700; }
+		.reminder-setting-row input[type="checkbox"] { position:relative; flex:0 0 auto; appearance:none; width:36px; height:20px; margin:0; border:1px solid #8998aa; border-radius:999px; background:#d9e1ea; cursor:pointer; transition:background .15s, border-color .15s; }
+		.reminder-setting-row input[type="checkbox"]::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
+		.reminder-setting-row input[type="checkbox"]:checked { border-color:var(--blue); background:var(--blue); }
+		.reminder-setting-row input[type="checkbox"]:checked::after { transform:translateX(16px); }
+		.reminder-setting-row input:focus-visible, .reminder-time-row input:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
+		.reminder-time-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+		.reminder-time-row label { color:var(--muted); }
+		.reminder-time-row input { width:112px; min-height:36px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#f8fbff; color:var(--navy); font:700 14px Arial, sans-serif; }
+		.reminder-schedule { color:var(--muted); font-size:11px; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
@@ -142,8 +149,7 @@
 
 		@media (max-width:760px) {
 			.header-inner { align-items:flex-start; flex-direction:column; gap:16px; }
-			.reminder-header-controls { width:100%; flex-wrap:wrap; }
-			.reminder-setting { flex:1 1 180px; }
+			.reminder-header-controls { align-self:flex-end; }
 			main { display:block; padding:58px 0; }
 			.intro { margin-bottom:36px; }
 			.intro p { font-size:18px; }
@@ -156,15 +162,19 @@
 			<div class="header-inner">
 				<p class="brand"><a href="index.html">ucmdm.in</a></p>
 				<div class="reminder-header-controls">
-					<div class="reminder-setting" role="group" aria-label="Daily data entry reminder settings">
-						<div class="reminder-first-line">
-							<span class="reminder-setting-copy">Enable reminder at</span>
-							<label class="reminder-time-inline" for="daily-reminder-time">
-								<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
-							</label>
-							<label class="reminder-switch" for="daily-reminder-toggle">
-								<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
-							</label>
+					<button class="reminder-settings-button" id="reminder-settings-button" type="button" aria-label="Reminder settings" aria-haspopup="dialog" aria-expanded="false" aria-controls="reminder-settings-popover" title="Reminder settings">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.7 1.7 0 0 0 .34 1.88l.06.06-1.7 2.94-.08-.03a1.7 1.7 0 0 0-1.85.34l-.07.06h-3.4l-.02-.09a1.7 1.7 0 0 0-1.16-1.46l-.09-.03-1.7-2.94.06-.06a1.7 1.7 0 0 0 .34-1.88l-.03-.08v-3.4l.08-.03a1.7 1.7 0 0 0 1.16-1.46l.02-.09h3.4l.07.06a1.7 1.7 0 0 0 1.85.34l.08-.03 1.7 2.94-.06.06A1.7 1.7 0 0 0 19.4 15Z"></path></svg>
+					</button>
+					<div class="reminder-settings-popover" id="reminder-settings-popover" role="dialog" aria-labelledby="reminder-settings-title" hidden>
+						<h2 id="reminder-settings-title">Reminder</h2>
+						<p>Set time as you wish.</p>
+						<div class="reminder-setting-row">
+							<label for="daily-reminder-toggle">Enable reminder</label>
+							<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
+						</div>
+						<div class="reminder-time-row">
+							<label for="daily-reminder-time">Reminder time</label>
+							<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
 						</div>
 						<span class="reminder-schedule">Monday to Saturday</span>
 					</div>
@@ -252,7 +262,29 @@
 		const DAILY_REMINDER_LAST_DATE_KEY = 'ucmdm-daily-reminder-last-date';
 		const reminderToggle = document.querySelector('#daily-reminder-toggle');
 		const reminderTimeInput = document.querySelector('#daily-reminder-time');
+		const reminderSettingsButton = document.querySelector('#reminder-settings-button');
+		const reminderSettingsPopover = document.querySelector('#reminder-settings-popover');
 		let reminderIntervalId = null;
+		const setReminderSettingsOpen = isOpen => {
+			if (!reminderSettingsButton || !reminderSettingsPopover) return;
+			reminderSettingsButton.setAttribute('aria-expanded', String(isOpen));
+			reminderSettingsPopover.hidden = !isOpen;
+		};
+		reminderSettingsButton?.addEventListener('click', () => {
+			const isOpen = reminderSettingsButton.getAttribute('aria-expanded') === 'true';
+			setReminderSettingsOpen(!isOpen);
+		});
+		document.addEventListener('click', event => {
+			if (!reminderSettingsPopover?.hidden && !event.target.closest('.reminder-header-controls')) {
+				setReminderSettingsOpen(false);
+			}
+		});
+		document.addEventListener('keydown', event => {
+			if (event.key === 'Escape' && reminderSettingsButton?.getAttribute('aria-expanded') === 'true') {
+				setReminderSettingsOpen(false);
+				reminderSettingsButton.focus();
+			}
+		});
 		const storageNoticeButton = document.querySelector('#storage-notice-more');
 		const storageNoticeDetails = document.querySelector('#storage-notice-details');
 		storageNoticeButton?.addEventListener('click', () => {
