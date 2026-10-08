@@ -402,6 +402,8 @@
 
     const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
     const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
+    const DAILY_REMINDER_TIME_STORAGE_KEY = 'ucmdm-daily-reminder-time';
+    const DAILY_REMINDER_LAST_DATE_KEY = 'ucmdm-daily-reminder-last-date';
     let reminderIntervalId = null;
 
     function openDailyEntryApp() {
@@ -457,11 +459,14 @@
         const day = now.getDay();
         if (day < 1 || day > 6) return;
 
-        const currentHour = now.getHours();
-        const currentMinute = now.getMinutes();
-        const isReminderTime = currentHour === 12 && currentMinute >= 30 && currentMinute <= 31;
+        const [hour, minute] = (localStorage.getItem(DAILY_REMINDER_TIME_STORAGE_KEY) || '12:30').split(':').map(Number);
+        const currentMinutes = now.getHours() * 60 + now.getMinutes();
+        const scheduledMinutes = hour * 60 + minute;
+        const dateKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+        const isReminderTime = currentMinutes >= scheduledMinutes && currentMinutes < scheduledMinutes + 2;
 
-        if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true' && isReminderTime) {
+        if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true' && isReminderTime && localStorage.getItem(DAILY_REMINDER_LAST_DATE_KEY) !== dateKey) {
+          localStorage.setItem(DAILY_REMINDER_LAST_DATE_KEY, dateKey);
           showDailyReminderNotification();
         }
       };

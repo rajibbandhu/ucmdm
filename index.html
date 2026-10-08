@@ -70,8 +70,10 @@
 		body { margin:0; background:var(--background); color:var(--ink); font:16px/1.5 Georgia, 'Times New Roman', serif; }
 		.page { display:flex; min-height:100vh; flex-direction:column; }
 		header { padding:24px clamp(22px, 6vw, 88px); background:var(--navy); color:#fff; }
+		.header-inner { display:flex; align-items:center; justify-content:space-between; gap:22px; }
 		.brand { margin:0; font:700 clamp(24px, 4vw, 38px)/1.1 Georgia, 'Times New Roman', serif; letter-spacing:.2px; }
 		.brand a { color:inherit; text-decoration:none; }
+		.reminder-header-controls { display:flex; align-items:center; gap:12px; }
 		main { display:grid; flex:1; width:min(1050px, calc(100% - 36px)); grid-template-columns:1.15fr .85fr; align-items:center; gap:clamp(28px, 7vw, 90px); margin:0 auto; padding:clamp(46px, 10vh, 110px) 0; }
 		.intro { max-width:650px; }
 		.eyebrow { margin:0 0 14px; color:var(--blue); font:700 12px/1.2 Arial, sans-serif; letter-spacing:1.5px; text-transform:uppercase; }
@@ -120,21 +122,27 @@
 		.storage-topic strong { color:var(--navy); }
 		.storage-notice-more { margin-top:12px; padding:0; border:0; background:transparent; color:var(--blue); cursor:pointer; font:700 13px Arial, sans-serif; text-decoration:underline; text-underline-offset:2px; }
 		.storage-notice-more:focus-visible { border-radius:2px; outline:2px solid var(--blue); outline-offset:3px; }
-		.reminder-setting { display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px 16px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); font:13px/1.4 Arial, sans-serif; }
+		.reminder-setting { display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:44px; padding:8px 12px; border:1px solid #ffffff40; border-radius:8px; background:#ffffff12; color:#fff; font:13px/1.4 Arial, sans-serif; cursor:pointer; }
 		.reminder-setting-copy { display:flex; flex-direction:column; gap:3px; }
-		.reminder-setting-copy strong { color:var(--navy); }
-		.reminder-setting-copy span { color:var(--muted); font-size:12px; }
-		.reminder-setting input { position:relative; flex:0 0 auto; appearance:none; width:40px; height:22px; margin:0; border:1px solid #8998aa; border-radius:999px; background:#d9e1ea; cursor:pointer; transition:background .15s, border-color .15s; }
+		.reminder-setting-copy strong { color:#fff; }
+		.reminder-setting-copy span { color:#dbeafa; font-size:11px; }
+		.reminder-setting input { position:relative; flex:0 0 auto; appearance:none; width:40px; height:22px; margin:0; border:1px solid #c9dcf3; border-radius:999px; background:#ffffff30; cursor:pointer; transition:background .15s, border-color .15s; }
 		.reminder-setting input::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
-		.reminder-setting input:checked { border-color:var(--blue); background:var(--blue); }
+		.reminder-setting input:checked { border-color:#8fe9f5; background:#2d76c3; }
 		.reminder-setting input:checked::after { transform:translateX(18px); }
-		.reminder-setting input:focus-visible { outline:2px solid var(--blue); outline-offset:3px; }
+		.reminder-setting input:focus-visible { outline:2px solid #8fe9f5; outline-offset:3px; }
+		.reminder-time-setting { display:flex; align-items:center; gap:8px; color:#dbeafa; font:700 12px Arial, sans-serif; }
+		.reminder-time-setting input { width:108px; min-height:40px; padding:6px 8px; border:1px solid #ffffff55; border-radius:6px; background:#fff; color:var(--navy); font:700 14px Arial, sans-serif; }
+		.reminder-time-setting input:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
 		footer a:hover { text-decoration:underline; }
 
 		@media (max-width:760px) {
+			.header-inner { align-items:flex-start; flex-direction:column; gap:16px; }
+			.reminder-header-controls { width:100%; flex-wrap:wrap; }
+			.reminder-setting { flex:1 1 180px; }
 			main { display:block; padding:58px 0; }
 			.intro { margin-bottom:36px; }
 			.intro p { font-size:18px; }
@@ -143,7 +151,20 @@
 </head>
 <body>
 	<div class="page">
-		<header><p class="brand"><a href="index.html">ucmdm.in</a></p></header>
+		<header>
+			<div class="header-inner">
+				<p class="brand"><a href="index.html">ucmdm.in</a></p>
+				<div class="reminder-header-controls" aria-label="Daily data entry reminder settings">
+					<label class="reminder-setting" for="daily-reminder-toggle">
+						<span class="reminder-setting-copy"><strong>Enable reminder</strong><span>Monday to Saturday</span></span>
+						<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
+					</label>
+					<label class="reminder-time-setting" for="daily-reminder-time">Time
+						<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
+					</label>
+				</div>
+			</div>
+		</header>
 		<main>
 			<section class="intro" aria-labelledby="page-title">
 				<p class="eyebrow">PM POSHAN ~ MDM</p>
@@ -174,7 +195,7 @@
 					<span class="action-detail">MonthlyDataEntry.pdf</span>
 				</a>
 				<div class="storage-notice" role="note" aria-label="Important data storage notice">
-					<strong class="storage-notice-title">Important Data Storage Notice</strong>
+					<strong class="storage-notice-title">Read the Important Notice</strong>
 					<div class="storage-topic"><strong>Where your data is stored:</strong> Your data is saved only in your browser on your device.</div>
 					<div class="storage-notice-details" id="storage-notice-details" hidden>
 						<div class="storage-topic"><strong>Privacy:</strong> ucmdm.in does not store or transmit your data to its server.</div>
@@ -186,11 +207,6 @@
 					<button class="storage-notice-more" id="storage-notice-more" type="button" aria-expanded="false" aria-controls="storage-notice-details">Read more</button>
           
 				</div>
-				<label class="reminder-setting" for="daily-reminder-toggle">
-					<span class="reminder-setting-copy"><strong>Enable reminder</strong><span>12:30 PM, Monday to Saturday</span></span>
-					<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
-				</label>
-				
 				<button class="install-app-button" id="install-app-button" type="button">
 					<span>Install app</span>
 					<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -226,7 +242,10 @@
 		const UPI_PAYMENT_URL = 'upi://pay?pa=INR';
 		const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
 		const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
+		const DAILY_REMINDER_TIME_STORAGE_KEY = 'ucmdm-daily-reminder-time';
+		const DAILY_REMINDER_LAST_DATE_KEY = 'ucmdm-daily-reminder-last-date';
 		const reminderToggle = document.querySelector('#daily-reminder-toggle');
+		const reminderTimeInput = document.querySelector('#daily-reminder-time');
 		let reminderIntervalId = null;
 		const storageNoticeButton = document.querySelector('#storage-notice-more');
 		const storageNoticeDetails = document.querySelector('#storage-notice-details');
@@ -238,6 +257,7 @@
 		});
 		const syncReminderToggle = () => {
 			if (reminderToggle) reminderToggle.checked = localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true';
+			if (reminderTimeInput) reminderTimeInput.value = localStorage.getItem(DAILY_REMINDER_TIME_STORAGE_KEY) || '12:30';
 		};
 		const openDailyEntryApp = () => {
 			window.location.href = 'main_ucmdm.html';
@@ -271,7 +291,12 @@
 				if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) !== 'true') return;
 				const now = new Date();
 				if (now.getDay() < 1 || now.getDay() > 6) return;
-				if (now.getHours() === 12 && now.getMinutes() >= 30 && now.getMinutes() <= 31) {
+				const [hour, minute] = (localStorage.getItem(DAILY_REMINDER_TIME_STORAGE_KEY) || '12:30').split(':').map(Number);
+				const currentMinutes = now.getHours() * 60 + now.getMinutes();
+				const scheduledMinutes = hour * 60 + minute;
+				const dateKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
+				if (currentMinutes >= scheduledMinutes && currentMinutes < scheduledMinutes + 2 && localStorage.getItem(DAILY_REMINDER_LAST_DATE_KEY) !== dateKey) {
+					localStorage.setItem(DAILY_REMINDER_LAST_DATE_KEY, dateKey);
 					showDailyReminderNotification();
 				}
 			};
@@ -296,8 +321,11 @@
 			syncReminderToggle();
 			if (enabled) scheduleDailyReminder();
 		});
+		reminderTimeInput?.addEventListener('change', () => {
+			localStorage.setItem(DAILY_REMINDER_TIME_STORAGE_KEY, reminderTimeInput.value || '12:30');
+		});
 		window.addEventListener('storage', event => {
-			if (event.key === DAILY_REMINDER_STORAGE_KEY) syncReminderToggle();
+			if (event.key === DAILY_REMINDER_STORAGE_KEY || event.key === DAILY_REMINDER_TIME_STORAGE_KEY) syncReminderToggle();
 		});
 		syncReminderToggle();
 		if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true') scheduleDailyReminder();
