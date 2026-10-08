@@ -61,11 +61,6 @@
     .download-pdf-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #7fd0a0; border-radius:6px; background:#1f8f56; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
     .download-pdf-button:hover:not(:disabled) { background:#166b40; }
     .download-pdf-button:disabled { background:#7fae93; border-color:#a9d6bd; cursor:not-allowed; }
-    .export-excel-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #1f8f56; border-radius:6px; background:#1f8f56; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
-    .export-excel-button:hover:not(:disabled) { background:#166b40; }
-    .export-excel-button:disabled { border-color:#a9d6bd; background:#7fae93; color:#fff; cursor:not-allowed; }
-    .financial-year-label { display:block; margin:0 0 6px; color:var(--navy); font:700 13px Arial, sans-serif; }
-    .financial-year-select { display:block; width:100%; margin:0 0 12px; padding:9px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font:14px Arial, sans-serif; }
     .form-actions { margin-top:48px; padding-top:18px; border-top:1px solid var(--line); }
     .table-actions { margin:-4px 0 16px; }
     .cook-table-actions { display:flex; justify-content:flex-start; gap:8px; margin:0; }
@@ -275,9 +270,6 @@
     <div class="form-actions">
       <button class="print-button" type="button" onclick="printForm()">Print</button>
       <button class="download-pdf-button" type="button" onclick="downloadPDF()">Download PDF</button>
-      <label class="financial-year-label" for="report-financial-year">Financial year</label>
-      <select class="financial-year-select" id="report-financial-year" aria-label="Select financial year for yearly report"></select>
-      <button class="export-excel-button" type="button" onclick="exportYearlyReport()">Export as Excel and PDF (Yearly report)</button>
     </div>
     </main>
     <aside class="daily-sidebar" id="daily-meal-popup" aria-labelledby="daily-meals-title">
@@ -296,7 +288,6 @@
   </div>
   <footer class="site-footer"><div>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das &middot; Golakganj, Assam, India &middot; <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a><button class="reset-storage-button" id="reset-storage-button" type="button">Reset all saved data</button></div></footer>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
   <script>
     const START_PAGE_KEY = 'ucmdm-default-page';
     const firstPageToggle = document.querySelector('#first-page-toggle');
@@ -701,7 +692,6 @@
     }
 
     const monthField = document.querySelector('input[type="month"]');
-    const financialYearField = document.querySelector('#report-financial-year');
     const udiseCodeField = document.querySelector('#udise-code');
     const schoolNameField = document.querySelector('#school-name');
     let activeMonth = '';
@@ -766,7 +756,7 @@
     }
 
     function getFormFields() {
-      return [...document.querySelectorAll('input, select, textarea')].filter(field => field.type !== 'hidden' && field !== financialYearField);
+      return [...document.querySelectorAll('input, select, textarea')].filter(field => field.type !== 'hidden');
     }
 
     function getFieldKey(field, index) {
@@ -979,8 +969,6 @@
         handleMonthChange(monthField.value);
       }
     }
-    populateFinancialYearOptions();
-
     restoreUdiseCode();
     restoreSchoolName();
     restoreSchoolType();
@@ -1048,310 +1036,6 @@
       const [year, month] = value.split('-').map(Number);
       const monthName = new Date(Date.UTC(year, month - 1, 1)).toLocaleString('en', { month: 'long', timeZone: 'UTC' });
       return `${monthName}-${year}.pdf`;
-    }
-
-    function getFinancialYearStart(monthValue) {
-      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthValue)) return null;
-      const [year, month] = monthValue.split('-').map(Number);
-      return month >= 4 ? year : year - 1;
-    }
-
-    function populateFinancialYearOptions() {
-      if (!financialYearField) return;
-      const storedMonths = readStorage(STORAGE_KEY, {});
-      const now = new Date();
-      const currentFinancialYearStart = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
-      const financialYearStarts = Object.keys(storedMonths && typeof storedMonths === 'object' ? storedMonths : {})
-        .map(getFinancialYearStart)
-        .filter(year => year !== null);
-      const firstFinancialYear = Math.min(currentFinancialYearStart, ...financialYearStarts);
-      const lastFinancialYear = Math.max(currentFinancialYearStart, ...financialYearStarts);
-
-      financialYearField.replaceChildren();
-      for (let year = lastFinancialYear; year >= firstFinancialYear; year -= 1) {
-        const option = document.createElement('option');
-        option.value = String(year);
-        option.textContent = `FY ${year}-${String((year + 1) % 100).padStart(2, '0')}`;
-        financialYearField.append(option);
-      }
-      financialYearField.value = String(currentFinancialYearStart);
-    }
-
-    async function exportYearlyReport() {
-      if (!financialYearField?.value) {
-        alert('Select a financial year for the report.');
-        return;
-      }
-      saveCurrentMonthData();
-
-      const exportButton = document.querySelector('.export-excel-button');
-      if (typeof XLSX === 'undefined') {
-        alert('The Excel exporter could not load. Please check your internet connection and try again.');
-        return;
-      }
-
-      const financialYearStart = Number(financialYearField.value);
-      const financialYearEnd = financialYearStart + 1;
-      const reportFinancialYear = `FY ${financialYearStart}-${String(financialYearEnd % 100).padStart(2, '0')}`;
-      const storedMonths = readStorage(STORAGE_KEY, {});
-      const monthsInYear = Object.entries(storedMonths)
-        .filter(([month, data]) => getFinancialYearStart(month) === financialYearStart && data && typeof data === 'object')
-        .sort(([firstMonth], [secondMonth]) => firstMonth.localeCompare(secondMonth));
-      const recordsByMonth = new Map(monthsInYear);
-      const summaryData = [['Month', 'Data saved', 'Daily rows', 'Bal Vatika meals', 'Primary meals', 'Upper Primary meals', 'Total meals']];
-      const annualTotals = [0, 0, 0];
-      const parseMealCount = value => Number(String(value ?? '').replace(/\D/g, '').slice(0, 5)) || 0;
-      let workbook;
-      try {
-        const templateResponse = await fetch('./MDM_YEARKY_REPORT.xlsx', { cache: 'no-cache' });
-        if (!templateResponse.ok) throw new Error(`Template request failed with status ${templateResponse.status}.`);
-        workbook = XLSX.read(await templateResponse.arrayBuffer(), { type: 'array', cellStyles: true });
-      } catch (error) {
-        console.error('Excel template could not be loaded', error);
-        alert('The yearly report template could not be loaded. Check your connection and try again.');
-        return;
-      }
-
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
-      if (!sheet) {
-        alert('The yearly report template does not contain a worksheet.');
-        return;
-      }
-      const setTemplateCell = (address, value) => {
-        if (value === null || value === undefined || value === '') return;
-        const cell = sheet[address] || {};
-        cell.v = value;
-        cell.t = typeof value === 'number' ? 'n' : 's';
-        sheet[address] = cell;
-      };
-      const currentFields = getFormFields();
-      const currentCookRowCount = cookRows.querySelectorAll('tr').length;
-      const getSavedFieldValue = (monthRecord, field) => {
-        if (!monthRecord || !field) return '';
-        const fieldIndex = currentFields.indexOf(field);
-        if (fieldIndex < 0) return '';
-        const fieldKey = getFieldKey(field, fieldIndex);
-        const savedCookRowCount = Math.max(4, ...Object.keys(monthRecord)
-          .map(key => key.match(/^Cook (\d+) name$/)?.[1])
-          .filter(Boolean)
-          .map(Number));
-        const followsCookRows = Boolean(cookRows.compareDocumentPosition(field) & Node.DOCUMENT_POSITION_FOLLOWING);
-        const savedFieldIndex = fieldIndex + (followsCookRows ? (savedCookRowCount - currentCookRowCount) * 5 : 0);
-        const legacyFieldKey = `field-${savedFieldIndex}`;
-        const stored = fieldKey.startsWith('field-')
-          ? monthRecord[legacyFieldKey] ?? monthRecord[fieldKey]
-          : monthRecord[fieldKey] ?? monthRecord[legacyFieldKey];
-        return stored && typeof stored === 'object' ? stored.value ?? '' : stored ?? '';
-      };
-      const getSavedNumber = (monthRecord, field) => {
-        const value = getSavedFieldValue(monthRecord, field);
-        if (value === '') return null;
-        const number = Number(value);
-        return Number.isFinite(number) ? number : null;
-      };
-      const setMetricCells = (row, metrics) => {
-        setTemplateCell(`G${row}`, metrics.opening);
-        setTemplateCell(`H${row}`, metrics.received);
-        setTemplateCell(`I${row}`, metrics.expenditure);
-        setTemplateCell(`J${row}`, metrics.closing);
-      };
-      const createAnnualMetrics = () => ({ opening: null, received: 0, expenditure: 0, closing: null, hasReceived: false, hasExpenditure: false });
-      const fundAnnual = Array.from({ length: 3 }, createAnnualMetrics);
-      const grainAnnual = Array.from({ length: 3 }, createAnnualMetrics);
-      const fundRows = [...document.querySelectorAll('.fund-table tr')].filter(row => row.querySelector('.fund-opening')).slice(0, 3);
-      const grainRows = [...document.querySelectorAll('#grain-rows tr')];
-      const categoryNames = ['Bal Vatika', 'Primary', 'Upper Primary'];
-      const persistentValues = readStorage(PERSISTENT_FIELDS_STORAGE_KEY, {});
-      const savedCategories = readStorage(SCHOOL_CATEGORY_STORAGE_KEY, []);
-      const enrollmentValue = Number(persistentValues.enrolment);
-      const enrollmentCategoryIndex = savedCategories[0] && !savedCategories[1] && !savedCategories[2]
-        ? 1
-        : savedCategories[1] && !savedCategories[0] && !savedCategories[2]
-          ? 2
-          : -1;
-      const sumMetrics = (rows, selector, monthRecord) => {
-        const values = rows.map(row => getSavedNumber(monthRecord, row.querySelector(selector))).filter(value => value !== null);
-        return values.length ? values.reduce((sum, value) => sum + value, 0) : null;
-      };
-      const addAnnualMetrics = (annual, monthly) => {
-        if (annual.opening === null && monthly.opening !== null) annual.opening = monthly.opening;
-        if (monthly.received !== null) {
-          annual.received += monthly.received;
-          annual.hasReceived = true;
-        }
-        if (monthly.expenditure !== null) {
-          annual.expenditure += monthly.expenditure;
-          annual.hasExpenditure = true;
-        }
-        if (monthly.closing !== null) annual.closing = monthly.closing;
-      };
-      const schoolName = schoolNameField?.value || localStorage.getItem(SCHOOL_NAME_STORAGE_KEY) || '';
-      const udiseCode = udiseCodeField?.value || localStorage.getItem(UDISE_STORAGE_KEY) || '';
-      const address = [persistentValues['state-or-ut'], persistentValues.district, persistentValues['block-or-np'], persistentValues['village-or-ward']]
-        .filter(Boolean)
-        .join(', ');
-      const templateTitle = String(sheet.A1?.v || '');
-      setTemplateCell('A1', templateTitle.replace('@YEAR', String(financialYearStart)).replace('@YEAR', String(financialYearEnd)));
-      setTemplateCell('B2', schoolName);
-      setTemplateCell('B3', address);
-      setTemplateCell('B4', udiseCode);
-      setTemplateCell('B5', reportFinancialYear);
-
-      for (let monthOffset = 0; monthOffset < 12; monthOffset += 1) {
-        const monthDate = new Date(Date.UTC(financialYearStart, 3 + monthOffset, 1));
-        const month = `${monthDate.getUTCFullYear()}-${String(monthDate.getUTCMonth() + 1).padStart(2, '0')}`;
-        const monthName = monthDate.toLocaleString('en', { month: 'long', year: 'numeric', timeZone: 'UTC' });
-        const monthRecord = recordsByMonth.get(month);
-        const mealRows = Array.isArray(monthRecord?.__dailyMeals) ? monthRecord.__dailyMeals : [];
-        const monthTotals = [0, 0, 0];
-        const monthBaseRow = 8 + monthOffset * 7;
-        setTemplateCell(`B${monthBaseRow}`, `${monthDate.toLocaleString('en', { month: 'long', timeZone: 'UTC' }).toUpperCase()} / ${monthDate.getUTCFullYear()}`);
-
-        mealRows.forEach(row => {
-          if (row.holiday === true) return;
-          const values = Array.isArray(row.values) ? row.values.map(parseMealCount) : [0, 0, 0];
-          values.forEach((value, index) => {
-            monthTotals[index] += value;
-            annualTotals[index] += value;
-          });
-        });
-        summaryData.push([monthName, monthRecord ? 'Yes' : 'No', mealRows.length, ...monthTotals, monthTotals.reduce((sum, value) => sum + value, 0)]);
-
-        categoryNames.forEach((categoryName, categoryIndex) => {
-          const reportRow = monthBaseRow + categoryIndex * 2;
-          if (monthRecord) {
-            setTemplateCell(`E${reportRow}`, monthTotals[categoryIndex]);
-            if (categoryIndex === enrollmentCategoryIndex && Number.isFinite(enrollmentValue)) {
-              setTemplateCell(`D${reportRow}`, enrollmentValue);
-            }
-          }
-
-          const fundRow = fundRows[categoryIndex];
-          const fundMetrics = {
-            opening: getSavedNumber(monthRecord, fundRow?.querySelector('.fund-opening')),
-            received: getSavedNumber(monthRecord, fundRow?.querySelector('.fund-received')),
-            expenditure: getSavedNumber(monthRecord, fundRow?.querySelector('.fund-expenditure')),
-            closing: getSavedNumber(monthRecord, fundRow?.querySelector('.fund-closing'))
-          };
-          setMetricCells(reportRow, fundMetrics);
-
-          const categoryGrainRows = grainRows.filter(row => row.dataset.grainCategory === categoryName);
-          const grainMetrics = {
-            opening: sumMetrics(categoryGrainRows, '.grain-opening', monthRecord),
-            received: sumMetrics(categoryGrainRows, '.grain-received', monthRecord),
-            expenditure: sumMetrics(categoryGrainRows, '.grain-consumption', monthRecord),
-            closing: sumMetrics(categoryGrainRows, '.grain-closing', monthRecord)
-          };
-          setMetricCells(reportRow + 1, grainMetrics);
-          addAnnualMetrics(fundAnnual[categoryIndex], fundMetrics);
-          addAnnualMetrics(grainAnnual[categoryIndex], grainMetrics);
-        });
-      }
-
-      summaryData.push(['Year Total', '', '', ...annualTotals, annualTotals.reduce((sum, value) => sum + value, 0)]);
-      for (let categoryIndex = 0; categoryIndex < 3; categoryIndex += 1) {
-        const fundTotalRow = 93 + categoryIndex * 2;
-        const grainTotalRow = fundTotalRow + 1;
-        const fundMetrics = fundAnnual[categoryIndex];
-        const grainMetrics = grainAnnual[categoryIndex];
-        setTemplateCell(`E${fundTotalRow}`, annualTotals[categoryIndex]);
-        setMetricCells(fundTotalRow, {
-          opening: fundMetrics.opening,
-          received: fundMetrics.hasReceived ? fundMetrics.received : null,
-          expenditure: fundMetrics.hasExpenditure ? fundMetrics.expenditure : null,
-          closing: fundMetrics.closing
-        });
-        setMetricCells(grainTotalRow, {
-          opening: grainMetrics.opening,
-          received: grainMetrics.hasReceived ? grainMetrics.received : null,
-          expenditure: grainMetrics.hasExpenditure ? grainMetrics.expenditure : null,
-          closing: grainMetrics.closing
-        });
-      }
-      const totalFundReceived = fundAnnual.reduce((sum, metrics) => sum + metrics.received, 0);
-      const totalFundExpenditure = fundAnnual.reduce((sum, metrics) => sum + metrics.expenditure, 0);
-      setTemplateCell('E92', annualTotals.reduce((sum, value) => sum + value, 0));
-      setTemplateCell('H92', totalFundReceived);
-      setTemplateCell('I92', totalFundExpenditure);
-      setTemplateCell('J92', totalFundReceived - totalFundExpenditure);
-
-      try {
-        XLSX.writeFile(workbook, 'MDM_YEARLY_REPORT.xlsx');
-      } catch (error) {
-        console.error('Excel export failed', error);
-        alert('Could not generate the Excel yearly report.');
-        return;
-      }
-
-      if (typeof html2pdf === 'undefined') {
-        alert('The Excel report was exported, but the PDF generator could not load.');
-        return;
-      }
-
-      const report = document.createElement('section');
-      report.id = 'yearly-report-export';
-      Object.assign(report.style, {
-        position: 'fixed', left: '0', top: '0', zIndex: '-1', opacity: '0', pointerEvents: 'none',
-        width: '1100px', padding: '28px', boxSizing: 'border-box', background: '#fff', color: '#111',
-        font: '14px Arial, sans-serif'
-      });
-      const title = document.createElement('h1');
-      title.textContent = `MDM Yearly Report ${reportFinancialYear}`;
-      title.style.cssText = 'margin:0 0 8px;font-size:22px';
-      report.append(title);
-      const description = document.createElement('p');
-      description.textContent = `Monthly meal totals for the financial year April ${financialYearStart} to March ${financialYearEnd}. Months without saved data are marked No.`;
-      description.style.cssText = 'margin:0 0 18px';
-      report.append(description);
-      const table = document.createElement('table');
-      table.style.cssText = 'width:100%;border-collapse:collapse;table-layout:fixed';
-      summaryData.forEach((row, rowIndex) => {
-        const tr = document.createElement('tr');
-        row.forEach(value => {
-          const cell = document.createElement(rowIndex === 0 ? 'th' : 'td');
-          cell.textContent = String(value ?? '');
-          cell.style.cssText = 'border:1px solid #555;padding:8px;text-align:left;overflow-wrap:anywhere';
-          if (rowIndex === 0) cell.style.background = '#e8eef3';
-          if (rowIndex === summaryData.length - 1) cell.style.fontWeight = '700';
-          tr.append(cell);
-        });
-        table.append(tr);
-      });
-      report.append(table);
-      document.body.append(report);
-
-      if (exportButton) {
-        exportButton.disabled = true;
-        exportButton.textContent = 'Generating yearly reports…';
-      }
-      const restoreButton = () => {
-        report.remove();
-        if (exportButton) {
-          exportButton.disabled = false;
-          exportButton.textContent = 'Export as Excel and PDF (Yearly report)';
-        }
-      };
-      html2pdf().set({
-        margin: 8,
-        filename: 'MDM_YEARLY_REPORT.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-          scale: 2,
-          windowWidth: 1100,
-          onclone: clonedDoc => {
-            const clonedReport = clonedDoc.querySelector('#yearly-report-export');
-            if (clonedReport) Object.assign(clonedReport.style, { position: 'static', left: 'auto', top: 'auto', zIndex: 'auto', opacity: '1' });
-          }
-        },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
-        pagebreak: { mode: ['css', 'legacy'] }
-      }).from(report).save()
-        .then(restoreButton)
-        .catch(error => {
-          console.error('Yearly PDF export failed', error);
-          alert('The Excel report was exported, but the PDF report could not be generated.');
-          restoreButton();
-        });
     }
 
     const PDF_EXPORT_STYLES = `
