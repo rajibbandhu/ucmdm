@@ -61,9 +61,11 @@
     .download-pdf-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #7fd0a0; border-radius:6px; background:#1f8f56; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
     .download-pdf-button:hover:not(:disabled) { background:#166b40; }
     .download-pdf-button:disabled { background:#7fae93; border-color:#a9d6bd; cursor:not-allowed; }
-    .export-excel-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #8998aa; border-radius:6px; background:#9aa8b8; color:#fff; cursor:not-allowed; font:700 13px Arial, sans-serif; }
-    .export-excel-button:hover:not(:disabled) { background:#effaf1; }
-    .export-excel-button:disabled { border-color:#8998aa; color:#fff; cursor:not-allowed; }
+    .export-excel-button { display:block; width:100%; margin:0 0 18px; padding:9px 14px; border:1px solid #1f8f56; border-radius:6px; background:#1f8f56; color:#fff; cursor:pointer; font:700 13px Arial, sans-serif; }
+    .export-excel-button:hover:not(:disabled) { background:#166b40; }
+    .export-excel-button:disabled { border-color:#a9d6bd; background:#7fae93; color:#fff; cursor:not-allowed; }
+    .financial-year-label { display:block; margin:0 0 6px; color:var(--navy); font:700 13px Arial, sans-serif; }
+    .financial-year-select { display:block; width:100%; margin:0 0 12px; padding:9px 10px; border:1px solid var(--line); border-radius:6px; background:#fff; color:var(--ink); font:14px Arial, sans-serif; }
     .form-actions { margin-top:48px; padding-top:18px; border-top:1px solid var(--line); }
     .table-actions { margin:-4px 0 16px; }
     .cook-table-actions { display:flex; justify-content:flex-start; gap:8px; margin:0; }
@@ -229,7 +231,7 @@
       <tr><th>Component</th><th>Opening Balance</th><th>Received during the Month</th><th>Expenditure during the Month</th><th>Closing Balance</th></tr>
       <tr><th>Cooking Cost - Bal Vatika</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Bal Vatika cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
       <tr><th>Cooking Cost - Primary</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Primary cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
-      <tr><th>Cooking Cost - Uper Primary</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Upper Primary cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
+      <tr><th>Cooking Cost - Upper Primary</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure cooking-cost-expenditure" type="number" min="0" readonly aria-label="Upper Primary cooking cost expenditure"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
       <tr><th>Cook Cum Helper</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure" type="number" min="0"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
       <tr><th>School Expenses : MME Expenses</th><td><input class="fund-opening" type="number" min="0" data-default-value="0"></td><td><input class="fund-received" type="number" min="0" value="0" data-default-value="0"></td><td><input class="fund-expenditure" type="number" min="0"></td><td><input class="fund-closing" type="number" min="0" readonly></td></tr>
       <tr><td colspan="5" class="balance-row">Whether the Sum of above Closing Balance matches with Bank Account Closing Balance <span class="yes-no"><label>Yes<input type="checkbox" name="balance-yes"></label><label>No<input type="checkbox" name="balance-no"></label></span></td></tr>
@@ -273,7 +275,9 @@
     <div class="form-actions">
       <button class="print-button" type="button" onclick="printForm()">Print</button>
       <button class="download-pdf-button" type="button" onclick="downloadPDF()">Download PDF</button>
-      <button class="export-excel-button" type="button" disabled>Export all as Excel (Coming soon)</button>
+      <label class="financial-year-label" for="report-financial-year">Financial year</label>
+      <select class="financial-year-select" id="report-financial-year" aria-label="Select financial year for yearly report"></select>
+      <button class="export-excel-button" type="button" onclick="exportYearlyReport()">Export as Excel and PDF (Yearly report)</button>
     </div>
     </main>
     <aside class="daily-sidebar" id="daily-meal-popup" aria-labelledby="daily-meals-title">
@@ -697,6 +701,7 @@
     }
 
     const monthField = document.querySelector('input[type="month"]');
+    const financialYearField = document.querySelector('#report-financial-year');
     const udiseCodeField = document.querySelector('#udise-code');
     const schoolNameField = document.querySelector('#school-name');
     let activeMonth = '';
@@ -974,6 +979,7 @@
         handleMonthChange(monthField.value);
       }
     }
+    populateFinancialYearOptions();
 
     restoreUdiseCode();
     restoreSchoolName();
@@ -1044,46 +1050,177 @@
       return `${monthName}-${year}.pdf`;
     }
 
-    function exportExcel() {
+    function getFinancialYearStart(monthValue) {
+      if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthValue)) return null;
+      const [year, month] = monthValue.split('-').map(Number);
+      return month >= 4 ? year : year - 1;
+    }
+
+    function populateFinancialYearOptions() {
+      if (!financialYearField) return;
+      const storedMonths = readStorage(STORAGE_KEY, {});
+      const now = new Date();
+      const currentFinancialYearStart = now.getMonth() >= 3 ? now.getFullYear() : now.getFullYear() - 1;
+      const financialYearStarts = Object.keys(storedMonths && typeof storedMonths === 'object' ? storedMonths : {})
+        .map(getFinancialYearStart)
+        .filter(year => year !== null);
+      const firstFinancialYear = Math.min(currentFinancialYearStart, ...financialYearStarts);
+      const lastFinancialYear = Math.max(currentFinancialYearStart, ...financialYearStarts);
+
+      financialYearField.replaceChildren();
+      for (let year = lastFinancialYear; year >= firstFinancialYear; year -= 1) {
+        const option = document.createElement('option');
+        option.value = String(year);
+        option.textContent = `FY ${year}-${String((year + 1) % 100).padStart(2, '0')}`;
+        financialYearField.append(option);
+      }
+      financialYearField.value = String(currentFinancialYearStart);
+    }
+
+    function exportYearlyReport() {
+      if (!financialYearField?.value) {
+        alert('Select a financial year for the report.');
+        return;
+      }
       saveCurrentMonthData();
+
       const exportButton = document.querySelector('.export-excel-button');
       if (typeof XLSX === 'undefined') {
         alert('The Excel exporter could not load. Please check your internet connection and try again.');
         return;
       }
 
-      if (exportButton) {
-        exportButton.disabled = true;
-        exportButton.textContent = 'Exporting…';
-      }
+      const financialYearStart = Number(financialYearField.value);
+      const financialYearEnd = financialYearStart + 1;
+      const reportFinancialYear = `FY ${financialYearStart}-${String(financialYearEnd % 100).padStart(2, '0')}`;
+      const storedMonths = readStorage(STORAGE_KEY, {});
+      const monthsInYear = Object.entries(storedMonths)
+        .filter(([month, data]) => getFinancialYearStart(month) === financialYearStart && data && typeof data === 'object')
+        .sort(([firstMonth], [secondMonth]) => firstMonth.localeCompare(secondMonth));
+      const recordsByMonth = new Map(monthsInYear);
+      const summaryData = [['Month', 'Data saved', 'Daily rows', 'Bal Vatika meals', 'Primary meals', 'Upper Primary meals', 'Total meals']];
+      const formData = [['Month', 'Field', 'Value']];
+      const dailyData = [['Month', 'Date', 'Holiday', 'Bal Vatika', 'Primary', 'Upper Primary', 'Total']];
+      const annualTotals = [0, 0, 0];
+      const parseMealCount = value => Number(String(value ?? '').replace(/\D/g, '').slice(0, 5)) || 0;
 
-      try {
-        const formData = [['Field', 'Value']];
-        getFormFields().forEach((field, index) => {
-          const label = field.getAttribute('aria-label') || field.id || field.name || `Field ${index + 1}`;
-          const value = field.type === 'checkbox' || field.type === 'radio'
-            ? (field.checked ? 'Yes' : 'No')
-            : field.value;
-          formData.push([label, value]);
+      for (let monthOffset = 0; monthOffset < 12; monthOffset += 1) {
+        const monthDate = new Date(Date.UTC(financialYearStart, 3 + monthOffset, 1));
+        const month = `${monthDate.getUTCFullYear()}-${String(monthDate.getUTCMonth() + 1).padStart(2, '0')}`;
+        const monthName = monthDate.toLocaleString('en', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+        const monthRecord = recordsByMonth.get(month);
+        const mealRows = Array.isArray(monthRecord?.__dailyMeals) ? monthRecord.__dailyMeals : [];
+        const monthTotals = [0, 0, 0];
+
+        mealRows.forEach(row => {
+          const values = Array.isArray(row.values) ? row.values.map(parseMealCount) : [0, 0, 0];
+          const isHoliday = row.holiday === true;
+          dailyData.push([month, row.date || '', isHoliday ? 'Yes' : 'No', ...values, values.reduce((sum, value) => sum + value, 0)]);
+          if (!isHoliday) values.forEach((value, index) => {
+            monthTotals[index] += value;
+            annualTotals[index] += value;
+          });
         });
 
-        const dailyData = [['Date', 'Bal Vatika', 'Primary', 'Upper Primary', 'Total']];
-        dailyMealRows.querySelectorAll('tr[data-date]').forEach(row => {
-          const values = [...row.querySelectorAll('.daily-meal-value')].map(input => input.value);
-          dailyData.push([row.dataset.date, ...values, row.querySelector('.daily-row-total')?.value || '']);
-        });
+        summaryData.push([monthName, monthRecord ? 'Yes' : 'No', mealRows.length, ...monthTotals, monthTotals.reduce((sum, value) => sum + value, 0)]);
 
-        const workbook = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(formData), 'Form Data');
-        XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(dailyData), 'Daily Meal Data');
-        const filename = getSelectedMonthFilename().replace(/\.pdf$/i, '.xlsx');
-        XLSX.writeFile(workbook, filename);
-      } finally {
-        if (exportButton) {
-          exportButton.disabled = false;
-          exportButton.textContent = 'Export all as Excel';
+        if (monthRecord) {
+          Object.entries(monthRecord).forEach(([field, storedValue]) => {
+            if (field === '__dailyMeals') return;
+            let value = storedValue;
+            if (storedValue && typeof storedValue === 'object') {
+              value = storedValue.type === 'checkbox' || storedValue.type === 'radio'
+                ? (storedValue.checked ? `Yes (${storedValue.value || 'selected'})` : 'No')
+                : storedValue.value ?? '';
+            }
+            formData.push([month, field, value ?? '']);
+          });
         }
       }
+
+      summaryData.push(['Year Total', '', '', ...annualTotals, annualTotals.reduce((sum, value) => sum + value, 0)]);
+      const workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(summaryData), 'Yearly Summary');
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(formData), 'Form Data');
+      XLSX.utils.book_append_sheet(workbook, XLSX.utils.aoa_to_sheet(dailyData), 'Daily Meals');
+
+      try {
+        XLSX.writeFile(workbook, 'MDM_YEARLY_REPORT.xlsx');
+      } catch (error) {
+        console.error('Excel export failed', error);
+        alert('Could not generate the Excel yearly report.');
+        return;
+      }
+
+      if (typeof html2pdf === 'undefined') {
+        alert('The Excel report was exported, but the PDF generator could not load.');
+        return;
+      }
+
+      const report = document.createElement('section');
+      report.id = 'yearly-report-export';
+      Object.assign(report.style, {
+        position: 'fixed', left: '0', top: '0', zIndex: '-1', opacity: '0', pointerEvents: 'none',
+        width: '1100px', padding: '28px', boxSizing: 'border-box', background: '#fff', color: '#111',
+        font: '14px Arial, sans-serif'
+      });
+      const title = document.createElement('h1');
+      title.textContent = `MDM Yearly Report ${reportFinancialYear}`;
+      title.style.cssText = 'margin:0 0 8px;font-size:22px';
+      report.append(title);
+      const description = document.createElement('p');
+      description.textContent = `Monthly meal totals for the financial year April ${financialYearStart} to March ${financialYearEnd}. Months without saved data are marked No.`;
+      description.style.cssText = 'margin:0 0 18px';
+      report.append(description);
+      const table = document.createElement('table');
+      table.style.cssText = 'width:100%;border-collapse:collapse;table-layout:fixed';
+      summaryData.forEach((row, rowIndex) => {
+        const tr = document.createElement('tr');
+        row.forEach(value => {
+          const cell = document.createElement(rowIndex === 0 ? 'th' : 'td');
+          cell.textContent = String(value ?? '');
+          cell.style.cssText = 'border:1px solid #555;padding:8px;text-align:left;overflow-wrap:anywhere';
+          if (rowIndex === 0) cell.style.background = '#e8eef3';
+          if (rowIndex === summaryData.length - 1) cell.style.fontWeight = '700';
+          tr.append(cell);
+        });
+        table.append(tr);
+      });
+      report.append(table);
+      document.body.append(report);
+
+      if (exportButton) {
+        exportButton.disabled = true;
+        exportButton.textContent = 'Generating yearly reports…';
+      }
+      const restoreButton = () => {
+        report.remove();
+        if (exportButton) {
+          exportButton.disabled = false;
+          exportButton.textContent = 'Export as Excel and PDF (Yearly report)';
+        }
+      };
+      html2pdf().set({
+        margin: 8,
+        filename: 'MDM_YEARLY_REPORT.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+          scale: 2,
+          windowWidth: 1100,
+          onclone: clonedDoc => {
+            const clonedReport = clonedDoc.querySelector('#yearly-report-export');
+            if (clonedReport) Object.assign(clonedReport.style, { position: 'static', left: 'auto', top: 'auto', zIndex: 'auto', opacity: '1' });
+          }
+        },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' },
+        pagebreak: { mode: ['css', 'legacy'] }
+      }).from(report).save()
+        .then(restoreButton)
+        .catch(error => {
+          console.error('Yearly PDF export failed', error);
+          alert('The Excel report was exported, but the PDF report could not be generated.');
+          restoreButton();
+        });
     }
 
     const PDF_EXPORT_STYLES = `
