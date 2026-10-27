@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Image size reducer</title>
+<style>
+  :root{
+    --bg:#e9edf2; --card:#ffffff; --ink:#16212c; --muted:#5d6b7a; --line:#c9d2dc;
+    --accent:#2f3fbf; --accent-ink:#ffffff; --ok:#1d7a4d; --warn:#a45a00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
+       min-height:100vh;display:flex;justify-content:center;padding:32px 16px}
+  main{width:100%;max-width:640px}
+  h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 24px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:20px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;
+       border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
+  .btn.ghost{background:#fff;color:var(--accent)}
+  .btn.go{background:var(--ok);border-color:var(--ok);color:#fff}
+  .btn:disabled.go{background:#dfe5ec;border-color:#dfe5ec;color:#7b8794}
+  .row{display:grid;grid-template-columns:1fr auto;gap:12px}
+  #msg.done{color:var(--ok);font-weight:700}
+  #prog{display:grid;gap:6px}
+  #prog[hidden]{display:none}
+  .track{height:10px;border-radius:999px;background:#dfe5ec;overflow:hidden}
+  #bar{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .25s linear}
+  #ptext{font-size:.88rem;color:var(--muted)}
+  footer{margin-top:20px;text-align:center;font-size:.85rem;color:var(--muted)}
+  footer a{color:var(--accent)}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn:focus-visible,input:focus-visible,label.btn:focus-within{outline:3px solid #8e99ee;outline-offset:2px}
+  #drop{border:2px dashed var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;transition:border-color .15s,background .15s}
+  #drop.over{border-color:var(--accent);background:#f1f3ff}
+  #drop small{color:var(--muted);text-align:center}
+  #file{position:absolute;opacity:0;width:1px;height:1px}
+  .size{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:14px;padding:8px 16px;min-height:52px}
+  .size label{font-weight:600;white-space:nowrap}
+  .size input{flex:1;min-width:0;border:0;border-bottom:2px solid var(--ink);background:transparent;font:inherit;font-size:1.1rem;padding:4px 2px;text-align:right}
+  .size span{color:var(--muted);font-weight:600}
+  #msg{margin:-8px 0 0;font-size:.9rem;color:var(--warn);min-height:1.3em}
+  #list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+  #list li{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
+  #list img{width:56px;height:56px;object-fit:cover;border-radius:8px;background:#dfe5ec}
+  .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .meta{font-size:.88rem;color:var(--muted)}
+  .meta b{color:var(--ok)}
+  .meta .miss{color:var(--warn)}
+  #list a{color:var(--accent);font-weight:600;font-size:.9rem}
+  .busy{color:var(--muted);font-size:.9rem}
+  @media (max-width:480px){#list li{grid-template-columns:48px 1fr}#list li a{grid-column:2}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<main>
+  <h1>Image size reducer</h1>
+  <p class="sub">Choose images, set the size you want in KB, press Reduce, then download. Everything runs in your browser; nothing is uploaded.</p>
+
+  <section class="panel">
+    <div id="drop">
+      <label class="btn" for="file" tabindex="0" id="pick">Upload image / images</label>
+      <input id="file" type="file" accept="image/*" multiple>
+      <small>or drop images here (JPG, PNG, WebP)</small>
+    </div>
+
+    <div class="size">
+      <label for="kb">Reduce image size :</label>
+      <input id="kb" type="number" min="1" step="1" value="100" inputmode="numeric">
+      <span>kb</span>
+    </div>
+    <p id="msg" role="status"></p>
+
+    <div class="row">
+      <button class="btn" id="reduce" disabled>Reduce</button>
+      <button class="btn ghost" id="reset" disabled>Reset</button>
+    </div>
+    <div id="prog" hidden>
+      <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div>
+      <div id="ptext" aria-live="polite"></div>
+    </div>
+
+    <button class="btn go" id="dl" disabled>Download reduced image</button>
+
+    <ul id="list" aria-live="polite"></ul>
+
+  </section>
+  <footer>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das · Golakganj, Assam, India · <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a></footer>
+</main>
+
+<script>
+const $ = s => document.querySelector(s);
+const fileIn = $('#file'), kbIn = $('#kb'), list = $('#list'), dl = $('#dl'), drop = $('#drop'), msg = $('#msg');
+let files = [], results = [], run = 0, timer;
+
+const fmt = b => b >= 1048576 ? (b/1048576).toFixed(2)+' MB' : (b/1024).toFixed(1)+' KB';
+const toBlob = (c, q) => new Promise(r => c.toBlob(r, 'image/jpeg', q));
+const baseName = n => n.replace(/\.[^.]+$/, '');
+
+/* Compress one image to <= target bytes: search JPEG quality, shrink dimensions if quality alone is not enough. */
+async function shrink(bmp, target, tick = () => {}){
+  let w = bmp.width, h = bmp.height;
+  const tb = async (c, q) => { const r = await toBlob(c, q); tick(); return r; };
+  for (let i = 0; i < 25; i++){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(bmp,0,0,w,h);
+    let lo = 0.05, hi = 0.95;
+    let b = await tb(c, hi);
+    if (b.size <= target) return {blob:b, w, h};
+    b = await tb(c, lo);
+    if (b.size <= target){
+      let best = b;
+      for (let k = 0; k < 7; k++){
+        const mid = (lo + hi) / 2, t = await tb(c, mid);
+        if (t.size <= target){ best = t; lo = mid; } else hi = mid;
+      }
+      return {blob:best, w, h};
+    }
+    if (Math.min(w,h) <= 16) return {blob:b, w, h, miss:true};
+    const s = Math.max(0.5, Math.min(0.9, Math.sqrt(target / b.size) * 1.05));
+    w = Math.max(16, Math.round(w*s)); h = Math.max(16, Math.round(h*s));
+  }
+}
+
+const reduceBtn = $('#reduce'), resetBtn = $('#reset'), prog = $('#prog'), bar = $('#bar'), ptext = $('#ptext');
+const fmtT = s => s < 1 ? 'under 1 s' : s < 60 ? Math.ceil(s) + ' s' : Math.floor(s/60) + ' min ' + Math.round(s % 60) + ' s';
+
+/* Show the selected files as "ready" and clear any earlier results. */
+function showPending(){
+  run++;
+  results.forEach(r => URL.revokeObjectURL(r.url));
+  results = []; list.innerHTML = ''; dl.disabled = true; msg.textContent = ''; msg.className = ''; prog.hidden = true; bar.style.width = '0';
+  dl.textContent = 'Download reduced image';
+  for (const f of files){
+    const li = document.createElement('li');
+    li.innerHTML = '<span></span><div><div class="name"></div><div class="meta"></div></div>';
+    li.querySelector('.name').textContent = f.name;
+    li.querySelector('.meta').textContent = fmt(f.size) + ' · ready to reduce';
+    list.appendChild(li);
+  }
+  reduceBtn.disabled = !files.length; resetBtn.disabled = !files.length;
+}
+
+async function process(){
+  reduceBtn.disabled = true; reduceBtn.textContent = 'Reducing…';
+  await doReduce();
+  reduceBtn.textContent = 'Reduce'; reduceBtn.disabled = !files.length;
+}
+
+async function doReduce(){
+  const my = ++run;
+  const kb = parseFloat(kbIn.value);
+  results.forEach(r => URL.revokeObjectURL(r.url));
+  results = []; list.innerHTML = ''; dl.disabled = true;
+  if (!files.length){ msg.textContent = ''; return; }
+  if (!(kb >= 1)){ msg.textContent = 'Enter a size of 1 KB or more.'; return; }
+  msg.textContent = ''; msg.className = '';
+  const target = Math.floor(kb * 1024);
+  const n = files.length, total = files.reduce((a, f) => a + f.size, 0), t0 = performance.now();
+  let done = 0;
+  const update = (frac, idx, size) => {
+    if (my !== run) return;
+    const p = Math.min(1, (done + frac * size) / total), el = (performance.now() - t0) / 1000;
+    bar.style.width = (p * 100) + '%';
+    bar.parentElement.setAttribute('aria-valuenow', Math.round(p * 100));
+    ptext.textContent = p >= 1 ? 'Finished in ' + fmtT(el)
+      : `Reducing image ${Math.min(idx + 1, n)} of ${n} · ${Math.round(p * 100)}%` +
+        (p > 0.03 ? ` · about ${fmtT(el / p * (1 - p))} left` : ' · estimating time…');
+  };
+  prog.hidden = false; update(0, 0, 0);
+
+  for (const [idx, f] of files.entries()){
+    let steps = 0;
+    const li = document.createElement('li');
+    li.innerHTML = '<span></span><div><div class="name"></div><div class="busy">Reducing…</div></div>';
+    li.querySelector('.name').textContent = f.name;
+    list.appendChild(li);
+    let res;
+    try{
+      if (f.size <= target){
+        res = {blob:f, name:f.name, kept:true};
+      } else {
+        const bmp = await createImageBitmap(f, {imageOrientation:'from-image'});
+        const r = await shrink(bmp, target, () => update(Math.min(0.95, ++steps / 10), idx, f.size));
+        bmp.close && bmp.close();
+        res = {...r, name: baseName(f.name) + '-reduced.jpg'};
+      }
+    } catch(e){ li.querySelector('.busy').textContent = 'This file could not be read as an image.'; done += f.size; update(0, idx + 1, 0); continue; }
+    if (my !== run) return;
+    res.url = URL.createObjectURL(res.blob); res.orig = f.size;
+    results.push(res); done += f.size; update(0, idx + 1, 0);
+    const meta = res.kept
+      ? `${fmt(f.size)}. <b>Already under ${kb} KB, kept as is.</b>`
+      : `${fmt(f.size)} → <b>${fmt(res.blob.size)}</b>` + (res.w ? ` · ${res.w}×${res.h}px` : '') +
+        (res.miss ? ` <span class="miss">Could not reach ${kb} KB; this is the smallest possible.</span>` : '');
+    li.innerHTML = `<img alt=""><div><div class="name"></div><div class="meta">${meta}</div></div><a download>Save</a>`;
+    li.querySelector('img').src = res.url;
+    li.querySelector('.name').textContent = res.name;
+    const a = li.querySelector('a'); a.href = res.url; a.download = res.name;
+  }
+  if (my !== run) return;
+  dl.disabled = !results.length;
+  dl.textContent = results.length > 1 ? 'Download reduced images (.zip)' : 'Download reduced image';
+  if (results.length){ msg.textContent = 'Done'; msg.className = 'done'; }
+}
+
+function setFiles(fl){
+  files = [...fl].filter(f => f.type.startsWith('image/'));
+  showPending();
+  if (fl.length && !files.length) msg.textContent = 'Choose image files (JPG, PNG or WebP).';
+}
+fileIn.addEventListener('change', () => setFiles(fileIn.files));
+kbIn.addEventListener('input', showPending);
+reduceBtn.addEventListener('click', process);
+resetBtn.addEventListener('click', () => { fileIn.value = ''; files = []; showPending(); resetBtn.disabled = true; });
+$('#pick').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileIn.click(); } });
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => setFiles(e.dataTransfer.files));
+
+function save(blob, name){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+
+/* Minimal store-only ZIP writer so several images download as one file. */
+const crcTable = (() => { const t = []; for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
+const crc32 = u => { let c = ~0; for (let i = 0; i < u.length; i++) c = crcTable[(c ^ u[i]) & 255] ^ (c >>> 8); return ~c >>> 0; };
+async function makeZip(items){
+  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
+  const d = new Date(), time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
+        date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
+  for (const it of items){
+    const data = new Uint8Array(await it.blob.arrayBuffer()), name = enc.encode(it.name), crc = crc32(data);
+    const lh = new DataView(new ArrayBuffer(30));
+    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
+    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true);
+    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
+    parts.push(lh.buffer, name, data);
+    const ch = new DataView(new ArrayBuffer(46));
+    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
+    ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true);
+    ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
+    central.push(ch.buffer, name);
+    offset += 30 + name.length + data.length;
+  }
+  const csize = central.reduce((s, p) => s + (p.byteLength ?? p.length), 0);
+  const end = new DataView(new ArrayBuffer(22));
+  end.setUint32(0, 0x06054b50, true); end.setUint16(8, items.length, true); end.setUint16(10, items.length, true);
+  end.setUint32(12, csize, true); end.setUint32(16, offset, true);
+  return new Blob([...parts, ...central, end.buffer], {type:'application/zip'});
+}
+
+dl.addEventListener('click', async () => {
+  if (!results.length) return;
+  if (results.length === 1) return save(results[0].blob, results[0].name);
+  const seen = {}, items = results.map(r => {
+    let n = r.name; if (seen[n]){ const i = n.lastIndexOf('.'); n = n.slice(0, i) + '-' + seen[n] + n.slice(i); } seen[r.name] = (seen[r.name] || 0) + 1;
+    return {blob:r.blob, name:n};
+  });
+  save(await makeZip(items), 'reduced-images.zip');
+});
+</script>
+</body>
+</html>

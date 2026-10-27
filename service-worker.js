@@ -1,8 +1,10 @@
-const CACHE_NAME = 'ucmdm-app-v4';
+const CACHE_NAME = 'ucmdm-app-v5';
 const APP_FILES = [
   './',
   './index.html',
   './main_ucmdm.html',
+  './useful-apps.html',
+  './image-size-reducer.html',
   './MonthlyDataEntry.pdf',
   './manifest.webmanifest',
   './app-icon.svg',
