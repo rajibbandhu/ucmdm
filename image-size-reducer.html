@@ -15,23 +15,61 @@
 
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Image size reducer</title>
+<title>Image Size Reducer - Compress Images to a Target KB Size | ucmdm.in</title>
+<meta name="description" content="Compress JPG, PNG, and WebP images to a target size in KB with this free online image size reducer. Reduce image file size privately in your browser.">
+<meta name="keywords" content="image size reducer, image compressor, compress image to 100KB, reduce image file size, photo size reducer, online image compressor, compress JPG, compress PNG, compress WebP, reduce photo size in KB">
+<meta name="author" content="Rajib Kumar Das">
+<meta name="application-name" content="ucmdm.in Image Size Reducer">
+<meta name="theme-color" content="#173b63">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<meta name="googlebot" content="index, follow">
+<link rel="canonical" href="https://ucmdm.in/image-size-reducer.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="ucmdm.in">
+<meta property="og:title" content="Image Size Reducer - Compress Images to a Target KB Size">
+<meta property="og:description" content="Reduce JPG, PNG, and WebP image file sizes to a target KB amount. Images are processed in your browser, not uploaded.">
+<meta property="og:url" content="https://ucmdm.in/image-size-reducer.html">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Image Size Reducer - Compress Images to a Target KB Size">
+<meta name="twitter:description" content="Reduce JPG, PNG, and WebP image file sizes to a target KB amount, privately in your browser.">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Image Size Reducer",
+  "url": "https://ucmdm.in/image-size-reducer.html",
+  "description": "Free online tool to reduce image file size to a target KB amount. Supports JPG, PNG, and WebP input and processes images in the browser.",
+  "applicationCategory": "MultimediaApplication",
+  "operatingSystem": "Any",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  }
+}
+</script>
 <style>
   :root{
     --bg:#e9edf2; --card:#ffffff; --ink:#16212c; --muted:#5d6b7a; --line:#c9d2dc;
     --accent:#2f3fbf; --accent-ink:#ffffff; --ok:#1d7a4d; --warn:#a45a00;
   }
   *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;
-       min-height:100vh;display:flex;justify-content:center;padding:32px 16px}
-  main{width:100%;max-width:640px}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;min-height:100vh}
+  .site-header{padding:24px clamp(22px,6vw,88px);background:#173b63;color:#fff}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:22px}
+  .brand{margin:0;font:700 clamp(24px,4vw,38px)/1.1 Georgia,"Times New Roman",serif;letter-spacing:.2px}
+  .brand a{color:inherit;text-decoration:none}
+  .header-tools{display:flex;align-items:center;gap:6px;margin-left:auto}
+  .useful-apps-link{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #ffffff55;border-radius:7px;color:#fff;font:700 13px Arial,sans-serif;text-decoration:none;white-space:nowrap}
+  .useful-apps-link:hover,.useful-apps-link:focus-visible{background:#ffffff24;outline:2px solid #8fe9f5;outline-offset:2px}
+  main{width:min(640px,calc(100% - 32px));margin:0 auto;padding:32px 0}
   h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
   .sub{color:var(--muted);margin:0 0 24px}
   .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:20px}
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;
        border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
   .btn.ghost{background:#fff;color:var(--accent)}
-    .home-button{width:fit-content;min-height:40px;margin-bottom:20px;border-radius:8px;font-size:.9rem;text-decoration:none}
   .btn.go{background:var(--ok);border-color:var(--ok);color:#fff}
   .btn:disabled.go{background:#dfe5ec;border-color:#dfe5ec;color:#7b8794}
   .row{display:grid;grid-template-columns:1fr auto;gap:12px}
@@ -68,10 +106,17 @@
 </style>
 </head>
 <body>
+<header class="site-header">
+  <div class="header-inner">
+    <p class="brand"><a href="index.html">ucmdm.in</a></p>
+    <div class="header-tools">
+      <a class="useful-apps-link" href="useful-apps.html">Useful Apps</a>
+    </div>
+  </div>
+</header>
 <main>
-  <a class="btn ghost home-button" href="index.html">Back to homepage</a>
   <h1>Image size reducer</h1>
-  <p class="sub">Choose images, set the size you want in KB, press Reduce, then download. Everything runs in your browser; nothing is uploaded.</p>
+  <p class="sub">Free online image compressor to reduce image file size to a target in KB. Choose JPG, PNG, or WebP images, then download the reduced photos. Everything runs in your browser; nothing is uploaded.</p>
 
   <section class="panel">
     <div id="drop">
