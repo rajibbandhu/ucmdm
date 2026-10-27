@@ -35,14 +35,14 @@
 		a.app-tile:hover, a.app-tile:focus-visible { border-color:var(--blue); box-shadow:0 12px 26px #173b631c; transform:translateY(-2px); outline:none; }
 		.app-tile.available { border-top:4px solid #258058; }
 		.app-tile.soon { border-top:4px solid #e0a03b; }
+		.app-tile.soon { align-items:center; justify-content:center; }
 		.tile-top { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; }
 		.tile-index { color:#8090a3; font:700 12px Arial, sans-serif; }
 		.tile-status { padding:5px 8px; border-radius:4px; background:var(--mint); color:#176542; font:700 10px Arial, sans-serif; letter-spacing:.5px; text-transform:uppercase; white-space:nowrap; }
-		.soon .tile-status { background:#fff0d5; color:#80500d; }
+		.soon .tile-status { padding:8px 12px; background:#fff0d5; color:#80500d; font-size:12px; }
 		.app-tile h2 { margin:0; color:var(--navy); font-size:21px; line-height:1.2; }
 		.app-tile p { margin:7px 0 0; color:var(--muted); font:13px/1.5 Arial, sans-serif; }
 		.tile-open { color:var(--blue); font:700 12px Arial, sans-serif; }
-		.soon .tile-open { color:#80500d; }
 		footer { padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
 		@media (max-width:760px) { .app-grid { grid-template-columns:repeat(2, minmax(0, 1fr)); } }
@@ -68,25 +68,20 @@
 					<div><h2>Image Size Reducer</h2><p>Compress images to a smaller file size.</p></div>
 					<span class="tile-open">Open app &rarr;</span>
 				</a>
-				<div class="app-tile soon" aria-label="PDF tools, coming soon">
-					<span class="tile-top"><span class="tile-index">02</span><span class="tile-status">Coming soon</span></span>
-					<div><h2>PDF Tools</h2><p>Quick tools for working with PDF files.</p></div>
+				<div class="app-tile soon">
+					<span class="tile-status">Coming soon</span>
 				</div>
-				<div class="app-tile soon" aria-label="Image cropper, coming soon">
-					<span class="tile-top"><span class="tile-index">03</span><span class="tile-status">Coming soon</span></span>
-					<div><h2>Image Cropper</h2><p>Crop and prepare images for sharing.</p></div>
+				<div class="app-tile soon">
+					<span class="tile-status">Coming soon</span>
 				</div>
-				<div class="app-tile soon" aria-label="QR Code Maker, coming soon">
-					<span class="tile-top"><span class="tile-index">04</span><span class="tile-status">Coming soon</span></span>
-					<div><h2>QR Code Maker</h2><p>Turn links and text into a QR code.</p></div>
+				<div class="app-tile soon">
+					<span class="tile-status">Coming soon</span>
 				</div>
-				<div class="app-tile soon" aria-label="Unit Converter, coming soon">
-					<span class="tile-top"><span class="tile-index">05</span><span class="tile-status">Coming soon</span></span>
-					<div><h2>Unit Converter</h2><p>Convert common measurements with ease.</p></div>
+				<div class="app-tile soon">
+					<span class="tile-status">Coming soon</span>
 				</div>
-				<div class="app-tile soon" aria-label="Text Utilities, coming soon">
-					<span class="tile-top"><span class="tile-index">06</span><span class="tile-status">Coming soon</span></span>
-					<div><h2>Text Utilities</h2><p>Handy tools for everyday text tasks.</p></div>
+				<div class="app-tile soon">
+					<span class="tile-status">Coming soon</span>
 				</div>
 			</nav>
 		</main>

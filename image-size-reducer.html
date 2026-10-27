@@ -19,6 +19,7 @@
   .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;
        border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
   .btn.ghost{background:#fff;color:var(--accent)}
+    .home-button{width:fit-content;min-height:40px;margin-bottom:20px;border-radius:8px;font-size:.9rem;text-decoration:none}
   .btn.go{background:var(--ok);border-color:var(--ok);color:#fff}
   .btn:disabled.go{background:#dfe5ec;border-color:#dfe5ec;color:#7b8794}
   .row{display:grid;grid-template-columns:1fr auto;gap:12px}
@@ -56,6 +57,7 @@
 </head>
 <body>
 <main>
+  <a class="btn ghost home-button" href="index.html">Back to homepage</a>
   <h1>Image size reducer</h1>
   <p class="sub">Choose images, set the size you want in KB, press Reduce, then download. Everything runs in your browser; nothing is uploaded.</p>
 

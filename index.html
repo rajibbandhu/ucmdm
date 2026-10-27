@@ -73,7 +73,6 @@
 		.header-inner { display:flex; align-items:center; justify-content:space-between; gap:22px; }
 		.brand { margin:0; font:700 clamp(24px, 4vw, 38px)/1.1 Georgia, 'Times New Roman', serif; letter-spacing:.2px; }
 		.brand a { color:inherit; text-decoration:none; }
-		.reminder-header-controls { position:relative; display:flex; align-items:center; gap:12px; }
 		main { display:grid; flex:1; width:min(1050px, calc(100% - 36px)); grid-template-columns:1.15fr .85fr; align-items:center; gap:clamp(28px, 7vw, 90px); margin:0 auto; padding:clamp(46px, 10vh, 110px) 0; }
 		.intro { max-width:650px; }
 		.eyebrow { margin:0 0 14px; color:var(--blue); font:700 12px/1.2 Arial, sans-serif; letter-spacing:1.5px; text-transform:uppercase; }
@@ -107,30 +106,14 @@
 		.header-tools { display:flex; align-items:center; gap:6px; margin-left:auto; }
 		.useful-apps-link { display:inline-flex; align-items:center; min-height:36px; padding:0 12px; border:1px solid #ffffff55; border-radius:7px; color:#fff; font:700 13px Arial, sans-serif; text-decoration:none; white-space:nowrap; }
 		.useful-apps-link:hover, .useful-apps-link:focus-visible { background:#ffffff24; outline:2px solid #8fe9f5; outline-offset:2px; }
-		.header-tool-button, .reminder-settings-button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
-		.header-tool-button:hover, .reminder-settings-button:hover, .reminder-settings-button[aria-expanded="true"] { background:#ffffff24; }
-		.header-tool-button:focus-visible, .reminder-settings-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
+		.header-tool-button { display:grid; place-items:center; width:36px; height:36px; padding:0; border:1px solid #ffffff40; border-radius:7px; background:#ffffff10; color:#fff; cursor:pointer; }
+		.header-tool-button:hover { background:#ffffff24; }
+		.header-tool-button:focus-visible { outline:2px solid #8fe9f5; outline-offset:2px; }
 		.header-tool-button svg { width:18px; height:18px; }
 		.footer-data-tools { display:inline-flex; align-items:center; gap:2px; margin:0 5px; vertical-align:middle; }
 		.footer-data-button { display:inline-grid; place-items:center; width:24px; height:24px; padding:0; border:1px solid transparent; border-radius:5px; background:transparent; color:var(--blue); cursor:pointer; vertical-align:middle; }
 		.footer-data-button:hover, .footer-data-button:focus-visible { border-color:var(--line); background:#eaf2fc; outline:none; }
 		.footer-data-button svg { display:block; width:13px; height:13px; }
-		.reminder-settings-button svg { width:19px; height:19px; }
-		.reminder-settings-popover { position:absolute; z-index:15; top:calc(100% + 9px); right:0; display:grid; gap:12px; width:min(290px, calc(100vw - 36px)); padding:14px; border:1px solid var(--line); border-radius:8px; background:#fff; color:var(--ink); box-shadow:0 12px 30px #17203330; font:13px/1.4 Arial, sans-serif; }
-		.reminder-settings-popover[hidden] { display:none; }
-		.reminder-settings-popover h2 { margin:0; color:var(--navy); font-size:15px; }
-		.reminder-settings-popover p { margin:-8px 0 0; color:var(--muted); font-size:12px; }
-		.reminder-setting-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-		.reminder-setting-row label { color:var(--ink); font-weight:700; }
-		.reminder-setting-row input[type="checkbox"] { position:relative; flex:0 0 auto; appearance:none; width:36px; height:20px; margin:0; border:1px solid #8998aa; border-radius:999px; background:#d9e1ea; cursor:pointer; transition:background .15s, border-color .15s; }
-		.reminder-setting-row input[type="checkbox"]::after { content:''; position:absolute; top:2px; left:2px; width:14px; height:14px; border-radius:50%; background:#fff; box-shadow:0 1px 3px #17203340; transition:transform .15s; }
-		.reminder-setting-row input[type="checkbox"]:checked { border-color:var(--blue); background:var(--blue); }
-		.reminder-setting-row input[type="checkbox"]:checked::after { transform:translateX(16px); }
-		.reminder-setting-row input:focus-visible, .reminder-time-row input:focus-visible { outline:2px solid var(--blue); outline-offset:2px; }
-		.reminder-time-row { display:flex; align-items:center; justify-content:space-between; gap:12px; }
-		.reminder-time-row label { color:var(--muted); }
-		.reminder-time-row input { width:112px; min-height:36px; padding:6px 8px; border:1px solid var(--line); border-radius:6px; background:#f8fbff; color:var(--navy); font:700 14px Arial, sans-serif; }
-		.reminder-schedule { color:var(--muted); font-size:11px; }
 		.download-tip { margin:0; padding:4px 4px 0; color:var(--blue); font:700 13px/1.4 Arial, sans-serif; }
 		footer { display:flex; align-items:center; justify-content:center; flex-wrap:wrap; gap:12px; padding:18px 22px; border-top:1px solid var(--line); color:#5a6b80; font:13px Arial, sans-serif; text-align:center; }
 		footer a { color:var(--blue); text-decoration:none; }
@@ -151,24 +134,6 @@
 				<p class="brand"><a href="index.html">ucmdm.in</a></p>
 				<div class="header-tools">
 					<a class="useful-apps-link" href="useful-apps.html">Useful Apps</a>
-					<div class="reminder-header-controls">
-						<button class="reminder-settings-button" id="reminder-settings-button" type="button" aria-label="Reminder settings" aria-haspopup="dialog" aria-expanded="false" aria-controls="reminder-settings-popover" title="Reminder settings">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16.4 15.8H3.5c0-1.5 2-2.5 2-8a5.5 5.5 0 0 1 11 0"></path><path d="M8.5 19a2 2 0 0 0 3.5 0"></path><circle cx="18" cy="17.5" r="4" stroke="#8fe9f5"></circle><path d="M18 15.5v2l1.4 1" stroke="#8fe9f5"></path></svg>
-						</button>
-						<div class="reminder-settings-popover" id="reminder-settings-popover" role="dialog" aria-labelledby="reminder-settings-title" hidden>
-						<h2 id="reminder-settings-title">Reminder for Daily Meal Entry</h2>
-						<p>Set time as you wish.</p>
-						<div class="reminder-setting-row">
-							<label for="daily-reminder-toggle">Enable reminder</label>
-							<input id="daily-reminder-toggle" type="checkbox" role="switch" aria-label="Enable daily data entry reminder">
-						</div>
-						<div class="reminder-time-row">
-							<label for="daily-reminder-time">Reminder time</label>
-							<input id="daily-reminder-time" type="time" value="12:30" step="60" aria-label="Daily reminder time">
-						</div>
-						<span class="reminder-schedule">Monday to Saturday</span>
-						</div>
-					</div>
 				</div>
 			</div>
 		</header>
@@ -236,10 +201,14 @@
 		const APP_BACKUP_FORMAT = 'ucmdm-data-backup';
 		const APP_BACKUP_VERSION = 1;
 		const APP_BACKUP_SETTING_KEYS = new Set([
-			'ucmdm-default-page',
-			'ucmdm-daily-reminder-enabled',
-			'ucmdm-daily-reminder-time'
+			'ucmdm-default-page'
 		]);
+		const LEGACY_REMINDER_BACKUP_KEYS = new Set([
+			'ucmdm-daily-reminder-enabled',
+			'ucmdm-daily-reminder-time',
+			'ucmdm-daily-reminder-last-date'
+		]);
+		LEGACY_REMINDER_BACKUP_KEYS.forEach(key => localStorage.removeItem(key));
 		const APP_BACKUP_JSON_KEYS = new Set([
 			'pm-poshan-uc-monthly-data',
 			'pm-poshan-uc-session-state',
@@ -276,21 +245,15 @@
 				throw new Error('This is not a supported ucmdm JSON backup.');
 			}
 			for (const [key, value] of Object.entries(backup.data)) {
-				if (!isAppBackupKey(key) || typeof value !== 'string') {
+				if ((!isAppBackupKey(key) && !LEGACY_REMINDER_BACKUP_KEYS.has(key)) || typeof value !== 'string') {
 					throw new Error('The backup contains unsupported data.');
 				}
 				if (APP_BACKUP_JSON_KEYS.has(key)) JSON.parse(value);
 				if (key === 'ucmdm-default-page' && !['index', 'main'].includes(value)) {
 					throw new Error('The backup contains an invalid startup page setting.');
 				}
-				if (key === 'ucmdm-daily-reminder-enabled' && !['true', 'false'].includes(value)) {
-					throw new Error('The backup contains an invalid reminder setting.');
-				}
-				if (key === 'ucmdm-daily-reminder-time' && !/^([01]\d|2[0-3]):[0-5]\d$/.test(value)) {
-					throw new Error('The backup contains an invalid reminder time.');
-				}
 			}
-			return Object.entries(backup.data);
+			return Object.entries(backup.data).filter(([key]) => !LEGACY_REMINDER_BACKUP_KEYS.has(key));
 		};
 		const importAppData = async file => {
 			let entries;
@@ -305,20 +268,19 @@
 			const previousEntries = [];
 			for (let index = 0; index < localStorage.length; index += 1) {
 				const key = localStorage.key(index);
-				if (key && (isAppBackupKey(key) || key === 'ucmdm-daily-reminder-last-date')) {
+				if (key && isAppBackupKey(key)) {
 					previousEntries.push([key, localStorage.getItem(key)]);
 				}
 			}
 			try {
 				previousEntries.forEach(([key]) => localStorage.removeItem(key));
-				localStorage.removeItem('ucmdm-daily-reminder-last-date');
 				entries.forEach(([key, value]) => localStorage.setItem(key, value));
 				window.alert('Data imported. The page will reload to apply the backup.');
 				window.location.reload();
 			} catch {
 				for (let index = localStorage.length - 1; index >= 0; index -= 1) {
 					const key = localStorage.key(index);
-					if (key && (isAppBackupKey(key) || key === 'ucmdm-daily-reminder-last-date')) localStorage.removeItem(key);
+					if (key && isAppBackupKey(key)) localStorage.removeItem(key);
 				}
 				previousEntries.forEach(([key, value]) => localStorage.setItem(key, value));
 				window.alert('Import failed. Your previous saved data was restored.');
@@ -332,35 +294,6 @@
 			await importAppData(file);
 			importDataFile.value = '';
 		});
-		const DAILY_REMINDER_TITLE = 'MDM daily data entry reminder';
-		const DAILY_REMINDER_STORAGE_KEY = 'ucmdm-daily-reminder-enabled';
-		const DAILY_REMINDER_TIME_STORAGE_KEY = 'ucmdm-daily-reminder-time';
-		const DAILY_REMINDER_LAST_DATE_KEY = 'ucmdm-daily-reminder-last-date';
-		const reminderToggle = document.querySelector('#daily-reminder-toggle');
-		const reminderTimeInput = document.querySelector('#daily-reminder-time');
-		const reminderSettingsButton = document.querySelector('#reminder-settings-button');
-		const reminderSettingsPopover = document.querySelector('#reminder-settings-popover');
-		let reminderIntervalId = null;
-		const setReminderSettingsOpen = isOpen => {
-			if (!reminderSettingsButton || !reminderSettingsPopover) return;
-			reminderSettingsButton.setAttribute('aria-expanded', String(isOpen));
-			reminderSettingsPopover.hidden = !isOpen;
-		};
-		reminderSettingsButton?.addEventListener('click', () => {
-			const isOpen = reminderSettingsButton.getAttribute('aria-expanded') === 'true';
-			setReminderSettingsOpen(!isOpen);
-		});
-		document.addEventListener('click', event => {
-			if (!reminderSettingsPopover?.hidden && !event.target.closest('.reminder-header-controls')) {
-				setReminderSettingsOpen(false);
-			}
-		});
-		document.addEventListener('keydown', event => {
-			if (event.key === 'Escape' && reminderSettingsButton?.getAttribute('aria-expanded') === 'true') {
-				setReminderSettingsOpen(false);
-				reminderSettingsButton.focus();
-			}
-		});
 		const storageNoticeButton = document.querySelector('#storage-notice-more');
 		const storageNoticeDetails = document.querySelector('#storage-notice-details');
 		storageNoticeButton?.addEventListener('click', () => {
@@ -369,80 +302,6 @@
 			storageNoticeButton.textContent = isExpanded ? 'Read more' : 'Read less';
 			if (storageNoticeDetails) storageNoticeDetails.hidden = isExpanded;
 		});
-		const syncReminderToggle = () => {
-			if (reminderToggle) reminderToggle.checked = localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true';
-			if (reminderTimeInput) reminderTimeInput.value = localStorage.getItem(DAILY_REMINDER_TIME_STORAGE_KEY) || '12:30';
-		};
-		const openDailyEntryApp = () => {
-			window.location.href = 'main_ucmdm.html';
-		};
-		const showDailyReminderNotification = () => {
-			if (!('Notification' in window) || Notification.permission !== 'granted') return;
-			const notification = new Notification(DAILY_REMINDER_TITLE, {
-				body: 'Please open the app and enter today’s daily data entry.',
-				icon: 'app-icon.svg',
-				tag: 'mdm-daily-reminder',
-				requireInteraction: true,
-				actions: [
-					{ action: 'open', title: 'Open' },
-					{ action: 'dismiss', title: 'No need' }
-				]
-			});
-			notification.addEventListener('click', event => {
-				event.preventDefault();
-				if (event.action === 'open' || !event.action) openDailyEntryApp();
-				notification.close();
-			});
-			notification.addEventListener('action', event => {
-				if (event.action === 'open') openDailyEntryApp();
-				notification.close();
-			});
-		};
-		const scheduleDailyReminder = () => {
-			if (!('Notification' in window) || Notification.permission !== 'granted') return;
-			if (reminderIntervalId) clearInterval(reminderIntervalId);
-			const checkReminder = () => {
-				if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) !== 'true') return;
-				const now = new Date();
-				if (now.getDay() < 1 || now.getDay() > 6) return;
-				const [hour, minute] = (localStorage.getItem(DAILY_REMINDER_TIME_STORAGE_KEY) || '12:30').split(':').map(Number);
-				const currentMinutes = now.getHours() * 60 + now.getMinutes();
-				const scheduledMinutes = hour * 60 + minute;
-				const dateKey = `${now.getFullYear()}-${now.getMonth()}-${now.getDate()}`;
-				if (currentMinutes >= scheduledMinutes && currentMinutes < scheduledMinutes + 2 && localStorage.getItem(DAILY_REMINDER_LAST_DATE_KEY) !== dateKey) {
-					localStorage.setItem(DAILY_REMINDER_LAST_DATE_KEY, dateKey);
-					showDailyReminderNotification();
-				}
-			};
-			checkReminder();
-			reminderIntervalId = setInterval(checkReminder, 60000);
-		};
-		reminderToggle?.addEventListener('change', async () => {
-			if (!reminderToggle.checked) {
-				localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
-				if (reminderIntervalId) clearInterval(reminderIntervalId);
-				reminderIntervalId = null;
-				return;
-			}
-			if (!('Notification' in window)) {
-				localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, 'false');
-				syncReminderToggle();
-				return;
-			}
-			const permission = Notification.permission === 'granted' ? 'granted' : await Notification.requestPermission();
-			const enabled = permission === 'granted';
-			localStorage.setItem(DAILY_REMINDER_STORAGE_KEY, String(enabled));
-			syncReminderToggle();
-			if (enabled) scheduleDailyReminder();
-		});
-		reminderTimeInput?.addEventListener('change', () => {
-			localStorage.setItem(DAILY_REMINDER_TIME_STORAGE_KEY, reminderTimeInput.value || '12:30');
-		});
-		window.addEventListener('storage', event => {
-			if (event.key === DAILY_REMINDER_STORAGE_KEY || event.key === DAILY_REMINDER_TIME_STORAGE_KEY) syncReminderToggle();
-		});
-		syncReminderToggle();
-		if (localStorage.getItem(DAILY_REMINDER_STORAGE_KEY) === 'true') scheduleDailyReminder();
 		let installPromptEvent;
 		const installAppButton = document.querySelector('#install-app-button');
 		const hideInstallButton = () => {
