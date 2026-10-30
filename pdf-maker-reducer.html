@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PDF maker &amp; size reducer</title>
+<style>
+  :root{
+    --bg:#e9edf2; --card:#ffffff; --ink:#16212c; --muted:#5d6b7a; --line:#c9d2dc;
+    --accent:#2f3fbf; --ok:#1d7a4d; --warn:#a45a00; --navy:#173b63; --blue:#245b91;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;min-height:100vh}
+  .page{display:flex;min-height:100vh;flex-direction:column}
+  header{padding:22px clamp(20px,6vw,88px);background:var(--navy);color:#fff}
+  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:18px}
+  .brand{margin:0;font:700 25px/1.1 Georgia,'Times New Roman',serif}
+  .brand a{color:inherit;text-decoration:none}
+  .home-link{color:#dce9f7;font:700 13px Arial,sans-serif;text-decoration:none}
+  .home-link:hover,.home-link:focus-visible{color:#fff;text-decoration:underline;text-underline-offset:4px}
+  main{width:min(680px,calc(100% - 36px));margin:0 auto;padding:38px 0 64px;flex:1}
+  h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
+  .sub{color:var(--muted);margin:0 0 24px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:24px;display:grid;gap:20px}
+  .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border-radius:14px;
+       border:2px solid var(--accent);background:var(--accent);color:#fff;font:600 1rem inherit;font-family:inherit;cursor:pointer;text-align:center}
+  .btn.ghost{background:#fff;color:var(--accent)}
+  .btn.go{background:var(--ok);border-color:var(--ok);font-size:.95rem;flex-direction:column;gap:0;padding:6px 12px;line-height:1.3}
+  .btn.go small{font-weight:500;opacity:.9}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.go:disabled{opacity:1;background:#dfe5ec;border-color:#dfe5ec;color:#7b8794}
+  .btn:focus-visible,input:focus-visible,label.btn:focus-within{outline:3px solid #8e99ee;outline-offset:2px}
+  #drop{border:2px dashed var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;transition:border-color .15s,background .15s}
+  #drop.over{border-color:var(--accent);background:#f1f3ff}
+  #drop small{color:var(--muted);text-align:center}
+  #file{position:absolute;opacity:0;width:1px;height:1px}
+  #files{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:.9rem}
+  #files li{display:flex;justify-content:space-between;gap:12px;border-top:1px solid var(--line);padding-top:4px}
+  #files li span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  #files li span:last-child{color:var(--muted);white-space:nowrap}
+  .row{display:grid;grid-template-columns:1fr auto;gap:12px}
+  .reduce{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:stretch}
+  .size{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:14px;padding:8px 16px;min-height:52px}
+  .size label{font-weight:600;white-space:nowrap}
+  .size input{flex:1;min-width:0;border:0;border-bottom:2px solid var(--ink);background:transparent;font:inherit;font-size:1.1rem;padding:4px 2px;text-align:right}
+  .size span{color:var(--muted);font-weight:600}
+  #msg{margin:-8px 0 0;font-size:.9rem;color:var(--warn);min-height:1.3em}
+  #msg.done{color:var(--ok);font-weight:700}
+  #prog{display:grid;gap:6px}
+  #prog[hidden]{display:none}
+  .track{height:10px;border-radius:999px;background:#dfe5ec;overflow:hidden}
+  #bar{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .25s linear}
+  #ptext{font-size:.88rem;color:var(--muted)}
+  .dls{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .pv-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .pv-head strong{margin-right:auto}
+  .tab{border:2px solid var(--line);background:#fff;color:var(--ink);border-radius:999px;padding:4px 14px;font:600 .88rem inherit;font-family:inherit;cursor:pointer}
+  .tab[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .tab:disabled{opacity:.4;cursor:not-allowed}
+  .pv-head a{font-size:.88rem;color:var(--accent);font-weight:600}
+  .pv-head a[hidden]{display:none}
+  #preview{border:2px solid var(--line);border-radius:14px;min-height:420px;display:grid;overflow:hidden;background:#f6f8fa}
+  #preview p{margin:auto;color:var(--muted);padding:16px;text-align:center}
+  #frame{width:100%;height:520px;border:0;display:none}
+  footer{padding:18px 22px;border-top:1px solid var(--line);color:#5a6b80;font:13px Arial,sans-serif;text-align:center}
+  footer a{color:var(--blue);text-decoration:none}
+  @media (max-width:520px){.reduce,.dls{grid-template-columns:1fr}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="header-inner">
+    <p class="brand"><a href="index.html">ucmdm.in</a></p>
+    <a class="home-link" href="index.html">Back to home</a>
+  </div>
+</header>
+<main>
+  <h1>PDF maker &amp; size reducer</h1>
+  <p class="sub">Upload images and/or PDFs, make a PDF, then reduce it to the size you need. Everything runs in your browser; nothing is uploaded.</p>
+
+  <section class="panel">
+    <div id="drop">
+      <label class="btn" for="file" tabindex="0" id="pick">Upload image / images / PDF</label>
+      <input id="file" type="file" accept="image/*,application/pdf,.pdf" multiple>
+      <small>or drop files here (JPG, PNG, WebP, PDF)</small>
+      <ul id="files"></ul>
+    </div>
+
+    <div class="row">
+      <button class="btn" id="make" disabled>Make PDF</button>
+      <button class="btn ghost" id="reset" disabled>Reset</button>
+    </div>
+
+    <div class="reduce">
+      <div class="size">
+        <label for="kb">Reduce PDF in :</label>
+        <input id="kb" type="number" min="1" step="1" value="200" inputmode="numeric">
+        <span>kb</span>
+      </div>
+      <button class="btn" id="reduce" disabled>Reduce</button>
+    </div>
+    <p id="msg" role="status"></p>
+
+    <div id="prog" hidden>
+      <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div>
+      <div id="ptext" aria-live="polite"></div>
+    </div>
+
+    <div class="dls">
+      <button class="btn go" id="dlOrig" disabled>Download (original file size)<small>–</small></button>
+      <button class="btn go" id="dlRed" disabled>Download (selected file size)<small>–</small></button>
+    </div>
+
+    <div>
+      <div class="pv-head">
+        <strong>Preview PDF</strong>
+        <button class="tab" id="tabOrig" aria-pressed="true" disabled>Original</button>
+        <button class="tab" id="tabRed" aria-pressed="false" disabled>Reduced</button>
+        <a id="openTab" target="_blank" rel="noopener" hidden>Open in new tab</a>
+      </div>
+      <div id="preview" style="margin-top:8px">
+        <p id="ph">The PDF preview appears here after you press Make PDF or Reduce.</p>
+        <iframe id="frame" title="PDF preview"></iframe>
+      </div>
+    </div>
+  </section>
+
+</main>
+<footer>&copy; 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das</footer>
+</div>
+
+<script>
+const $ = s => document.querySelector(s);
+const fileIn = $('#file'), kbIn = $('#kb'), drop = $('#drop'), msg = $('#msg'), filesUl = $('#files');
+const makeBtn = $('#make'), reduceBtn = $('#reduce'), resetBtn = $('#reset');
+const prog = $('#prog'), bar = $('#bar'), ptext = $('#ptext');
+const dlBtn = {orig:$('#dlOrig'), red:$('#dlRed')}, tab = {orig:$('#tabOrig'), red:$('#tabRed')};
+const frame = $('#frame'), ph = $('#ph'), openTab = $('#openTab');
+let files = [], res = {orig:null, red:null}, cur = 'orig', run = 0, docs = new WeakMap();
+
+if (window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+const fmt = b => b >= 1048576 ? (b/1048576).toFixed(2)+' MB' : (b/1024).toFixed(1)+' KB';
+const fmtT = s => s < 1 ? 'under 1 s' : s < 60 ? Math.ceil(s)+' s' : Math.floor(s/60)+' min '+Math.round(s%60)+' s';
+const baseName = n => n.replace(/\.[^.]+$/, '');
+const isPdf = f => f.type === 'application/pdf' || /\.pdf$/i.test(f.name);
+const toBlob = (c, q) => new Promise(r => c.toBlob(r, 'image/jpeg', q));
+
+/* Compress one page (bitmap or canvas) to <= target bytes: search JPEG quality, then shrink dimensions if needed. */
+async function shrink(src, target, tick = () => {}){
+  let w = src.width, h = src.height;
+  const tb = async (c, q) => { const r = await toBlob(c, q); tick(); return r; };
+  for (let i = 0; i < 25; i++){
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(src,0,0,w,h);
+    let lo = 0.05, hi = 0.92;
+    let b = await tb(c, hi);
+    if (b.size <= target) return {blob:b, w, h};
+    b = await tb(c, lo);
+    if (b.size <= target){
+      let best = b;
+      for (let k = 0; k < 7; k++){
+        const mid = (lo + hi) / 2, t = await tb(c, mid);
+        if (t.size <= target){ best = t; lo = mid; } else hi = mid;
+      }
+      return {blob:best, w, h};
+    }
+    if (Math.min(w,h) <= 16) return {blob:b, w, h, miss:true};
+    const s = Math.max(0.5, Math.min(0.9, Math.sqrt(target / b.size) * 1.05));
+    w = Math.max(16, Math.round(w*s)); h = Math.max(16, Math.round(h*s));
+  }
+}
+
+/* Minimal PDF writer: one JPEG per page. */
+function buildPdf(pages){
+  const enc = new TextEncoder(), chunks = [], offs = []; let len = 0;
+  const push = d => { const u = typeof d === 'string' ? enc.encode(d) : d; chunks.push(u); len += u.length; };
+  const obj = (i, body) => { offs[i] = len; push(`${i} 0 obj\n${body}\nendobj\n`); };
+  const n = pages.length, total = 2 + 3*n;
+  push('%PDF-1.4\n');
+  obj(1, '<< /Type /Catalog /Pages 2 0 R >>');
+  obj(2, `<< /Type /Pages /Count ${n} /Kids [${pages.map((_, i) => `${3+3*i} 0 R`).join(' ')}] >>`);
+  pages.forEach((p, i) => {
+    const pg = 3 + 3*i, ct = pg + 1, im = pg + 2, pw = p.pw.toFixed(2), ph = p.ph.toFixed(2);
+    obj(pg, `<< /Type /Page /Parent 2 0 R /MediaBox [0 0 ${pw} ${ph}] /Resources << /XObject << /Im0 ${im} 0 R >> >> /Contents ${ct} 0 R >>`);
+    const s = `q ${pw} 0 0 ${ph} 0 0 cm /Im0 Do Q`;
+    obj(ct, `<< /Length ${s.length} >>\nstream\n${s}\nendstream`);
+    offs[im] = len;
+    push(`${im} 0 obj\n<< /Type /XObject /Subtype /Image /Width ${p.iw} /Height ${p.ih} /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ${p.jpg.length} >>\nstream\n`);
+    push(p.jpg); push('\nendstream\nendobj\n');
+  });
+  const xr = len;
+  push(`xref\n0 ${total+1}\n0000000000 65535 f \n`);
+  for (let i = 1; i <= total; i++) push(String(offs[i]).padStart(10,'0') + ' 00000 n \n');
+  push(`trailer\n<< /Size ${total+1} /Root 1 0 R >>\nstartxref\n${xr}\n%%EOF`);
+  return new Blob(chunks, {type:'application/pdf'});
+}
+
+/* ---------- progress ---------- */
+function setProgress(p, text){
+  bar.style.width = (p * 100) + '%';
+  bar.parentElement.setAttribute('aria-valuenow', Math.round(p * 100));
+  ptext.textContent = text;
+}
+
+/* Build a PDF from all uploaded files. target = max size in bytes (Infinity = best quality). */
+async function build(target, label, my){
+  const t0 = performance.now();
+  prog.hidden = false; setProgress(0, 'Reading files…');
+  const units = [];
+  for (const f of files){
+    if (isPdf(f)){
+      if (!window.pdfjsLib) throw new Error('nopdfjs');
+      let doc = docs.get(f);
+      if (!doc){ doc = await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise; docs.set(f, doc); }
+      for (let i = 1; i <= doc.numPages; i++) units.push({f, doc, i, w:f.size / doc.numPages});
+    } else units.push({f, w:f.size});
+  }
+  const sumW = units.reduce((a, u) => a + u.w, 0) || 1;
+  const budgetTotal = Math.max(1000, target - 500 - 350 * units.length);
+  let doneW = 0, miss = false, skipped = 0; const pages = [];
+  for (const [k, u] of units.entries()){
+    if (my !== run) return null;
+    let steps = 0;
+    const upd = frac => {
+      if (my !== run) return;
+      const p = Math.min(1, (doneW + frac * u.w) / sumW), el = (performance.now() - t0) / 1000;
+      setProgress(p, `${label} page ${Math.min(k + 1, units.length)} of ${units.length} · ${Math.round(p * 100)}%` +
+        (p > 0.03 ? ` · about ${fmtT(el / p * (1 - p))} left` : ' · estimating time…'));
+    };
+    upd(0);
+    try{
+      let src, pw, ph;
+      if (u.doc){
+        const page = await u.doc.getPage(u.i), v1 = page.getViewport({scale:1});
+        const v = page.getViewport({scale:Math.min(2.5, 2200 / Math.max(v1.width, v1.height))});
+        src = document.createElement('canvas'); src.width = Math.round(v.width); src.height = Math.round(v.height);
+        const cx = src.getContext('2d'); cx.fillStyle = '#fff'; cx.fillRect(0,0,src.width,src.height);
+        await page.render({canvasContext:cx, viewport:v}).promise;
+        pw = v1.width; ph = v1.height;
+      } else {
+        src = await createImageBitmap(u.f, {imageOrientation:'from-image'});
+        const m = 842 / Math.max(src.width, src.height); pw = src.width * m; ph = src.height * m;
+      }
+      const r = await shrink(src, Math.max(500, Math.floor(budgetTotal * u.w / sumW)), () => upd(Math.min(0.95, ++steps / 10)));
+      if (src.close) src.close();
+      if (r.miss) miss = true;
+      pages.push({jpg:new Uint8Array(await r.blob.arrayBuffer()), iw:r.w, ih:r.h, pw, ph});
+    } catch(e){ skipped++; }
+    doneW += u.w; upd(0);
+  }
+  if (my !== run) return null;
+  if (!pages.length) throw new Error('nopages');
+  setProgress(1, 'Finished in ' + fmtT((performance.now() - t0) / 1000));
+  return {blob:buildPdf(pages), pages:pages.length, miss, skipped};
+}
+
+/* ---------- results, downloads, preview ---------- */
+function setResult(kind, blob, name){
+  if (res[kind]) URL.revokeObjectURL(res[kind].url);
+  res[kind] = {blob, name, url:URL.createObjectURL(blob)};
+  refresh(); show(kind);
+}
+function clearResult(kind){
+  if (res[kind]) URL.revokeObjectURL(res[kind].url);
+  res[kind] = null; refresh();
+  if (cur === kind) show(res.orig ? 'orig' : res.red ? 'red' : null);
+}
+function refresh(){
+  for (const k of ['orig','red']){
+    dlBtn[k].disabled = tab[k].disabled = !res[k];
+    dlBtn[k].querySelector('small').textContent = res[k] ? fmt(res[k].blob.size) : '–';
+  }
+}
+function show(kind){
+  cur = kind;
+  for (const k of ['orig','red']) tab[k].setAttribute('aria-pressed', k === kind);
+  const has = !!(kind && res[kind]);
+  frame.style.display = has ? 'block' : 'none'; ph.style.display = has ? 'none' : 'block'; openTab.hidden = !has;
+  if (has){ frame.src = res[kind].url; openTab.href = res[kind].url; } else frame.removeAttribute('src');
+}
+function save(r){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(r.blob); a.download = r.name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+}
+dlBtn.orig.onclick = () => res.orig && save(res.orig);
+dlBtn.red.onclick = () => res.red && save(res.red);
+tab.orig.onclick = () => res.orig && show('orig');
+tab.red.onclick = () => res.red && show('red');
+
+/* ---------- actions ---------- */
+const outName = (suffix) => (files.length === 1 ? baseName(files[0].name) : 'document') + suffix + '.pdf';
+function syncButtons(){ makeBtn.disabled = reduceBtn.disabled = resetBtn.disabled = !files.length; }
+function explain(e){
+  msg.className = '';
+  msg.textContent = e.message === 'nopdfjs' ? 'PDF files need an internet connection to load the PDF reader. Images work offline.'
+    : e.message === 'nopages' ? 'None of the files could be read as images or PDFs.' : 'One of the files could not be read.';
+  prog.hidden = true;
+}
+async function withBusy(btn, text, fn){
+  makeBtn.disabled = reduceBtn.disabled = true;
+  const old = btn.textContent; btn.textContent = text;
+  try{ await fn(); } finally { btn.textContent = old; syncButtons(); }
+}
+
+makeBtn.onclick = () => withBusy(makeBtn, 'Making…', async () => {
+  const my = ++run; msg.textContent = ''; msg.className = '';
+  clearResult('orig');
+  try{
+    if (files.length === 1 && isPdf(files[0])){           // a single PDF is already a PDF: keep it exactly as is
+      prog.hidden = false; setProgress(1, 'Single PDF kept as is');
+      setResult('orig', files[0], files[0].name);
+    } else {
+      const r = await build(Infinity, 'Making', my);
+      if (!r) return;
+      setResult('orig', r.blob, outName(''));
+    }
+    msg.textContent = 'Done'; msg.className = 'done';
+  } catch(e){ explain(e); }
+});
+
+reduceBtn.onclick = () => withBusy(reduceBtn, 'Reducing…', async () => {
+  const my = ++run, kb = parseFloat(kbIn.value); msg.textContent = ''; msg.className = '';
+  clearResult('red');
+  if (!(kb >= 1)){ msg.textContent = 'Enter a size of 1 KB or more.'; return; }
+  try{
+    const r = await build(Math.floor(kb * 1024), 'Reducing', my);
+    if (!r) return;
+    setResult('red', r.blob, outName('-reduced'));
+    const over = r.blob.size > kb * 1024;
+    msg.textContent = over ? `Done, but ${kb} KB could not be reached; ${fmt(r.blob.size)} is the smallest possible.` : 'Done';
+    msg.className = over ? '' : 'done';
+    if (r.skipped) msg.textContent += ` ${r.skipped} page${r.skipped > 1 ? 's' : ''} could not be read and were skipped.`;
+  } catch(e){ explain(e); }
+});
+
+function setFiles(fl){
+  run++; files = [...fl].filter(f => f.type.startsWith('image/') || isPdf(f));
+  clearResult('orig'); clearResult('red'); show(null);
+  prog.hidden = true; bar.style.width = '0'; msg.className = ''; msg.textContent = '';
+  filesUl.innerHTML = '';
+  for (const f of files){
+    const li = document.createElement('li');
+    li.innerHTML = '<span></span><span></span>';
+    li.children[0].textContent = f.name; li.children[1].textContent = fmt(f.size);
+    filesUl.appendChild(li);
+  }
+  if (fl.length && !files.length) msg.textContent = 'Choose image or PDF files.';
+  syncButtons();
+}
+fileIn.addEventListener('change', () => setFiles(fileIn.files));
+resetBtn.onclick = () => { fileIn.value = ''; setFiles([]); };
+kbIn.addEventListener('input', () => { clearResult('red'); msg.textContent = ''; msg.className = ''; });
+$('#pick').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileIn.click(); } });
+['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
+['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
+drop.addEventListener('drop', e => setFiles(e.dataTransfer.files));
+</script>
+</body>
+</html>
