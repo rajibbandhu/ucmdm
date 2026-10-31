@@ -1,9 +1,10 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
 
-  	
-	<!-- Google tag (gtag.js) -->
+
+
+  	<!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-4JTMWXL54G"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -13,314 +14,850 @@
   gtag('config', 'G-4JTMWXL54G');
 </script>
 
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Image Size Reducer - Compress Images to a Target KB Size | ucmdm.in</title>
-<meta name="description" content="Compress JPG, PNG, and WebP images to a target size in KB with this free online image size reducer. Reduce image file size privately in your browser.">
-<meta name="keywords" content="image size reducer, image compressor, compress image to 100KB, reduce image file size, photo size reducer, online image compressor, compress JPG, compress PNG, compress WebP, reduce photo size in KB">
-<meta name="author" content="Rajib Kumar Das">
-<meta name="application-name" content="ucmdm.in Image Size Reducer">
-<meta name="theme-color" content="#173b63">
-<link rel="manifest" href="manifest.webmanifest">
-<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
-<meta name="googlebot" content="index, follow">
-<link rel="canonical" href="https://ucmdm.in/image-size-reducer.html">
-<meta property="og:type" content="website">
-<meta property="og:site_name" content="ucmdm.in">
-<meta property="og:title" content="Image Size Reducer - Compress Images to a Target KB Size">
-<meta property="og:description" content="Reduce JPG, PNG, and WebP image file sizes to a target KB amount. Images are processed in your browser, not uploaded.">
-<meta property="og:url" content="https://ucmdm.in/image-size-reducer.html">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="Image Size Reducer - Compress Images to a Target KB Size">
-<meta name="twitter:description" content="Reduce JPG, PNG, and WebP image file sizes to a target KB amount, privately in your browser.">
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  "name": "Image Size Reducer",
-  "url": "https://ucmdm.in/image-size-reducer.html",
-  "description": "Free online tool to reduce image file size to a target KB amount. Supports JPG, PNG, and WebP input and processes images in the browser.",
-  "applicationCategory": "MultimediaApplication",
-  "operatingSystem": "Any",
-  "offers": {
-    "@type": "Offer",
-    "price": "0",
-    "priceCurrency": "USD"
-  }
-}
-</script>
-<style>
-  :root{
-    --bg:#e9edf2; --card:#ffffff; --ink:#16212c; --muted:#5d6b7a; --line:#c9d2dc;
-    --accent:#2f3fbf; --accent-ink:#ffffff; --ok:#1d7a4d; --warn:#a45a00;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,sans-serif;min-height:100vh}
-  .site-header{padding:24px clamp(22px,6vw,88px);background:#173b63;color:#fff}
-  .header-inner{display:flex;align-items:center;justify-content:space-between;gap:22px}
-  .brand{margin:0;font:700 clamp(24px,4vw,38px)/1.1 Georgia,"Times New Roman",serif;letter-spacing:.2px}
-  .brand a{color:inherit;text-decoration:none}
-  .header-tools{display:flex;align-items:center;gap:6px;margin-left:auto}
-  .useful-apps-link{display:inline-flex;align-items:center;min-height:36px;padding:0 12px;border:1px solid #ffffff55;border-radius:7px;color:#fff;font:700 13px Arial,sans-serif;text-decoration:none;white-space:nowrap}
-  .useful-apps-link:hover,.useful-apps-link:focus-visible{background:#ffffff24;outline:2px solid #8fe9f5;outline-offset:2px}
-  main{width:min(640px,calc(100% - 32px));margin:0 auto;padding:32px 0}
-  h1{font-size:1.6rem;margin:0 0 4px;letter-spacing:-.01em}
-  .sub{color:var(--muted);margin:0 0 24px}
- 
-  .btn{display:flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 20px;border-radius:14px;
-       border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:600 1rem inherit;font-family:inherit;cursor:pointer}
-  .btn.ghost{background:#fff;color:var(--accent)}
-  .btn.go{background:var(--ok);border-color:var(--ok);color:#fff}
-  .btn:disabled.go{background:#dfe5ec;border-color:#dfe5ec;color:#7b8794}
-  .row{display:grid;grid-template-columns:1fr auto;gap:12px}
-  #msg.done{color:var(--ok);font-weight:700}
-  #prog{display:grid;gap:6px}
-  #prog[hidden]{display:none}
-  .track{height:10px;border-radius:999px;background:#dfe5ec;overflow:hidden}
-  #bar{height:100%;width:0;background:var(--accent);border-radius:999px;transition:width .25s linear}
-  #ptext{font-size:.88rem;color:var(--muted)}
-  footer{margin-top:20px;text-align:center;font-size:.85rem;color:var(--muted)}
-  footer a{color:var(--accent)}
-  .btn:disabled{opacity:.4;cursor:not-allowed}
-  .btn:focus-visible,input:focus-visible,label.btn:focus-within{outline:3px solid #8e99ee;outline-offset:2px}
-  #drop{border:2px dashed var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;transition:border-color .15s,background .15s}
-  #drop.over{border-color:var(--accent);background:#f1f3ff}
-  #drop small{color:var(--muted);text-align:center}
-  #file{position:absolute;opacity:0;width:1px;height:1px}
-  .size{display:flex;align-items:center;gap:12px;border:2px solid var(--line);border-radius:14px;padding:8px 16px;min-height:52px}
-  .size label{font-weight:600;white-space:nowrap}
-  .size input{flex:1;min-width:0;border:0;border-bottom:2px solid var(--ink);background:transparent;font:inherit;font-size:1.1rem;padding:4px 2px;text-align:right}
-  .size span{color:var(--muted);font-weight:600}
-  #msg{margin:-8px 0 0;font-size:.9rem;color:var(--warn);min-height:1.3em}
-  #list{list-style:none;margin:0;padding:0;display:grid;gap:10px}
-  #list li{display:grid;grid-template-columns:56px 1fr auto;gap:12px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:8px 12px}
-  #list img{width:56px;height:56px;object-fit:cover;border-radius:8px;background:#dfe5ec}
-  .name{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .meta{font-size:.88rem;color:var(--muted)}
-  .meta b{color:var(--ok)}
-  .meta .miss{color:var(--warn)}
-  #list a{color:var(--accent);font-weight:600;font-size:.9rem}
-  .busy{color:var(--muted);font-size:.9rem}
-  @media (max-width:480px){#list li{grid-template-columns:48px 1fr}#list li a{grid-column:2}}
-  @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-</style>
+
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f8fc">
+  <title>imageLite by ucmdm.in — Image size reducer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20233a;
+      --muted: #85889c;
+      --line: #e9e9f1;
+      --purple: #7658e8;
+      --purple-dark: #6142d4;
+      --surface: #fff;
+      --canvas: #f8f8fc;
+      --green: #238a62;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--canvas); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .topbar {
+      height: 70px; padding: 0 max(24px, calc((100% - 1060px) / 2));
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(255,255,255,.86); border-bottom: 1px solid var(--line);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; font-size: 16px; font-weight: 750; letter-spacing: -.4px; }
+    .brand-owner { color: var(--muted); font-size: 11px; font-weight: 550; letter-spacing: 0; }
+    .brand-mark {
+      width: 34px; height: 34px; display: grid; place-items: center; border-radius: 11px;
+      color: #fff; background: var(--purple); box-shadow: 0 5px 12px #7658e833;
+    }
+    .privacy { display: flex; align-items: center; gap: 7px; color: var(--muted); font-size: 12px; }
+
+    main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 42px 0 48px; }
+
+    .workspace {
+      overflow: hidden; border: 1px solid var(--line); border-radius: 16px;
+      background: var(--surface); box-shadow: 0 13px 38px #2626480a;
+    }
+    .upload-area { padding: 21px 22px 0; }
+    .dropzone {
+      min-height: 190px; padding: 26px 18px; display: grid; place-items: center; text-align: center;
+      border: 1.5px dashed #d9d5ed; border-radius: 12px; background: #fcfbff;
+      transition: border-color .16s, background .16s;
+    }
+    .dropzone.dragging { border-color: var(--purple); background: #f6f3ff; }
+    .upload-icon {
+      width: 45px; height: 45px; margin: 0 auto 11px; display: grid; place-items: center;
+      border-radius: 14px; color: var(--purple); background: #f0edff;
+    }
+    .upload-title { margin: 0 0 5px; font-size: 16px; font-weight: 700; letter-spacing: -.25px; }
+    .upload-hint { margin: 0 0 13px; color: var(--muted); font-size: 12px; }
+    .primary, .secondary {
+      border: 0; border-radius: 8px; font-weight: 680;
+      transition: background .15s, transform .15s, opacity .15s;
+    }
+    .primary { padding: 10px 17px; color: #fff; background: var(--purple); box-shadow: 0 4px 10px #7658e82b; }
+    .primary:hover:not(:disabled) { background: var(--purple-dark); transform: translateY(-1px); }
+    .primary:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
+    .secondary { padding: 9px 13px; color: #5841b9; background: #f1efff; }
+    .secondary:hover { background: #e9e5ff; }
+    .file-hint { margin-top: 11px; color: #a0a2b1; font-size: 11px; }
+    #file-input { display: none; }
+
+    .queue { padding: 17px 22px 0; }
+    .queue-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 9px; }
+    .queue-title { font-size: 12px; font-weight: 700; }
+    .queue-count { margin-left: 5px; color: var(--muted); font-weight: 500; }
+    .add-more { color: var(--purple); background: transparent; border: 0; padding: 5px 0; font-size: 12px; font-weight: 650; }
+    .file-list { display: grid; gap: 7px; max-height: 168px; overflow-y: auto; }
+    .file-item {
+      width: 100%; display: grid; grid-template-columns: 39px minmax(0,1fr) auto; align-items: center; gap: 10px;
+      padding: 8px 10px; text-align: left; color: var(--ink); border: 1px solid var(--line);
+      border-radius: 9px; background: #fff;
+    }
+    .file-item:hover { border-color: #d7d0f7; }
+    .file-item.active { border-color: #b6a8f3; background: #faf9ff; box-shadow: 0 0 0 2px #7658e80c; }
+    .file-thumb { width: 38px; height: 38px; display: grid; place-items: center; overflow: hidden; border-radius: 6px; background: #f2f1f8; }
+    .file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .file-description { min-width: 0; }
+    .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 650; }
+    .file-details { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .file-result { color: var(--green); text-align: right; font-size: 11px; font-weight: 700; }
+    .file-result.pending { color: #a0a2b1; font-weight: 500; }
+    .file-result.error { color: #bd5546; }
+
+    .controls { padding: 19px 22px 0; }
+    .control-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #55586d; font-size: 12px; font-weight: 650; }
+    .mode-fieldset { margin: 0 0 16px; padding: 0; border: 0; }
+    .mode-options { display: flex; flex-wrap: wrap; gap: 10px; }
+    .mode-option {
+      display: inline-flex; align-items: center; gap: 6px; padding: 8px 11px;
+      color: #55586d; border: 1px solid #e1e1ea; border-radius: 8px; background: #fff;
+      font-size: 12px; cursor: pointer;
+    }
+    .mode-option:has(input:checked) { color: #5841b9; border-color: #b6a8f3; background: #faf9ff; }
+    .mode-option input { margin: 0; accent-color: var(--purple); }
+    .target-wrap { position: relative; }
+    input[type="number"] {
+      width: 100%; height: 40px; padding: 0 12px; color: var(--ink); border: 1px solid #e1e1ea;
+      border-radius: 8px; outline: none; background: #fff;
+    }
+    input[type="number"] { padding-right: 47px; }
+    input[type="number"]:focus, button:focus-visible, input:focus-visible { outline: 3px solid #7658e83b; outline-offset: 2px; }
+    .unit { position: absolute; top: 12px; right: 12px; color: var(--muted); font-size: 11px; pointer-events: none; }
+    .helper { margin-top: 6px; color: #9a9cac; font-size: 10px; line-height: 1.4; }
+
+    .progress-section { padding: 17px 22px 0; }
+    .progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 7px; color: #64677b; font-size: 11px; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: #eeedf4; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #9278f3, #7658e8); transition: width .22s ease; }
+    .eta { min-height: 17px; margin-top: 6px; color: #9698a9; font-size: 10px; }
+    .actions {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 22px 18px; margin-top: 5px; border-top: 1px solid #f0f0f5;
+    }
+    .action-buttons { display: flex; gap: 8px; }
+    .action-buttons .primary { min-width: 105px; }
+    .reset { color: #777a8d; background: #f3f3f7; box-shadow: none; }
+    .reset:hover { background: #e9e9f0; }
+    .download { color: #5740bd; background: #f0edff; }
+    .download:hover:not(:disabled) { background: #e7e2ff; }
+    .download:disabled { color: #aaa7ba; background: #f4f3f8; }
+    .status { padding: 0 22px 14px; color: #bd5546; font-size: 11px; }
+    .privacy-note { margin: 16px 0 0; color: #989aaa; text-align: center; font-size: 11px; }
+    footer { padding: 0 18px 24px; color: #a1a2b0; text-align: center; font-size: 10px; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 600px) {
+      .topbar { height: 62px; padding: 0 17px; }
+      main { width: min(100% - 26px, 920px); padding: 39px 0 38px; }
+      .upload-area { padding: 13px 13px 0; }
+      .dropzone { min-height: 175px; padding: 20px 12px; }
+      .queue { padding: 14px 13px 0; }
+      .controls { padding: 17px 13px 0; }
+      .progress-section { padding: 15px 13px 0; }
+      .actions { padding: 13px; }
+      .status { padding: 0 13px 12px; }
+      .action-buttons { gap: 6px; }
+      .action-buttons .primary { padding: 10px 12px; }
+      .download { padding: 9px 10px; font-size: 11px; }
+    }
+  </style>
 </head>
 <body>
-<header class="site-header">
-  <div class="header-inner">
-    <p class="brand"><a href="index.html">ucmdm.in</a></p>
-    <div class="header-tools">
-      <a class="useful-apps-link" href="useful-apps.html">Useful Apps</a>
-    </div>
-  </div>
-</header>
-<main>
-  <h1>Image size reducer</h1>
-  <p class="sub">Free online image compressor to reduce image file size to a target in KB. Choose JPG, PNG, or WebP images, then download the reduced photos. Everything runs in your browser; nothing is uploaded.</p>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7.5A2.5 2.5 0 0 1 6.5 5h11A2.5 2.5 0 0 1 20 7.5v9a2.5 2.5 0 0 1-2.5 2.5h-11A2.5 2.5 0 0 1 4 16.5v-9Z" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9" r="1.5" fill="currentColor"/><path d="m5 17 5-5 3 3 2-2 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </span><span>imageLite <small class="brand-owner">by ucmdm.in</small></span></div>
+    <div class="privacy"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" aria-hidden="true"><path d="M10 2.5 4 5v4.4c0 3.8 2.6 6.4 6 8.1 3.4-1.7 6-4.3 6-8.1V5l-6-2.5Z" stroke="currentColor" stroke-width="1.5"/><path d="m7.5 10 1.7 1.7 3.5-3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>Private &amp; secure</div>
+  </header>
 
-  <section class="panel">
-    <div id="drop">
-      <label class="btn" for="file" tabindex="0" id="pick">Upload image / images</label>
-      <input id="file" type="file" accept="image/*" multiple>
-      <small>or drop images here (JPG, PNG, WebP)</small>
-    </div>
+  <main>
+    <section class="workspace" aria-label="Image size reducer">
+      <div class="upload-area" id="upload-area">
+        <div class="dropzone" id="dropzone">
+          <div>
+            <div class="upload-icon" aria-hidden="true">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none"><path d="M12 16V4m0 0L7.5 8.5M12 4l4.5 4.5M5 14.5v3A2.5 2.5 0 0 0 7.5 20h9a2.5 2.5 0 0 0 2.5-2.5v-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="upload-title">Upload image / images</p>
+            <p class="upload-hint">Drag and drop your images here, or browse your device</p>
+            <button type="button" class="primary" id="browse-button">Choose images</button>
+            <div class="file-hint">JPG, PNG, or WebP · images are processed privately on your device</div>
+          </div>
+        </div>
+      </div>
+      <input id="file-input" type="file" accept="image/jpeg,image/png,image/webp" multiple>
 
-    <div class="size">
-      <label for="kb">Reduce image size :</label>
-      <input id="kb" type="number" min="1" step="1" value="100" inputmode="numeric">
-      <span>kb</span>
-    </div>
-    <p id="msg" role="status"></p>
+      <section class="queue" id="queue" hidden aria-label="Uploaded images">
+        <div class="queue-heading">
+          <div class="queue-title">Your images<span class="queue-count" id="queue-count"></span></div>
+          <button type="button" class="add-more" id="add-more">+ Add more</button>
+        </div>
+        <div class="file-list" id="file-list"></div>
+      </section>
 
-    <div class="row">
-      <button class="btn" id="reduce" disabled>Reduce</button>
-      <button class="btn ghost" id="reset" disabled>Reset</button>
-    </div>
-    <div id="prog" hidden>
-      <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="bar"></div></div>
-      <div id="ptext" aria-live="polite"></div>
-    </div>
+      <div class="controls" id="controls" hidden>
+        <fieldset class="mode-fieldset">
+          <legend class="control-label">Compression mode</legend>
+          <div class="mode-options">
+            <label class="mode-option"><input type="radio" name="compression-mode" value="quality" checked> Quality</label>
+            <label class="mode-option"><input type="radio" name="compression-mode" value="speed"> Speed</label>
+          </div>
+        </fieldset>
+        <div>
+          <label class="control-label" for="target-size">Reduce file size to</label>
+          <div class="target-wrap">
+            <input id="target-size" type="number" min="1" max="100000" step="1" value="200" inputmode="numeric">
+            <span class="unit">KB</span>
+          </div>
+          <div class="helper" id="mode-helper">We'll preserve quality first, then resize dimensions if needed to fit your target.</div>
+        </div>
+      </div>
 
-    <button class="btn go" id="dl" disabled>Download reduced image</button>
+      <div class="progress-section" id="progress-section" hidden>
+        <div class="progress-heading"><span id="progress-label">Ready to reduce</span><span id="progress-percent">0%</span></div>
+        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Image reduction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="eta" id="eta" aria-live="polite">Estimated time will appear while reducing.</div>
+      </div>
 
-    <ul id="list" aria-live="polite"></ul>
+      <div class="actions" id="actions" hidden>
+        <div class="action-buttons">
+          <button type="button" class="primary" id="reduce-button">Reduce all</button>
+          <button type="button" class="secondary reset" id="reset-button">Reset</button>
+        </div>
+        <button type="button" class="secondary download" id="download-button" disabled>Download all (—)</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+    <p class="privacy-note">🔒 Your images never leave your device · No uploads · No account required</p>
+  </main>
+  <footer>Free to use · Your original images are always untouched</footer>
 
-  </section>
-  <footer>© 2026 <a href="https://ucmdm.in/">ucmdm.in</a> Developed by Rajib Kumar Das · Golakganj, Assam, India · <a href="mailto:rajibbandhu@gmail.com">rajibbandhu@gmail.com</a></footer>
-</main>
+  <script>
+    (() => {
+      const input = document.getElementById("file-input");
+      const dropzone = document.getElementById("dropzone");
+      const uploadArea = document.getElementById("upload-area");
+      const queueSection = document.getElementById("queue");
+      const controls = document.getElementById("controls");
+      const progressSection = document.getElementById("progress-section");
+      const actions = document.getElementById("actions");
+      const list = document.getElementById("file-list");
+      const targetInput = document.getElementById("target-size");
+      const reduceButton = document.getElementById("reduce-button");
+      const downloadButton = document.getElementById("download-button");
+      const status = document.getElementById("status");
+      const progressBar = document.getElementById("progress-bar");
+      const progressTrack = document.getElementById("progress-track");
+      const progressLabel = document.getElementById("progress-label");
+      const progressPercent = document.getElementById("progress-percent");
+      const eta = document.getElementById("eta");
+      const modeInputs = [...document.querySelectorAll('input[name="compression-mode"]')];
+      const modeHelper = document.getElementById("mode-helper");
+      const files = [];
+      let activeId = null;
+      let operationId = 0;
+      let isReducing = false;
 
-<script>
-const $ = s => document.querySelector(s);
-const fileIn = $('#file'), kbIn = $('#kb'), list = $('#list'), dl = $('#dl'), drop = $('#drop'), msg = $('#msg');
-let files = [], results = [], run = 0, timer;
+      const formatBytes = (bytes) => {
+        if (bytes < 1024) return `${bytes} B`;
+        const units = ["KB", "MB", "GB"];
+        let value = bytes / 1024;
+        let unit = 0;
+        while (value >= 1024 && unit < units.length - 1) {
+          value /= 1024;
+          unit += 1;
+        }
+        return `${value.toFixed(value >= 100 ? 0 : 1)} ${units[unit]}`;
+      };
 
-const fmt = b => b >= 1048576 ? (b/1048576).toFixed(2)+' MB' : (b/1024).toFixed(1)+' KB';
-const toBlob = (c, q) => new Promise(r => c.toBlob(r, 'image/jpeg', q));
-const baseName = n => n.replace(/\.[^.]+$/, '');
+      const outputMime = "image/webp";
+      const extensionForMime = (mime) => ({ "image/webp": "webp", "image/jpeg": "jpg", "image/png": "png" }[mime]);
+      const activeFile = () => files.find((item) => item.id === activeId);
 
-/* Compress one image to <= target bytes: search JPEG quality, shrink dimensions if quality alone is not enough. */
-async function shrink(bmp, target, tick = () => {}){
-  let w = bmp.width, h = bmp.height;
-  const tb = async (c, q) => { const r = await toBlob(c, q); tick(); return r; };
-  for (let i = 0; i < 25; i++){
-    const c = document.createElement('canvas'); c.width = w; c.height = h;
-    const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0,0,w,h); x.drawImage(bmp,0,0,w,h);
-    let lo = 0.05, hi = 0.95;
-    let b = await tb(c, hi);
-    if (b.size <= target) return {blob:b, w, h};
-    b = await tb(c, lo);
-    if (b.size <= target){
-      let best = b;
-      for (let k = 0; k < 7; k++){
-        const mid = (lo + hi) / 2, t = await tb(c, mid);
-        if (t.size <= target){ best = t; lo = mid; } else hi = mid;
+      function syncDownloadButton() {
+        const targetKB = Number(targetInput.value);
+        const targetBytes = Math.floor(targetKB * 1024);
+        const downloadable = Number.isFinite(targetKB) && targetKB > 0
+          ? files.filter((item) => item.output && (
+            item.output.size <= targetBytes ||
+            (item.miss && item.outputTargetBytes === targetBytes)
+          ))
+          : [];
+        downloadButton.disabled = isReducing || downloadable.length === 0;
+        downloadButton.textContent = downloadable.length
+          ? `Download all (${downloadable.length})`
+          : "Download all (—)";
       }
-      return {blob:best, w, h};
-    }
-    if (Math.min(w,h) <= 16) return {blob:b, w, h, miss:true};
-    const s = Math.max(0.5, Math.min(0.9, Math.sqrt(target / b.size) * 1.05));
-    w = Math.max(16, Math.round(w*s)); h = Math.max(16, Math.round(h*s));
-  }
-}
 
-const reduceBtn = $('#reduce'), resetBtn = $('#reset'), prog = $('#prog'), bar = $('#bar'), ptext = $('#ptext');
-const fmtT = s => s < 1 ? 'under 1 s' : s < 60 ? Math.ceil(s) + ' s' : Math.floor(s/60) + ' min ' + Math.round(s % 60) + ' s';
-
-/* Show the selected files as "ready" and clear any earlier results. */
-function showPending(){
-  run++;
-  results.forEach(r => URL.revokeObjectURL(r.url));
-  results = []; list.innerHTML = ''; dl.disabled = true; msg.textContent = ''; msg.className = ''; prog.hidden = true; bar.style.width = '0';
-  dl.textContent = 'Download reduced image';
-  for (const f of files){
-    const li = document.createElement('li');
-    li.innerHTML = '<span></span><div><div class="name"></div><div class="meta"></div></div>';
-    li.querySelector('.name').textContent = f.name;
-    li.querySelector('.meta').textContent = fmt(f.size) + ' · ready to reduce';
-    list.appendChild(li);
-  }
-  reduceBtn.disabled = !files.length; resetBtn.disabled = !files.length;
-}
-
-async function process(){
-  reduceBtn.disabled = true; reduceBtn.textContent = 'Reducing…';
-  await doReduce();
-  reduceBtn.textContent = 'Reduce'; reduceBtn.disabled = !files.length;
-}
-
-async function doReduce(){
-  const my = ++run;
-  const kb = parseFloat(kbIn.value);
-  results.forEach(r => URL.revokeObjectURL(r.url));
-  results = []; list.innerHTML = ''; dl.disabled = true;
-  if (!files.length){ msg.textContent = ''; return; }
-  if (!(kb >= 1)){ msg.textContent = 'Enter a size of 1 KB or more.'; return; }
-  msg.textContent = ''; msg.className = '';
-  const target = Math.floor(kb * 1024);
-  const n = files.length, total = files.reduce((a, f) => a + f.size, 0), t0 = performance.now();
-  let done = 0;
-  const update = (frac, idx, size) => {
-    if (my !== run) return;
-    const p = Math.min(1, (done + frac * size) / total), el = (performance.now() - t0) / 1000;
-    bar.style.width = (p * 100) + '%';
-    bar.parentElement.setAttribute('aria-valuenow', Math.round(p * 100));
-    ptext.textContent = p >= 1 ? 'Finished in ' + fmtT(el)
-      : `Reducing image ${Math.min(idx + 1, n)} of ${n} · ${Math.round(p * 100)}%` +
-        (p > 0.03 ? ` · about ${fmtT(el / p * (1 - p))} left` : ' · estimating time…');
-  };
-  prog.hidden = false; update(0, 0, 0);
-
-  for (const [idx, f] of files.entries()){
-    let steps = 0;
-    const li = document.createElement('li');
-    li.innerHTML = '<span></span><div><div class="name"></div><div class="busy">Reducing…</div></div>';
-    li.querySelector('.name').textContent = f.name;
-    list.appendChild(li);
-    let res;
-    try{
-      if (f.size <= target){
-        res = {blob:f, name:f.name, kept:true};
-      } else {
-        const bmp = await createImageBitmap(f, {imageOrientation:'from-image'});
-        const r = await shrink(bmp, target, () => update(Math.min(0.95, ++steps / 10), idx, f.size));
-        bmp.close && bmp.close();
-        res = {...r, name: baseName(f.name) + '-reduced.jpg'};
+      function setProgress(percent, message, estimate) {
+        const value = Math.max(0, Math.min(100, Math.round(percent)));
+        progressBar.style.width = `${value}%`;
+        progressTrack.setAttribute("aria-valuenow", String(value));
+        progressPercent.textContent = `${value}%`;
+        progressLabel.textContent = message;
+        eta.textContent = estimate;
       }
-    } catch(e){ li.querySelector('.busy').textContent = 'This file could not be read as an image.'; done += f.size; update(0, idx + 1, 0); continue; }
-    if (my !== run) return;
-    res.url = URL.createObjectURL(res.blob); res.orig = f.size;
-    results.push(res); done += f.size; update(0, idx + 1, 0);
-    const meta = res.kept
-      ? `${fmt(f.size)}. <b>Already under ${kb} KB, kept as is.</b>`
-      : `${fmt(f.size)} → <b>${fmt(res.blob.size)}</b>` + (res.w ? ` · ${res.w}×${res.h}px` : '') +
-        (res.miss ? ` <span class="miss">Could not reach ${kb} KB; this is the smallest possible.</span>` : '');
-    li.innerHTML = `<img alt=""><div><div class="name"></div><div class="meta">${meta}</div></div><a download>Save</a>`;
-    li.querySelector('img').src = res.url;
-    li.querySelector('.name').textContent = res.name;
-    const a = li.querySelector('a'); a.href = res.url; a.download = res.name;
-  }
-  if (my !== run) return;
-  dl.disabled = !results.length;
-  dl.textContent = results.length > 1 ? 'Download reduced images (.zip)' : 'Download reduced image';
-  if (results.length){ msg.textContent = 'Done'; msg.className = 'done'; }
-}
 
-function setFiles(fl){
-  files = [...fl].filter(f => f.type.startsWith('image/'));
-  showPending();
-  if (fl.length && !files.length) msg.textContent = 'Choose image files (JPG, PNG or WebP).';
-}
-fileIn.addEventListener('change', () => setFiles(fileIn.files));
-kbIn.addEventListener('input', showPending);
-reduceBtn.addEventListener('click', process);
-resetBtn.addEventListener('click', () => { fileIn.value = ''; files = []; showPending(); resetBtn.disabled = true; });
-$('#pick').addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' '){ e.preventDefault(); fileIn.click(); } });
-['dragenter','dragover'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.add('over'); }));
-['dragleave','drop'].forEach(t => drop.addEventListener(t, e => { e.preventDefault(); drop.classList.remove('over'); }));
-drop.addEventListener('drop', e => setFiles(e.dataTransfer.files));
+      function renderList() {
+        list.replaceChildren();
+        document.getElementById("queue-count").textContent = `(${files.length})`;
+        files.forEach((item) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `file-item${item.id === activeId ? " active" : ""}`;
+          button.setAttribute("aria-pressed", String(item.id === activeId));
+          button.addEventListener("click", () => selectFile(item.id));
 
-function save(blob, name){
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
-  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-}
+          const thumb = document.createElement("span");
+          thumb.className = "file-thumb";
+          const image = document.createElement("img");
+          image.src = item.url;
+          image.alt = "";
+          thumb.append(image);
 
-/* Minimal store-only ZIP writer so several images download as one file. */
-const crcTable = (() => { const t = []; for (let n = 0; n < 256; n++){ let c = n; for (let k = 0; k < 8; k++) c = c & 1 ? 0xEDB88320 ^ (c >>> 1) : c >>> 1; t[n] = c >>> 0; } return t; })();
-const crc32 = u => { let c = ~0; for (let i = 0; i < u.length; i++) c = crcTable[(c ^ u[i]) & 255] ^ (c >>> 8); return ~c >>> 0; };
-async function makeZip(items){
-  const enc = new TextEncoder(), parts = [], central = []; let offset = 0;
-  const d = new Date(), time = (d.getHours() << 11) | (d.getMinutes() << 5) | (d.getSeconds() >> 1),
-        date = ((d.getFullYear() - 1980) << 9) | ((d.getMonth() + 1) << 5) | d.getDate();
-  for (const it of items){
-    const data = new Uint8Array(await it.blob.arrayBuffer()), name = enc.encode(it.name), crc = crc32(data);
-    const lh = new DataView(new ArrayBuffer(30));
-    lh.setUint32(0, 0x04034b50, true); lh.setUint16(4, 20, true); lh.setUint16(6, 0x0800, true); lh.setUint16(8, 0, true);
-    lh.setUint16(10, time, true); lh.setUint16(12, date, true); lh.setUint32(14, crc, true);
-    lh.setUint32(18, data.length, true); lh.setUint32(22, data.length, true); lh.setUint16(26, name.length, true); lh.setUint16(28, 0, true);
-    parts.push(lh.buffer, name, data);
-    const ch = new DataView(new ArrayBuffer(46));
-    ch.setUint32(0, 0x02014b50, true); ch.setUint16(4, 20, true); ch.setUint16(6, 20, true); ch.setUint16(8, 0x0800, true);
-    ch.setUint16(12, time, true); ch.setUint16(14, date, true); ch.setUint32(16, crc, true);
-    ch.setUint32(20, data.length, true); ch.setUint32(24, data.length, true); ch.setUint16(28, name.length, true); ch.setUint32(42, offset, true);
-    central.push(ch.buffer, name);
-    offset += 30 + name.length + data.length;
-  }
-  const csize = central.reduce((s, p) => s + (p.byteLength ?? p.length), 0);
-  const end = new DataView(new ArrayBuffer(22));
-  end.setUint32(0, 0x06054b50, true); end.setUint16(8, items.length, true); end.setUint16(10, items.length, true);
-  end.setUint32(12, csize, true); end.setUint32(16, offset, true);
-  return new Blob([...parts, ...central, end.buffer], {type:'application/zip'});
-}
+          const description = document.createElement("span");
+          description.className = "file-description";
+          const name = document.createElement("span");
+          name.className = "file-name";
+          name.textContent = item.file.name;
+          const details = document.createElement("span");
+          details.className = "file-details";
+          details.textContent = `${formatBytes(item.file.size)} · ${item.file.type.replace("image/", "").toUpperCase()}`;
+          description.append(name, details);
 
-dl.addEventListener('click', async () => {
-  if (!results.length) return;
-  if (results.length === 1) return save(results[0].blob, results[0].name);
-  const seen = {}, items = results.map(r => {
-    let n = r.name; if (seen[n]){ const i = n.lastIndexOf('.'); n = n.slice(0, i) + '-' + seen[n] + n.slice(i); } seen[r.name] = (seen[r.name] || 0) + 1;
-    return {blob:r.blob, name:n};
-  });
-  save(await makeZip(items), 'reduced-images.zip');
-});
-</script>
+          const result = document.createElement("span");
+          result.className = `file-result${item.output ? "" : " pending"}${item.error || item.miss ? " error" : ""}`;
+          result.textContent = item.miss ? "Target missed" : item.output ? formatBytes(item.output.size) : item.error ? "Target missed" : "Not reduced";
+          button.append(thumb, description, result);
+          list.append(button);
+        });
+      }
+
+      function selectFile(id) {
+        if (isReducing) return;
+        activeId = id;
+        const selected = activeFile();
+        syncDownloadButton();
+        status.textContent = selected.error || "";
+        renderList();
+        if (selected.miss && !downloadButton.disabled) setProgress(100, "Smallest result ready to download", "This image couldn't meet the target; download the smallest result.");
+        else if (selected.output && !downloadButton.disabled) setProgress(100, "Image ready to download", "Choose another image or reset to start over.");
+        else if (selected.output) setProgress(0, "Target size changed", "Reduce again to meet the current target.");
+        else setProgress(0, "Ready to reduce", "Choose a target size, then select Reduce.");
+      }
+
+      async function loadImages(fileList) {
+        const accepted = Array.from(fileList).filter((file) => ["image/jpeg", "image/png", "image/webp"].includes(file.type));
+        const rejectedCount = fileList.length - accepted.length;
+        if (rejectedCount) status.textContent = `${rejectedCount} unsupported file${rejectedCount === 1 ? " was" : "s were"} skipped. Choose JPG, PNG, or WebP images.`;
+        if (!accepted.length) return;
+        for (const file of accepted) {
+          files.push({ id: crypto.randomUUID(), file, url: URL.createObjectURL(file), output: null, outputFormat: null, error: "" });
+        }
+        uploadArea.hidden = true;
+        queueSection.hidden = false;
+        controls.hidden = false;
+        progressSection.hidden = false;
+        actions.hidden = false;
+        if (!activeId) activeId = files[files.length - accepted.length].id;
+        renderList();
+        selectFile(activeId);
+      }
+
+      function encode(canvas, mime, quality) {
+        return new Promise((resolve, reject) => {
+          try {
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error("Your browser couldn't create a WebP image. Try another browser."));
+                return;
+              }
+              if (blob.type !== mime) {
+                reject(new Error("Your browser doesn't support WebP image output. Try another browser."));
+                return;
+              }
+              resolve(blob);
+            }, mime, mime === "image/png" ? undefined : quality);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
+      async function reduceOne(selected, targetBytes, onProgress, thisOperation) {
+        try {
+          if (selected.file.size <= targetBytes) {
+            return { output: selected.file, outputFormat: selected.file.type, quality: 1, dimensions: "" };
+          }
+          const image = new Image();
+          image.src = selected.url;
+          await image.decode();
+          if (thisOperation !== operationId) return null;
+          const mime = outputMime;
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (!context) throw new Error("Your browser couldn't prepare this image.");
+
+          const startedAt = performance.now();
+          const minimumQuality = .25;
+          let completed = 0;
+          let scale = 1;
+          let best = null;
+          let smallest = null;
+          const estimatedEncodes = 12;
+
+          const encodeAt = async (width, height, quality) => {
+            canvas.width = width;
+            canvas.height = height;
+            context.drawImage(image, 0, 0, width, height);
+            const blob = await encode(canvas, mime, quality);
+            if (thisOperation !== operationId) return null;
+            completed += 1;
+            const elapsed = (performance.now() - startedAt) / 1000;
+            onProgress(completed, estimatedEncodes, elapsed, width, height);
+            if (!smallest || blob.size < smallest.size) smallest = blob;
+            return { blob, quality };
+          };
+
+          for (let pass = 0; pass < 18; pass += 1) {
+            if (thisOperation !== operationId) return null;
+            const width = Math.max(1, Math.round(image.naturalWidth * scale));
+            const height = Math.max(1, Math.round(image.naturalHeight * scale));
+            const highQuality = await encodeAt(width, height, .8);
+            if (!highQuality) return null;
+            if (highQuality.blob.size <= targetBytes) {
+              best = highQuality;
+              break;
+            }
+
+            const lowestQuality = await encodeAt(width, height, minimumQuality);
+            if (!lowestQuality) return null;
+            if (lowestQuality.blob.size <= targetBytes) {
+              best = lowestQuality;
+              let low = minimumQuality;
+              let high = .8;
+              for (let attempt = 0; attempt < 5; attempt += 1) {
+                const quality = (low + high) / 2;
+                const candidate = await encodeAt(width, height, quality);
+                if (!candidate) return null;
+                if (candidate.blob.size <= targetBytes) {
+                  low = quality;
+                  best = candidate;
+                } else {
+                  high = quality;
+                }
+              }
+              break;
+            }
+
+            const nextScale = scale * Math.min(.85, Math.sqrt(targetBytes / lowestQuality.blob.size) * .9);
+            if (nextScale >= scale || (width === 1 && height === 1)) break;
+            scale = Math.max(Math.min(1 / image.naturalWidth, 1 / image.naturalHeight), nextScale);
+            setProgress(
+              Math.min(92, 12 + pass * 3),
+              "Preserving quality by resizing dimensions",
+              "Adjusting image dimensions to meet your target size."
+            );
+          }
+          if (thisOperation !== operationId) return null;
+          if (!best || best.blob.size > targetBytes) {
+            throw new Error(`This image couldn't reach the target. Smallest result: ${formatBytes(smallest.size)}.`);
+          }
+          if (best.blob.size >= selected.file.size) {
+            throw new Error("Reducing this image would make it larger than the original.");
+          }
+          const dimensions = scale < 1
+            ? `${Math.max(1, Math.round(image.naturalWidth * scale))} × ${Math.max(1, Math.round(image.naturalHeight * scale))} px`
+            : "";
+          return { output: best.blob, outputFormat: mime, quality: best.quality, dimensions };
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : "Something went wrong while reducing this image." };
+        }
+      }
+
+      async function reduceOneSpeed(selected, targetBytes, onProgress, thisOperation) {
+        try {
+          if (selected.file.size <= targetBytes) {
+            return { output: selected.file, outputFormat: selected.file.type, quality: 1, dimensions: "" };
+          }
+
+          const bitmap = await createImageBitmap(selected.file, { imageOrientation: "from-image" });
+          try {
+            if (thisOperation !== operationId) return null;
+            const canvas = document.createElement("canvas");
+            const context = canvas.getContext("2d");
+            if (!context) throw new Error("Your browser couldn't prepare this image.");
+
+            const startedAt = performance.now();
+            const estimatedEncodes = 12;
+            let completed = 0;
+            let width = bitmap.width;
+            let height = bitmap.height;
+            let best = null;
+            let smallest = null;
+
+            const encodeAt = (quality) => new Promise((resolve, reject) => {
+              canvas.toBlob((blob) => {
+                if (!blob) {
+                  reject(new Error("Your browser couldn't create a JPEG image."));
+                  return;
+                }
+                resolve(blob);
+              }, "image/jpeg", quality);
+            });
+
+            for (let pass = 0; pass < 25; pass += 1) {
+              if (thisOperation !== operationId) return null;
+              canvas.width = width;
+              canvas.height = height;
+              context.fillStyle = "#fff";
+              context.fillRect(0, 0, width, height);
+              context.drawImage(bitmap, 0, 0, width, height);
+
+              const encodeAndReport = async (quality) => {
+                const blob = await encodeAt(quality);
+                if (thisOperation !== operationId) return null;
+                completed += 1;
+                onProgress(
+                  completed,
+                  estimatedEncodes,
+                  (performance.now() - startedAt) / 1000,
+                  width,
+                  height
+                );
+                if (!smallest || blob.size < smallest.size) smallest = blob;
+                return blob;
+              };
+
+              const highQuality = await encodeAndReport(.95);
+              if (!highQuality) return null;
+              if (highQuality.size <= targetBytes) {
+                best = highQuality;
+                break;
+              }
+
+              const lowestQuality = await encodeAndReport(.05);
+              if (!lowestQuality) return null;
+              if (lowestQuality.size <= targetBytes) {
+                let low = .05;
+                let high = .95;
+                best = lowestQuality;
+                for (let attempt = 0; attempt < 7; attempt += 1) {
+                  const quality = (low + high) / 2;
+                  const candidate = await encodeAndReport(quality);
+                  if (!candidate) return null;
+                  if (candidate.size <= targetBytes) {
+                    best = candidate;
+                    low = quality;
+                  } else {
+                    high = quality;
+                  }
+                }
+                break;
+              }
+
+              if (Math.min(width, height) <= 16) {
+                best = lowestQuality;
+                break;
+              }
+              const scale = Math.max(.5, Math.min(.9, Math.sqrt(targetBytes / lowestQuality.size) * 1.05));
+              const nextWidth = Math.max(16, Math.round(width * scale));
+              const nextHeight = Math.max(16, Math.round(height * scale));
+              if (nextWidth === width && nextHeight === height) {
+                best = lowestQuality;
+                break;
+              }
+              width = nextWidth;
+              height = nextHeight;
+            }
+
+            if (thisOperation !== operationId) return null;
+            if (!best) best = smallest;
+            if (!best) throw new Error("Your browser couldn't reduce this image.");
+            if (best.size >= selected.file.size) {
+              throw new Error("Reducing this image would make it larger than the original.");
+            }
+            return {
+              output: best,
+              outputFormat: best.type,
+              quality: 1,
+              dimensions: width !== bitmap.width || height !== bitmap.height ? `${width} × ${height} px` : "",
+              miss: best.size > targetBytes
+            };
+          } finally {
+            bitmap.close();
+          }
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : "Something went wrong while reducing this image." };
+        }
+      }
+
+      async function reduceSelected() {
+        const targetKB = Number(targetInput.value);
+        if (!files.length || isReducing) return;
+        if (!Number.isFinite(targetKB) || targetKB <= 0) {
+          status.textContent = "Enter a target file size greater than 0 KB.";
+          targetInput.focus();
+          return;
+        }
+        if (targetKB > 100000) {
+          status.textContent = "Enter a target size of 100,000 KB or less.";
+          targetInput.focus();
+          return;
+        }
+
+        const thisOperation = ++operationId;
+        const targetBytes = Math.floor(targetKB * 1024);
+        const startedAt = performance.now();
+        let totalEncodes = 0;
+        isReducing = true;
+        reduceButton.disabled = true;
+        reduceButton.textContent = "Reducing…";
+        targetInput.disabled = true;
+        document.getElementById("add-more").disabled = true;
+        document.getElementById("reset-button").disabled = true;
+        modeInputs.forEach((modeInput) => { modeInput.disabled = true; });
+        downloadButton.disabled = true;
+        status.textContent = "";
+        files.forEach((item) => {
+          item.output = null;
+          item.outputFormat = null;
+          item.outputTargetBytes = null;
+          item.miss = false;
+          item.error = "";
+        });
+        renderList();
+
+        for (let index = 0; index < files.length; index += 1) {
+          if (thisOperation !== operationId) break;
+          const selected = files[index];
+          activeId = selected.id;
+          renderList();
+          setProgress(index / files.length * 100, `Reducing image ${index + 1} of ${files.length}`, "Estimating time remaining…");
+          const reduceImage = modeInputs.find((modeInput) => modeInput.checked).value === "speed"
+            ? reduceOneSpeed
+            : reduceOne;
+          const result = await reduceImage(selected, targetBytes, (attempt, expected, imageElapsed, width, height) => {
+            totalEncodes += 1;
+            const perImageProgress = Math.min(.95, attempt / expected);
+            const overall = ((index + perImageProgress) / files.length) * 100;
+            const elapsed = (performance.now() - startedAt) / 1000;
+            const remainingEncodes = Math.max(0, (files.length - index - 1) * expected + (expected - attempt));
+            const secondsRemaining = totalEncodes ? Math.max(1, Math.ceil(elapsed / totalEncodes * remainingEncodes)) : 0;
+            const etaText = secondsRemaining < 60
+              ? `Estimated time remaining: about ${secondsRemaining} sec`
+              : `Estimated time remaining: about ${Math.ceil(secondsRemaining / 60)} min`;
+            setProgress(overall, `Reducing image ${index + 1} of ${files.length} · ${width} × ${height}`, etaText);
+          }, thisOperation);
+          if (thisOperation !== operationId) break;
+          if (result && result.output) {
+            selected.output = result.output;
+            selected.outputFormat = result.outputFormat;
+            selected.outputTargetBytes = targetBytes;
+            selected.miss = Boolean(result.miss);
+            selected.quality = result.quality;
+            selected.dimensions = result.dimensions;
+          } else {
+            selected.error = result && result.error ? result.error : "Reduction was cancelled.";
+          }
+          renderList();
+        }
+
+        if (thisOperation === operationId) {
+          const ready = files.filter((item) => item.output && item.output.size <= targetBytes).length;
+          const failed = files.length - ready;
+          isReducing = false;
+          reduceButton.disabled = false;
+          reduceButton.textContent = "Reduce all";
+          targetInput.disabled = false;
+          document.getElementById("add-more").disabled = false;
+          document.getElementById("reset-button").disabled = false;
+          modeInputs.forEach((modeInput) => { modeInput.disabled = false; });
+          syncDownloadButton();
+          const elapsed = Math.max(1, Math.ceil((performance.now() - startedAt) / 1000));
+          const duration = elapsed < 60 ? `${elapsed} sec` : `${Math.ceil(elapsed / 60)} min`;
+          const summary = failed
+            ? `${ready} of ${files.length} ready · ${failed} couldn't meet the target · completed in ${duration}.`
+            : `All ${ready} images reduced in ${duration}.`;
+          status.textContent = failed ? summary : "";
+          setProgress(100, failed ? "Reduction finished with some misses" : "All images reduced", summary);
+        }
+      }
+
+      function reset() {
+        operationId += 1;
+        files.forEach((item) => URL.revokeObjectURL(item.url));
+        files.length = 0;
+        activeId = null;
+        input.value = "";
+        targetInput.value = "200";
+        queueSection.hidden = true;
+        controls.hidden = true;
+        progressSection.hidden = true;
+        actions.hidden = true;
+        uploadArea.hidden = false;
+        list.replaceChildren();
+        status.textContent = "";
+        reduceButton.disabled = false;
+      }
+
+      async function downloadAll() {
+        const targetKB = Number(targetInput.value);
+        const targetBytes = Math.floor(targetKB * 1024);
+        const ready = files.filter((item) => item.output && (
+          item.output.size <= targetBytes ||
+          (item.miss && item.outputTargetBytes === targetBytes)
+        ));
+        if (!ready.length || isReducing) {
+          syncDownloadButton();
+          return;
+        }
+
+        const encoder = new TextEncoder();
+        const crcTable = new Uint32Array(256);
+        for (let index = 0; index < crcTable.length; index += 1) {
+          let value = index;
+          for (let bit = 0; bit < 8; bit += 1) value = value & 1 ? 0xedb88320 ^ (value >>> 1) : value >>> 1;
+          crcTable[index] = value >>> 0;
+        }
+        const crc32 = (bytes) => {
+          let crc = 0xffffffff;
+          for (const byte of bytes) crc = crcTable[(crc ^ byte) & 0xff] ^ (crc >>> 8);
+          return (crc ^ 0xffffffff) >>> 0;
+        };
+        const write16 = (view, offset, value) => view.setUint16(offset, value, true);
+        const write32 = (view, offset, value) => view.setUint32(offset, value, true);
+        const localParts = [];
+        const directoryParts = [];
+        const usedNames = new Set();
+        let localOffset = 0;
+        const now = new Date();
+        const dosTime = (now.getHours() << 11) | (now.getMinutes() << 5) | Math.floor(now.getSeconds() / 2);
+        const dosDate = ((Math.max(1980, now.getFullYear()) - 1980) << 9) | ((now.getMonth() + 1) << 5) | now.getDate();
+
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Preparing ZIP…";
+        status.textContent = "";
+        try {
+          for (let index = 0; index < ready.length; index += 1) {
+            const item = ready[index];
+            const baseName = item.file.name.replace(/\.[^.]+$/, "");
+            const extension = extensionForMime(item.outputFormat);
+            let fileName = encoder.encode(`${baseName}-reduced.${extension}`);
+            if (usedNames.has(new TextDecoder().decode(fileName))) {
+              fileName = encoder.encode(`${baseName}-${index + 1}-reduced.${extension}`);
+            }
+            usedNames.add(new TextDecoder().decode(fileName));
+            const data = new Uint8Array(await item.output.arrayBuffer());
+            const checksum = crc32(data);
+
+            const localHeader = new Uint8Array(30 + fileName.length);
+            const localView = new DataView(localHeader.buffer);
+            write32(localView, 0, 0x04034b50);
+            write16(localView, 4, 20);
+            write16(localView, 6, 0x0800);
+            write16(localView, 8, 0);
+            write16(localView, 10, dosTime);
+            write16(localView, 12, dosDate);
+            write32(localView, 14, checksum);
+            write32(localView, 18, data.length);
+            write32(localView, 22, data.length);
+            write16(localView, 26, fileName.length);
+            localHeader.set(fileName, 30);
+            localParts.push(localHeader, data);
+
+            const directory = new Uint8Array(46 + fileName.length);
+            const directoryView = new DataView(directory.buffer);
+            write32(directoryView, 0, 0x02014b50);
+            write16(directoryView, 4, 20);
+            write16(directoryView, 6, 20);
+            write16(directoryView, 8, 0x0800);
+            write16(directoryView, 10, 0);
+            write16(directoryView, 12, dosTime);
+            write16(directoryView, 14, dosDate);
+            write32(directoryView, 16, checksum);
+            write32(directoryView, 20, data.length);
+            write32(directoryView, 24, data.length);
+            write16(directoryView, 28, fileName.length);
+            write32(directoryView, 42, localOffset);
+            directory.set(fileName, 46);
+            directoryParts.push(directory);
+            localOffset += localHeader.length + data.length;
+          }
+
+          const directorySize = directoryParts.reduce((size, part) => size + part.length, 0);
+          const endRecord = new Uint8Array(22);
+          const endView = new DataView(endRecord.buffer);
+          write32(endView, 0, 0x06054b50);
+          write16(endView, 8, ready.length);
+          write16(endView, 10, ready.length);
+          write32(endView, 12, directorySize);
+          write32(endView, 16, localOffset);
+          const archive = new Blob([...localParts, ...directoryParts, endRecord], { type: "application/zip" });
+          const url = URL.createObjectURL(archive);
+          const link = document.createElement("a");
+          link.href = url;
+          link.download = `imageLite-reduced-${ready.length}-images.zip`;
+          document.body.append(link);
+          link.click();
+          link.remove();
+          window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+          status.textContent = `Downloading ${ready.length} image${ready.length === 1 ? "" : "s"} in one ZIP file.`;
+        } catch (error) {
+          status.textContent = error instanceof Error ? `Could not prepare the ZIP download: ${error.message}` : "Could not prepare the ZIP download.";
+        } finally {
+          syncDownloadButton();
+        }
+      }
+
+      document.getElementById("browse-button").addEventListener("click", () => input.click());
+      document.getElementById("add-more").addEventListener("click", () => input.click());
+      input.addEventListener("change", () => {
+        loadImages(input.files);
+        input.value = "";
+      });
+      targetInput.addEventListener("input", () => {
+        syncDownloadButton();
+        if (activeId && activeFile().output) {
+          setProgress(0, "Target size changed", "Reduce again to meet the current target.");
+        }
+      });
+      modeInputs.forEach((modeInput) => modeInput.addEventListener("change", () => {
+        files.forEach((item) => {
+          item.output = null;
+          item.outputFormat = null;
+          item.outputTargetBytes = null;
+          item.miss = false;
+          item.error = "";
+        });
+        modeHelper.textContent = modeInput.value === "speed"
+          ? "Uses the faster JPEG resizing method to reach your target size."
+          : "We'll preserve quality first, then resize dimensions if needed to fit your target.";
+        status.textContent = "";
+        renderList();
+        syncDownloadButton();
+        setProgress(0, "Ready to reduce", "Choose a target size, then select Reduce.");
+      }));
+      reduceButton.addEventListener("click", reduceSelected);
+      document.getElementById("reset-button").addEventListener("click", reset);
+      downloadButton.addEventListener("click", () => {
+        downloadAll();
+      });
+
+      ["dragenter", "dragover"].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.add("dragging");
+      }));
+      ["dragleave", "drop"].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.remove("dragging");
+      }));
+      dropzone.addEventListener("drop", (event) => loadImages(event.dataTransfer.files));
+      window.addEventListener("beforeunload", () => files.forEach((item) => URL.revokeObjectURL(item.url)));
+    })();
+  </script>
 </body>
 </html>
