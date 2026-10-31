@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f8fc">
+  <title>imageLite by ucmdm.in — Image size reducer</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20233a;
+      --muted: #85889c;
+      --line: #e9e9f1;
+      --purple: #7658e8;
+      --purple-dark: #6142d4;
+      --surface: #fff;
+      --canvas: #f8f8fc;
+      --green: #238a62;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; min-width: 320px; min-height: 100vh; color: var(--ink); background: var(--canvas); }
+    button, input, select { font: inherit; }
+    button { cursor: pointer; }
+
+    .site-header { padding: 24px clamp(22px, 6vw, 88px); background: #173b63; color: #fff; }
+    .header-inner { display: flex; align-items: center; justify-content: space-between; gap: 22px; }
+    .brand { margin: 0; font: 700 clamp(24px, 4vw, 38px)/1.1 Georgia, "Times New Roman", serif; letter-spacing: .2px; }
+    .brand a { color: inherit; text-decoration: none; }
+    .header-tools { display: flex; align-items: center; gap: 6px; margin-left: auto; }
+    .useful-apps-link { display: inline-flex; align-items: center; min-height: 36px; padding: 0 12px; border: 1px solid #ffffff55; border-radius: 7px; color: #fff; font: 700 13px Arial, sans-serif; text-decoration: none; white-space: nowrap; }
+    .useful-apps-link:hover, .useful-apps-link:focus-visible { background: #ffffff24; outline: 2px solid #8fe9f5; outline-offset: 2px; }
+
+    main { width: min(100% - 40px, 920px); margin: 0 auto; padding: 42px 0 48px; }
+
+    .workspace {
+      overflow: hidden; border: 1px solid var(--line); border-radius: 16px;
+      background: var(--surface); box-shadow: 0 13px 38px #2626480a;
+    }
+    .upload-area { padding: 21px 22px 0; }
+    .dropzone {
+      min-height: 190px; padding: 26px 18px; display: grid; place-items: center; text-align: center;
+      border: 1.5px dashed #d9d5ed; border-radius: 12px; background: #fcfbff;
+      transition: border-color .16s, background .16s;
+    }
+    .dropzone.dragging { border-color: var(--purple); background: #f6f3ff; }
+    .upload-icon {
+      width: 45px; height: 45px; margin: 0 auto 11px; display: grid; place-items: center;
+      border-radius: 14px; color: var(--purple); background: #f0edff;
+    }
+    .upload-title { margin: 0 0 5px; font-size: 16px; font-weight: 700; letter-spacing: -.25px; }
+    .upload-hint { margin: 0 0 13px; color: var(--muted); font-size: 12px; }
+    .primary, .secondary {
+      border: 0; border-radius: 8px; font-weight: 680;
+      transition: background .15s, transform .15s, opacity .15s;
+    }
+    .primary { padding: 10px 17px; color: #fff; background: var(--purple); box-shadow: 0 4px 10px #7658e82b; }
+    .primary:hover:not(:disabled) { background: var(--purple-dark); transform: translateY(-1px); }
+    .primary:disabled { cursor: not-allowed; opacity: .48; box-shadow: none; }
+    .secondary { padding: 9px 13px; color: #5841b9; background: #f1efff; }
+    .secondary:hover { background: #e9e5ff; }
+    .file-hint { margin-top: 11px; color: #a0a2b1; font-size: 11px; }
+    #file-input { display: none; }
+
+    .queue { padding: 17px 22px 0; }
+    .queue-heading { display: none; }
+    .queue-toggle { display: block; margin: 0 0 9px auto; padding: 5px 8px; font-size: 11px; }
+    .file-list { display: grid; gap: 7px; max-height: 168px; overflow-y: auto; }
+    .file-list[hidden] { display: none; }
+    .file-item {
+      width: 100%; display: grid; grid-template-columns: 39px minmax(0,1fr) auto; align-items: center; gap: 10px;
+      padding: 8px 10px; text-align: left; color: var(--ink); border: 1px solid var(--line);
+      border-radius: 9px; background: #fff;
+    }
+    .file-item:hover { border-color: #d7d0f7; }
+    .file-item.active { border-color: #b6a8f3; background: #faf9ff; box-shadow: 0 0 0 2px #7658e80c; }
+    .file-thumb { width: 38px; height: 38px; display: grid; place-items: center; overflow: hidden; border-radius: 6px; background: #f2f1f8; }
+    .file-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .file-description { min-width: 0; }
+    .file-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12px; font-weight: 650; }
+    .file-details { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .file-result { color: var(--green); text-align: right; font-size: 11px; font-weight: 700; }
+    .file-result.pending { color: #a0a2b1; font-weight: 500; }
+    .file-result.error { color: #bd5546; }
+
+    .controls { padding: 19px 22px 0; }
+    .control-label { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 8px; color: #55586d; font-size: 12px; font-weight: 650; }
+    .target-wrap { position: relative; }
+    input[type="number"] {
+      width: 100%; height: 40px; padding: 0 12px; color: var(--ink); border: 1px solid #e1e1ea;
+      border-radius: 8px; outline: none; background: #fff;
+    }
+    input[type="number"] { padding-right: 47px; }
+    input[type="number"]:focus, button:focus-visible, input:focus-visible { outline: 3px solid #7658e83b; outline-offset: 2px; }
+    .unit { position: absolute; top: 12px; right: 12px; color: var(--muted); font-size: 11px; pointer-events: none; }
+    .helper { margin-top: 6px; color: #9a9cac; font-size: 10px; line-height: 1.4; }
+
+    .progress-section { padding: 17px 22px 0; }
+    .progress-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 7px; color: #64677b; font-size: 11px; }
+    .progress-track { height: 7px; overflow: hidden; border-radius: 999px; background: #eeedf4; }
+    .progress-bar { width: 0; height: 100%; border-radius: inherit; background: linear-gradient(90deg, #9278f3, #7658e8); transition: width .22s ease; }
+    .eta { min-height: 17px; margin-top: 6px; color: #9698a9; font-size: 10px; }
+    .actions {
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
+      padding: 14px 22px 18px; margin-top: 5px; border-top: 1px solid #f0f0f5;
+    }
+    .action-buttons { display: flex; gap: 8px; }
+    .action-buttons .primary { min-width: 105px; }
+    .reset { color: #777a8d; background: #f3f3f7; box-shadow: none; }
+    .reset:hover { background: #e9e9f0; }
+    .download { color: #5740bd; background: #f0edff; }
+    .download:hover:not(:disabled) { background: #e7e2ff; }
+    .download:disabled { color: #aaa7ba; background: #f4f3f8; }
+    .status { padding: 0 22px 14px; color: #bd5546; font-size: 11px; }
+    .privacy-note { margin: 16px 0 0; color: #989aaa; text-align: center; font-size: 11px; }
+    footer { padding: 0 18px 24px; color: #a1a2b0; text-align: center; font-size: 10px; }
+    [hidden] { display: none !important; }
+
+    @media (max-width: 600px) {
+      .site-header { padding: 18px 17px; }
+      .header-inner { gap: 12px; }
+      main { width: min(100% - 26px, 920px); padding: 39px 0 38px; }
+      .upload-area { padding: 13px 13px 0; }
+      .dropzone { min-height: 175px; padding: 20px 12px; }
+      .queue { padding: 14px 13px 0; }
+      .controls { padding: 17px 13px 0; }
+      .progress-section { padding: 15px 13px 0; }
+      .actions { padding: 13px; }
+      .status { padding: 0 13px 12px; }
+      .action-buttons { gap: 6px; }
+      .action-buttons .primary { padding: 10px 12px; }
+      .download { padding: 9px 10px; font-size: 11px; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <p class="brand"><a href="index.html">ucmdm.in</a></p>
+      <div class="header-tools">
+        <a class="useful-apps-link" href="useful-apps.html">Useful Apps</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="workspace" aria-label="Image size reducer">
+      <div class="upload-area" id="upload-area">
+        <div class="dropzone" id="dropzone">
+          <div>
+            <div class="upload-icon" aria-hidden="true">
+              <svg width="23" height="23" viewBox="0 0 24 24" fill="none"><rect x="3.5" y="4.5" width="17" height="15" rx="2.5" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9.5" r="1.75" stroke="currentColor" stroke-width="1.6"/><path d="m5 17 4.5-4.5 3 3 2.5-2.5 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <button type="button" class="primary" id="browse-button">Choose image / images</button>
+          </div>
+        </div>
+      </div>
+      <input id="file-input" type="file" accept="image/*,.heic,.heif" multiple>
+
+      <section class="queue" id="queue" hidden aria-label="Uploaded images">
+        <div class="queue-heading">
+          <div class="queue-title">Your images<span class="queue-count" id="queue-count"></span></div>
+          <button type="button" class="add-more" id="add-more">+ Add more</button>
+        </div>
+        <button type="button" class="secondary queue-toggle" id="toggle-file-list" aria-label="Show uploaded images" title="Show uploaded images" aria-expanded="false" aria-controls="file-list">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2" stroke="currentColor" stroke-width="1.8"/><circle cx="9" cy="9" r="1.5" stroke="currentColor" stroke-width="1.6"/><path d="m5 17 4-4 3 3 3-3 4 4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="file-list" id="file-list" hidden></div>
+      </section>
+
+      <div class="controls" id="controls" hidden>
+        <div>
+          <label class="control-label" for="target-size">Reduce file size to</label>
+          <div class="target-wrap">
+            <input id="target-size" type="number" min="1" max="100000" step="1" value="100" inputmode="numeric">
+            <span class="unit">KB</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="progress-section" id="progress-section" hidden>
+        <div class="progress-heading"><span id="progress-label"></span><span id="progress-percent">0%</span></div>
+        <div class="progress-track" id="progress-track" role="progressbar" aria-label="Image reduction progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <div class="eta" id="eta" aria-live="polite"></div>
+      </div>
+
+      <div class="actions" id="actions" hidden>
+        <div class="action-buttons">
+          <button type="button" class="primary" id="reduce-button">Reduce all</button>
+          <button type="button" class="secondary reset" id="reset-button">Reset</button>
+        </div>
+        <button type="button" class="secondary download" id="download-button" disabled>Download</button>
+      </div>
+      <div class="status" id="status" role="status" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const input = document.getElementById("file-input");
+      const dropzone = document.getElementById("dropzone");
+      const uploadArea = document.getElementById("upload-area");
+      const queueSection = document.getElementById("queue");
+      const controls = document.getElementById("controls");
+      const progressSection = document.getElementById("progress-section");
+      const actions = document.getElementById("actions");
+      const list = document.getElementById("file-list");
+      const targetInput = document.getElementById("target-size");
+      const reduceButton = document.getElementById("reduce-button");
+      const downloadButton = document.getElementById("download-button");
+      const status = document.getElementById("status");
+      const progressBar = document.getElementById("progress-bar");
+      const progressTrack = document.getElementById("progress-track");
+      const progressLabel = document.getElementById("progress-label");
+      const progressPercent = document.getElementById("progress-percent");
+      const eta = document.getElementById("eta");
+      const files = [];
+      let activeId = null;
+      let operationId = 0;
+      let isReducing = false;
+
+      const formatBytes = (bytes) => {
+        if (bytes < 1024) return `${bytes} B`;
+        const units = ["KB", "MB", "GB"];
+        let value = bytes / 1024;
+        let unit = 0;
+        while (value >= 1024 && unit < units.length - 1) {
+          value /= 1024;
+          unit += 1;
+        }
+        return `${value.toFixed(value >= 100 ? 0 : 1)} ${units[unit]}`;
+      };
+
+      const outputMime = "image/jpeg";
+      const activeFile = () => files.find((item) => item.id === activeId);
+
+      function syncDownloadButton() {
+        const targetKB = Number(targetInput.value);
+        const targetBytes = Math.floor(targetKB * 1024);
+        const downloadable = Number.isFinite(targetKB) && targetKB > 0
+          ? files.filter((item) => item.output && (
+            item.output.size <= targetBytes ||
+            (item.miss && item.outputTargetBytes === targetBytes)
+          ))
+          : [];
+        downloadButton.disabled = isReducing || downloadable.length === 0;
+        downloadButton.textContent = "Download";
+        downloadButton.title = downloadable.length
+          ? `Download ${downloadable.length} reduced JPG file${downloadable.length === 1 ? "" : "s"}`
+          : "No reduced JPG files ready to download";
+      }
+
+      function setProgress(percent, message, estimate) {
+        const value = Math.max(0, Math.min(100, Math.round(percent)));
+        progressBar.style.width = `${value}%`;
+        progressTrack.setAttribute("aria-valuenow", String(value));
+        progressPercent.textContent = `${value}%`;
+        progressLabel.textContent = message;
+        eta.textContent = estimate;
+      }
+
+      function renderList() {
+        list.replaceChildren();
+        document.getElementById("queue-count").textContent = `(${files.length})`;
+        files.forEach((item) => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = `file-item${item.id === activeId ? " active" : ""}`;
+          button.setAttribute("aria-pressed", String(item.id === activeId));
+          button.addEventListener("click", () => selectFile(item.id));
+
+          const thumb = document.createElement("span");
+          thumb.className = "file-thumb";
+          const image = document.createElement("img");
+          image.src = item.url;
+          image.alt = "";
+          thumb.append(image);
+
+          const description = document.createElement("span");
+          description.className = "file-description";
+          const name = document.createElement("span");
+          name.className = "file-name";
+          name.textContent = item.file.name;
+          const details = document.createElement("span");
+          details.className = "file-details";
+          const format = item.file.type.replace(/^image\//i, "") || item.file.name.split(".").pop() || "image";
+          details.textContent = `${formatBytes(item.file.size)} · ${format.toUpperCase()}`;
+          description.append(name, details);
+
+          const result = document.createElement("span");
+          result.className = `file-result${item.output ? "" : " pending"}${item.error || item.miss ? " error" : ""}`;
+          result.textContent = item.miss ? "Target missed" : item.output ? formatBytes(item.output.size) : item.error ? "Target missed" : "Not reduced";
+          button.append(thumb, description, result);
+          list.append(button);
+        });
+      }
+
+      function selectFile(id) {
+        if (isReducing) return;
+        activeId = id;
+        const selected = activeFile();
+        syncDownloadButton();
+        status.textContent = selected.error || "";
+        renderList();
+        if (selected.miss && !downloadButton.disabled) setProgress(100, "Smallest result ready to download", "This image couldn't meet the target; download the smallest result.");
+        else if (selected.output && !downloadButton.disabled) setProgress(100, "Image ready to download", "Choose another image or reset to start over.");
+        else if (selected.output) setProgress(0, "Target size changed", "Reduce again to meet the current target.");
+        else setProgress(0, "", "");
+      }
+
+      async function loadImages(fileList) {
+        const accepted = Array.from(fileList).filter((file) =>
+          file.type.startsWith("image/") || /\.(heic|heif)$/i.test(file.name)
+        );
+        const rejectedCount = fileList.length - accepted.length;
+        if (rejectedCount) status.textContent = `${rejectedCount} non-image file${rejectedCount === 1 ? " was" : "s were"} skipped. Choose image files.`;
+        if (!accepted.length) return;
+        for (const file of accepted) {
+          files.push({ id: crypto.randomUUID(), file, url: URL.createObjectURL(file), output: null, outputFormat: null, error: "" });
+        }
+        uploadArea.hidden = true;
+        queueSection.hidden = false;
+        controls.hidden = false;
+        progressSection.hidden = false;
+        actions.hidden = false;
+        if (!activeId) activeId = files[files.length - accepted.length].id;
+        renderList();
+        selectFile(activeId);
+      }
+
+      function encode(canvas, mime, quality) {
+        return new Promise((resolve, reject) => {
+          try {
+            canvas.toBlob((blob) => {
+              if (!blob) {
+                reject(new Error("Your browser couldn't create a JPEG image. Try another browser."));
+                return;
+              }
+              if (blob.type !== mime) {
+                reject(new Error("Your browser doesn't support JPEG image output. Try another browser."));
+                return;
+              }
+              resolve(blob);
+            }, mime, mime === "image/png" ? undefined : quality);
+          } catch (error) {
+            reject(error);
+          }
+        });
+      }
+
+      async function reduceOne(selected, targetBytes, onProgress, thisOperation) {
+        try {
+          if (selected.file.type === "image/jpeg" && selected.file.size <= targetBytes) {
+            return { output: selected.file, outputFormat: selected.file.type, quality: 1 };
+          }
+          const image = new Image();
+          image.src = selected.url;
+          try {
+            await image.decode();
+          } catch {
+            throw new Error("This image format isn't supported by your browser. Try converting it to JPG, PNG, or WebP.");
+          }
+          if (thisOperation !== operationId) return null;
+          const mime = outputMime;
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+          if (!context) throw new Error("Your browser couldn't prepare this image.");
+
+          const startedAt = performance.now();
+          const minimumQuality = .25;
+          let completed = 0;
+          let scale = 1;
+          let best = null;
+          let smallest = null;
+          const estimatedEncodes = 12;
+
+          const encodeAt = async (width, height, quality) => {
+            canvas.width = width;
+            canvas.height = height;
+            context.drawImage(image, 0, 0, width, height);
+            const blob = await encode(canvas, mime, quality);
+            if (thisOperation !== operationId) return null;
+            completed += 1;
+            const elapsed = (performance.now() - startedAt) / 1000;
+            onProgress(completed, estimatedEncodes, elapsed);
+            if (!smallest || blob.size < smallest.size) smallest = blob;
+            return { blob, quality };
+          };
+
+          for (let pass = 0; pass < 18; pass += 1) {
+            if (thisOperation !== operationId) return null;
+            const width = Math.max(1, Math.round(image.naturalWidth * scale));
+            const height = Math.max(1, Math.round(image.naturalHeight * scale));
+            const highQuality = await encodeAt(width, height, .8);
+            if (!highQuality) return null;
+            if (highQuality.blob.size <= targetBytes) {
+              best = highQuality;
+              break;
+            }
+
+            const lowestQuality = await encodeAt(width, height, minimumQuality);
+            if (!lowestQuality) return null;
+            if (lowestQuality.blob.size <= targetBytes) {
+              best = lowestQuality;
+              let low = minimumQuality;
+              let high = .8;
+              for (let attempt = 0; attempt < 5; attempt += 1) {
+                const quality = (low + high) / 2;
+                const candidate = await encodeAt(width, height, quality);
+                if (!candidate) return null;
+                if (candidate.blob.size <= targetBytes) {
+                  low = quality;
+                  best = candidate;
+                } else {
+                  high = quality;
+                }
+              }
+              break;
+            }
+
+            const nextScale = scale * Math.min(.85, Math.sqrt(targetBytes / lowestQuality.blob.size) * .9);
+            if (nextScale >= scale || (width === 1 && height === 1)) break;
+            scale = Math.max(Math.min(1 / image.naturalWidth, 1 / image.naturalHeight), nextScale);
+            setProgress(
+              Math.min(92, 12 + pass * 3),
+              " ",
+              " "
+            );
+          }
+          if (thisOperation !== operationId) return null;
+          if (!best || best.blob.size > targetBytes) {
+            throw new Error(`This image couldn't reach the target. Smallest result: ${formatBytes(smallest.size)}.`);
+          }
+          if (best.blob.size >= selected.file.size && selected.file.size > targetBytes) {
+            throw new Error("Reducing this image would make it larger than the original.");
+          }
+          return { output: best.blob, outputFormat: mime, quality: best.quality };
+        } catch (error) {
+          return { error: error instanceof Error ? error.message : "Something went wrong while reducing this image." };
+        }
+      }
+
+      async function reduceSelected() {
+        const targetKB = Number(targetInput.value);
+        if (!files.length || isReducing) return;
+        if (!Number.isFinite(targetKB) || targetKB <= 0) {
+          status.textContent = "Enter a target file size greater than 0 KB.";
+          targetInput.focus();
+          return;
+        }
+        if (targetKB > 100000) {
+          status.textContent = "Enter a target size of 100,000 KB or less.";
+          targetInput.focus();
+          return;
+        }
+
+        const thisOperation = ++operationId;
+        const targetBytes = Math.floor(targetKB * 1024);
+        const startedAt = performance.now();
+        let totalEncodes = 0;
+        isReducing = true;
+        reduceButton.disabled = true;
+        reduceButton.textContent = "Reducing…";
+        targetInput.disabled = true;
+        document.getElementById("add-more").disabled = true;
+        document.getElementById("reset-button").disabled = true;
+        downloadButton.disabled = true;
+        status.textContent = "";
+        files.forEach((item) => {
+          item.output = null;
+          item.outputFormat = null;
+          item.outputTargetBytes = null;
+          item.miss = false;
+          item.error = "";
+        });
+        renderList();
+
+        for (let index = 0; index < files.length; index += 1) {
+          if (thisOperation !== operationId) break;
+          const selected = files[index];
+          activeId = selected.id;
+          renderList();
+          setProgress(index / files.length * 100, `Done ${index + 1} of ${files.length}`, " ");
+          const result = await reduceOne(selected, targetBytes, (attempt, expected) => {
+            totalEncodes += 1;
+            const perImageProgress = Math.min(.95, attempt / expected);
+            const overall = ((index + perImageProgress) / files.length) * 100;
+            const elapsed = (performance.now() - startedAt) / 1000;
+            const remainingEncodes = Math.max(0, (files.length - index - 1) * expected + (expected - attempt));
+            const secondsRemaining = totalEncodes ? Math.max(1, Math.ceil(elapsed / totalEncodes * remainingEncodes)) : 0;
+            const etaText = secondsRemaining < 60
+              ? `${secondsRemaining} sec`
+              : `${Math.ceil(secondsRemaining / 60)} min`;
+            setProgress(overall, `Done ${index + 1} of ${files.length}`, etaText);
+          }, thisOperation);
+          if (thisOperation !== operationId) break;
+          if (result && result.output) {
+            selected.output = result.output;
+            selected.outputFormat = result.outputFormat;
+            selected.outputTargetBytes = targetBytes;
+            selected.miss = Boolean(result.miss);
+            selected.quality = result.quality;
+          } else {
+            selected.error = result && result.error ? result.error : "Reduction was cancelled.";
+          }
+          renderList();
+        }
+
+        if (thisOperation === operationId) {
+          const ready = files.filter((item) => item.output && item.output.size <= targetBytes).length;
+          const failed = files.length - ready;
+          isReducing = false;
+          reduceButton.disabled = false;
+          reduceButton.textContent = "Reduce all";
+          targetInput.disabled = false;
+          document.getElementById("add-more").disabled = false;
+          document.getElementById("reset-button").disabled = false;
+          syncDownloadButton();
+          const elapsed = Math.max(1, Math.ceil((performance.now() - startedAt) / 1000));
+          const duration = elapsed < 60 ? `${elapsed} sec` : `${Math.ceil(elapsed / 60)} min`;
+          const summary = failed
+            ? `${ready} of ${files.length} ready · ${failed} couldn't meet the target · completed in ${duration}.`
+            : `All ${ready} images reduced in ${duration}.`;
+          status.textContent = failed ? summary : "";
+          setProgress(100, failed ? "Reduction finished with some misses" : "Done 100%", summary);
+        }
+      }
+
+      function reset() {
+        operationId += 1;
+        files.forEach((item) => URL.revokeObjectURL(item.url));
+        files.length = 0;
+        activeId = null;
+        input.value = "";
+        targetInput.value = "100";
+        queueSection.hidden = true;
+        controls.hidden = true;
+        progressSection.hidden = true;
+        actions.hidden = true;
+        uploadArea.hidden = false;
+        list.replaceChildren();
+        list.hidden = true;
+        const toggleFileListButton = document.getElementById("toggle-file-list");
+        toggleFileListButton.setAttribute("aria-label", "Show uploaded images");
+        toggleFileListButton.title = "Show uploaded images";
+        toggleFileListButton.setAttribute("aria-expanded", "false");
+        status.textContent = "";
+        reduceButton.disabled = false;
+      }
+
+      async function downloadAll() {
+        const targetKB = Number(targetInput.value);
+        const targetBytes = Math.floor(targetKB * 1024);
+        const ready = files.filter((item) => item.output && (
+          item.output.size <= targetBytes ||
+          (item.miss && item.outputTargetBytes === targetBytes)
+        ));
+        if (!ready.length || isReducing) {
+          syncDownloadButton();
+          return;
+        }
+
+        const usedNames = new Set();
+        downloadButton.disabled = true;
+        downloadButton.textContent = "Preparing JPGs…";
+        status.textContent = "";
+        try {
+          for (let index = 0; index < ready.length; index += 1) {
+            const item = ready[index];
+            const baseName = item.file.name.replace(/\.[^.]+$/, "");
+            const fileSizeKB = Math.round(item.output.size / 1024);
+            let fileName = `${baseName}_${fileSizeKB}_KB.jpg`;
+            let suffix = 2;
+            while (usedNames.has(fileName)) {
+              fileName = `${baseName}_${suffix}_${fileSizeKB}_KB.jpg`;
+              suffix += 1;
+            }
+            usedNames.add(fileName);
+
+            const url = URL.createObjectURL(item.output);
+            const link = document.createElement("a");
+            link.href = url;
+            link.download = fileName;
+            document.body.append(link);
+            link.click();
+            link.remove();
+            window.setTimeout(() => URL.revokeObjectURL(url), 10000);
+            if (index < ready.length - 1) {
+              await new Promise((resolve) => window.setTimeout(resolve, 150));
+            }
+          }
+          status.textContent = `Downloading ${ready.length} JPG file${ready.length === 1 ? "" : "s"} separately.`;
+        } catch (error) {
+          status.textContent = error instanceof Error ? `Could not prepare the JPG download: ${error.message}` : "Could not prepare the JPG download.";
+        } finally {
+          syncDownloadButton();
+        }
+      }
+
+      document.getElementById("browse-button").addEventListener("click", () => input.click());
+      document.getElementById("add-more").addEventListener("click", () => input.click());
+      document.getElementById("toggle-file-list").addEventListener("click", (event) => {
+        const button = event.currentTarget;
+        list.hidden = !list.hidden;
+        const label = list.hidden ? "Show uploaded images" : "Hide uploaded images";
+        button.setAttribute("aria-label", label);
+        button.title = label;
+        button.setAttribute("aria-expanded", String(!list.hidden));
+      });
+      input.addEventListener("change", () => {
+        loadImages(input.files);
+        input.value = "";
+      });
+      targetInput.addEventListener("input", () => {
+        syncDownloadButton();
+        if (activeId && activeFile().output) {
+          setProgress(0, "Target size changed", "Reduce again to meet the current target.");
+        }
+      });
+      reduceButton.addEventListener("click", reduceSelected);
+      document.getElementById("reset-button").addEventListener("click", reset);
+      downloadButton.addEventListener("click", () => {
+        downloadAll();
+      });
+
+      ["dragenter", "dragover"].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.add("dragging");
+      }));
+      ["dragleave", "drop"].forEach((eventName) => dropzone.addEventListener(eventName, (event) => {
+        event.preventDefault();
+        dropzone.classList.remove("dragging");
+      }));
+      dropzone.addEventListener("drop", (event) => loadImages(event.dataTransfer.files));
+      window.addEventListener("beforeunload", () => files.forEach((item) => URL.revokeObjectURL(item.url)));
+    })();
+  </script>
+</body>
+</html>
